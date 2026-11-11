@@ -6,8 +6,8 @@
 
 | Suite | Result |
 | --- | --- |
-| `@loadline/db` (real PostgreSQL: isolation, overlap, transitions, cursor, positions, schema mirror) | 11 files, **135 passed** |
-| `@loadline/intake` (baseline, Claude extractor through a fake client, schema, no-network) | 4 files, **24 passed** |
+| `@loadline/db` (real PostgreSQL: isolation, driver writes, overlap, transitions, cursor, positions, schema mirror) | 12 files, **138 passed** |
+| `@loadline/intake` (baseline including the whitespace stress test, Claude extractor through a fake client, schema, no-network) | 4 files, **25 passed** |
 | `@loadline/simulator` | 1 file, **4 passed** |
 | `@loadline/web` (hub, events, positions, services, permissions, rate limit, intake, draft) | 9 files, **78 passed** |
 | `pnpm e2e` (Playwright, desktop and phone, against a dev server) | **13 passed**; `board.spec.ts --repeat-each 10`: **30 passed** |

@@ -2,7 +2,7 @@
   "benchmark": "intake",
   "extractor": "baseline",
   "model": null,
-  "date": "2026-11-11T19:17:33.306Z",
+  "date": "2026-11-11T20:08:15.858Z",
   "machine": {
     "cpu": "Apple M2 Pro",
     "node": "v24.22.1"

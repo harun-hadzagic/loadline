@@ -123,7 +123,7 @@ One entry per phase: what was built, and the evidence it works. Figures here are
 
 **Evidence**
 
-- `pnpm test` (clean test database): db `11 files, 135 tests`, intake `4 files, 24 tests`, simulator `4 tests`, web `9 files, 78 tests`; all passing. `pnpm lint`, `pnpm typecheck`: clean.
+- `pnpm test` (clean test database, after the Phase 6 review fixes): db `12 files, 138 tests`, intake `4 files, 25 tests`, simulator `4 tests`, web `9 files, 78 tests`; all passing. `pnpm lint`, `pnpm typecheck`: clean.
 - `pnpm e2e` against the dev server: `13 passed`; `board.spec.ts --repeat-each 10`: `30 passed`.
 - `docker compose up -d --build web simulator` on the existing stack: migration 0009 applied by the `migrate` service, web healthy, simulator running, sign-in and board 200 on the production build.
 - `bench/results/sync-latency.json`, production build, after the hub rework: 50 clients, 200 writes at 4.97/s, 10,000 of 10,000 delivered, 0 lost, 0 duplicates, 0 stray, p50 2.5 ms, p95 4.4 ms, p99 7.4 ms, max 31.5 ms.
