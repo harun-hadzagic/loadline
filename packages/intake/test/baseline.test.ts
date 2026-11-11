@@ -145,3 +145,29 @@ describe("the regex baseline", () => {
     expect(s.fields.rateUsd.accuracy).toBeGreaterThan(0.7);
   });
 });
+
+describe("the regex baseline is safe to run on anything a dispatcher pastes", () => {
+  it("finishes in well under a second on 20,000 characters of whitespace after every keyword", () => {
+    const keywords = [
+      "PO",
+      "Load",
+      "Pickup:",
+      "Order #",
+      "Ref",
+      "equipment",
+      "commodity",
+      "Pickup\nAppointment",
+    ];
+    for (const k of keywords) {
+      for (const filler of [" ", "\n", " \n", "\t"]) {
+        const doc = `${k}${filler.repeat(Math.floor(20_000 / filler.length))}!`;
+        const started = performance.now();
+        extractWithBaseline(doc, { defaultYear: Y });
+        expect(
+          performance.now() - started,
+          `${JSON.stringify(k)} + ${JSON.stringify(filler)}`,
+        ).toBeLessThan(200);
+      }
+    }
+  });
+});

@@ -201,8 +201,11 @@ function findBroker(text: string): string | null {
 }
 
 function findLoadReference(text: string): string | null {
+  // One whitespace class between the keyword and the value, never several
+  // overlapping ones: the Phase 6 review found the previous shape backtracked
+  // in O(n^4) on a long run of spaces and could stall the process for minutes.
   const re =
-    /(?:order|load|pro|reference|ref|confirmation)\s*(?:no\.?|number|#)?\s*[:#]?\s*\n?\s*([A-Z]{1,5}-?\d{4,9})\b/i;
+    /\b(?:order|load|pro|reference|ref|confirmation)\b[\s:#]*(?:no\.?|number)?[\s:#]*([A-Z]{1,5}-?\d{4,9})\b/i;
   const m = re.exec(text);
   return m?.[1] ?? null;
 }
@@ -280,7 +283,7 @@ function parseOtherReferences(text: string, loadRef: string | null): Extraction[
   const out: Extraction["otherReferences"] = [];
   const seen = new Set<string>();
   const re =
-    /\b(PO|BOL|Pickup|Pick-up|Delivery|Shipper Ref(?:erence)?|Trailer)\s*(?:#|No\.?|Number|:)?\s*[:#]?\s*\n?\s*([A-Z]{1,4}-?\d{3,9})\b/gi;
+    /\b(PO|BOL|Pickup|Pick-up|Delivery|Shipper Ref(?:erence)?|Trailer)\b[\s:#]*(?:no\.?|number)?[\s:#]*([A-Z]{1,4}-?\d{3,9})\b/gi;
   for (const m of text.matchAll(re)) {
     const label = m[1] as string;
     const value = m[2] as string;
@@ -369,7 +372,14 @@ export interface BaselineOptions {
 
 export function extractWithBaseline(input: string, opts: BaselineOptions = {}): Extraction {
   const defaultYear = opts.defaultYear ?? thisYear();
-  const text = input.replace(/\r\n/g, "\n");
+  // Bound every whitespace run before any pattern sees the text: runs of
+  // spaces to three (the PDF layout's column gaps stay recognisable as "two or
+  // more"), blank lines to two. Every pattern's backtracking is then bounded
+  // by a constant, whatever is pasted.
+  const text = input
+    .replace(/\r\n/g, "\n")
+    .replace(/[^\S\n]{4,}/g, "   ")
+    .replace(/\n(?:[^\S\n]*\n){2,}/g, "\n\n");
   const loadReference = findLoadReference(text);
   const stops = segments(text)
     .map((seg) => parseStop(seg, defaultYear))
