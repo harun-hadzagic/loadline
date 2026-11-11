@@ -1,0 +1,108 @@
+# Lint, type check, unit and database tests against a PostGIS service
+# container, then the Playwright tests against a dev server on the same
+# database. Third-party actions are pinned to commit SHAs; permissions are the
+# minimum; nothing uses pull_request_target.
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PNPM_VERSION: 12.18.0
+  NODE_VERSION: 24
+  TEST_DATABASE_URL_SUPER: postgres://postgres:postgres-local@localhost:5433/loadline_test
+
+jobs:
+  checks:
+    name: lint, types, unit and database tests
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    services:
+      db-test:
+        # The official image is amd64, which is what the runner is; no emulation here.
+        image: postgis/postgis:18-3.6
+        env:
+          POSTGRES_PASSWORD: postgres-local
+          POSTGRES_DB: loadline_test
+        ports:
+          - 5433:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d loadline_test"
+          --health-interval 3s
+          --health-timeout 3s
+          --health-retries 30
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm lint
+      - run: pnpm typecheck
+      - name: unit and database tests
+        run: pnpm test
+      - name: intake eval (baseline) matches the committed result
+        run: |
+          cp bench/results/intake-baseline.json /tmp/intake-baseline.before.json
+          pnpm eval:intake > /dev/null
+          node -e '
+            const a = require("/tmp/intake-baseline.before.json"), b = require("./bench/results/intake-baseline.json");
+            for (const k of ["documentAccuracy", "fieldAccuracy", "documents"]) if (a[k] !== b[k]) { console.error(k, a[k], b[k]); process.exit(1); }
+            console.log("baseline eval unchanged:", b.documentAccuracy, b.fieldAccuracy);
+          '
+          git checkout -- bench/results/intake-baseline.json
+
+  e2e:
+    name: playwright (two browsers, map, driver, intake)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    needs: checks
+    services:
+      db-test:
+        image: postgis/postgis:18-3.6
+        env:
+          POSTGRES_PASSWORD: postgres-local
+          POSTGRES_DB: loadline_test
+        ports:
+          - 5433:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d loadline_test"
+          --health-interval 3s
+          --health-timeout 3s
+          --health-retries 30
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @loadline/e2e exec playwright install --with-deps chromium
+      - name: playwright
+        run: pnpm --filter @loadline/e2e test
+        env:
+          CI: "1"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        if: failure()
+        with:
+          name: playwright-report
+          path: |
+            e2e/playwright-report
+            e2e/test-results
+          retention-days: 7
