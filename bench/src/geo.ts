@@ -11,7 +11,13 @@
 import { mkdirSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { bootstrap, createPool, migrate, withCredentials } from "@loadline/db/testing";
+import {
+  bootstrap,
+  createPool,
+  migrate,
+  TEST_PASSWORDS,
+  withCredentials,
+} from "@loadline/db/testing";
 import { machineInfo, percentile } from "./env.ts";
 
 const SUPER =
@@ -20,12 +26,9 @@ const SUPER =
 const ROWS = Number(process.env.BENCH_ROWS ?? 100_000);
 const RUNS = Number(process.env.BENCH_RUNS ?? 20);
 const WARMUP = 3;
-const PASSWORDS = {
-  owner: "owner-bench",
-  app: "app-bench",
-  auth: "auth-bench",
-  stream: "stream-bench",
-};
+// Roles are cluster-wide: bootstrap would ALTER ROLE for every database on
+// the server, so the benchmark uses the test cluster's own passwords.
+const PASSWORDS = TEST_PASSWORDS;
 const COMPANY = "01930000-0000-7000-8000-0000000bec40";
 
 type PlanNode = {
