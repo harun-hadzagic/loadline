@@ -21,3 +21,8 @@ The isolation tests (`packages/db/test/db/isolation.test.ts`) run every tenant t
 - Filters in application code: fails open on the first forgotten clause, and cannot be checked by a catalog query.
 - One database or schema per tenant: operationally heavy for a small company's board, and it moves the isolation story out of the SQL a reviewer can read.
 - Policies only on `loadline_app` (`TO loadline_app`): see record 0009; the owner would then be unrestricted under `FORCE`, which hides mistakes in seeds and jobs.
+
+## Addendum (Phase 6): what the policies do not decide
+
+Row security answers *which rows* a role may touch, not *which columns* or *which values*. The Phase 6 review showed a driver, limited by the restrictive `driver_scope` policies to their own loads and stops, could still rewrite a load's rate or a stop's appointment, or cancel the load, because the table grant is a plain `UPDATE`. Column-level grants would not express "status may change, but only forward", so migration 0010 adds a `BEFORE UPDATE` trigger (`app.limit_driver_writes`) that lets a non-staff role change only `status` on loads (to `in_transit` or `delivered`) and `arrived_at`/`departed_at` on stops, and makes `app.end_assignment` accept only `delivered` from a driver. The rule still lives in the database and `packages/db/test/db/driver-writes.test.ts` proves it as the driver role; the application never had to be trusted for it.
+

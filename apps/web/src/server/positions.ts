@@ -1,6 +1,7 @@
 import { createHash, timingSafeEqual } from "node:crypto";
 import { type AppRole, emit, sql, withTenant } from "@loadline/db";
 import { z } from "zod";
+import { assertCan } from "./authorize";
 import type { RequestContext } from "./context";
 import { tenant } from "./context";
 import { AppError } from "./errors";
@@ -79,6 +80,7 @@ export async function recordPositions(
       const recordedAt = p.recordedAt ?? new Date().toISOString();
       const r = await tx.execute<{
         applied: boolean;
+        recorded_at: Date | string;
         arrived_stop_id: string | null;
         arrived_load_id: string | null;
         arrived_seq: number | null;
@@ -99,7 +101,9 @@ export async function recordPositions(
           lng: p.lng,
           heading: p.heading ?? null,
           speedMph: p.speedMph ?? null,
-          recordedAt,
+          // The time the database stored (a future-dated report is clamped to
+          // now), so a browser never holds a timestamp later reports lose to.
+          recordedAt: new Date(first.recorded_at).toISOString(),
         },
       });
       for (const row of r.rows) {
@@ -133,6 +137,7 @@ export async function recordPositions(
 
 /** Latest position of every truck with its driver and load, for the map. */
 export async function listPositions(ctx: RequestContext): Promise<TruckPositionView[]> {
+  assertCan(ctx, "map", "read");
   return withTenant(tenant(ctx), async (tx) => {
     const r = await tx.execute<TruckPositionView>(sql`
       SELECT t.id AS "truckId", t.unit_number AS "unitNumber", t.equipment,

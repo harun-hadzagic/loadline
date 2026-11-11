@@ -14,6 +14,7 @@ afterAll(closePools);
 
 type Row = {
   applied: boolean;
+  recorded_at: string | null;
   arrived_stop_id: string | null;
   arrived_load_id: string | null;
   arrived_seq: number | null;
@@ -68,7 +69,13 @@ describe("app.record_position", () => {
     // Stale, and placed right at the pickup: must neither move the truck nor arrive.
     const stale = await record(truckId, pickup.lng, pickup.lat, t0);
     expect(stale).toEqual([
-      { applied: false, arrived_stop_id: null, arrived_load_id: null, arrived_seq: null },
+      {
+        applied: false,
+        recorded_at: null,
+        arrived_stop_id: null,
+        arrived_load_id: null,
+        arrived_seq: null,
+      },
     ]);
     const r = await superPool().query<{ lng: number; n: string; arrived: string }>(
       `SELECT ST_X(location::geometry) AS lng, (SELECT count(*)::text FROM app.truck_positions WHERE truck_id = $1) AS n,
