@@ -6,6 +6,7 @@ import {
   positionsBodySchema,
   recordPositions,
 } from "@/server/positions";
+import { LIMITS, limiter } from "@/server/rate-limit";
 
 export const dynamic = "force-dynamic";
 
@@ -14,6 +15,8 @@ export async function POST(request: Request): Promise<Response> {
   try {
     assertServiceToken(request);
     const body = positionsBodySchema.parse(await readJson(request));
+    // Per company: a runaway or malicious poster cannot flood the outbox.
+    limiter("positions", LIMITS.positions).take(body.companyId);
     const result = await recordPositions(body.companyId, body.positions);
     return Response.json(result);
   } catch (err) {
