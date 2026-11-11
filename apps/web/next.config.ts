@@ -6,7 +6,8 @@ import type { NextConfig } from "next";
 // and the app's own event stream; nothing else.
 const CSP = [
   "default-src 'self'",
-  "script-src 'self' 'unsafe-inline' 'unsafe-eval'", // Next.js dev needs eval; production keeps inline for the RSC bootstrap
+  // Next.js dev needs eval; production keeps inline for the RSC bootstrap and nothing else.
+  `script-src 'self' 'unsafe-inline'${process.env.NODE_ENV === "production" ? "" : " 'unsafe-eval'"}`,
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob: https://tiles.openfreemap.org",
   "font-src 'self' data: https://tiles.openfreemap.org",

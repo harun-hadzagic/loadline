@@ -123,9 +123,11 @@ export class EventHub {
     for (const t of this.timers) t.unref?.();
   }
 
-  stats(): HubStats {
+  stats(companyId?: string): HubStats {
     return {
-      clients: this.clients.size,
+      clients: companyId
+        ? [...this.clients].filter((c) => c.companyId === companyId).length
+        : this.clients.size,
       cursor: this.horizon ? encodeCursor(this.horizon) : null,
       delivered: this.delivered,
       drains: this.drains,

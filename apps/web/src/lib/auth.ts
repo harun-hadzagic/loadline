@@ -11,6 +11,10 @@ import { ac, roles } from "./permissions";
  */
 export const auth = betterAuth({
   appName: "Loadline",
+  // Sign-in is limited by the app's own limiter in the auth route (decision
+  // 0019); Better Auth's, on by default in production, would count the same
+  // requests a second time against a different window.
+  rateLimit: { enabled: false },
   baseURL: process.env.BETTER_AUTH_URL ?? "http://localhost:3000",
   secret: process.env.BETTER_AUTH_SECRET,
   database: authPool(),

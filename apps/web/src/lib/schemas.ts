@@ -87,7 +87,6 @@ export const driverInputSchema = z.object({
   homeCityId: z.coerce.number().int().positive().nullish(),
   active: z.boolean().default(true),
   /** Email of an existing member to link, or null. */
-  userEmail: z.email().nullish(),
 });
 export type DriverInput = z.infer<typeof driverInputSchema>;
 

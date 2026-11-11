@@ -37,6 +37,7 @@ describe("RateLimiter", () => {
   });
 
   it("keys sign-in attempts by the proxy's forwarded address", () => {
+    process.env.TRUST_PROXY = "1";
     expect(
       clientKey(
         new Request("http://x", { headers: { "x-forwarded-for": "203.0.113.9, 10.0.0.1" } }),
@@ -46,5 +47,10 @@ describe("RateLimiter", () => {
       "198.51.100.2",
     );
     expect(clientKey(new Request("http://x"))).toBe("local");
+    // Without a trusted proxy the forwarded header is the client's word and is ignored.
+    process.env.TRUST_PROXY = "";
+    expect(
+      clientKey(new Request("http://x", { headers: { "x-forwarded-for": "203.0.113.9" } })),
+    ).toBe("local");
   });
 });

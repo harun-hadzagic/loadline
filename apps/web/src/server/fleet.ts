@@ -60,14 +60,9 @@ export async function saveDriver(
   id?: string,
 ): Promise<string> {
   assertCan(ctx, "fleet", "manage");
+  // Linking a driver row to a login is not built in 0.1: logins and links
+  // come from the seed (HANDOFF, known gaps).
   return withTenant(tenant(ctx), async (tx) => {
-    const userId: string | null = null;
-    if (input.userEmail) {
-      // Linking happens by email through the auth schema's user table, which
-      // loadline_app cannot read. The admin page passes the resolved id instead.
-      throw new AppError(400, "Link drivers to accounts by user id.");
-    }
-    void userId;
     if (id) {
       if (!input.active) await refuseIfBooked(tx, "driver_id", id, "driver");
       const r = await tx.execute(sql`

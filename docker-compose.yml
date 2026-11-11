@@ -88,6 +88,8 @@ services:
       NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL:-http://localhost:3000}
       SIMULATOR_TOKEN: ${SIMULATOR_TOKEN:-sim-local-token-change-me}
       ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      SIGN_IN_RATE_LIMIT: ${SIGN_IN_RATE_LIMIT:-20}
+      TRUST_PROXY: ${TRUST_PROXY:-}
     healthcheck:
       test:
         [

@@ -18,6 +18,8 @@ interface Bucket {
   resetAt: number;
 }
 
+const MAX_BUCKETS = 10_000;
+
 export class RateLimiter {
   private readonly buckets = new Map<string, Bucket>();
   private lastSweep = 0;
@@ -33,6 +35,12 @@ export class RateLimiter {
     this.sweep(t);
     let b = this.buckets.get(key);
     if (!b || b.resetAt <= t) {
+      // A flood of distinct keys cannot grow the map without bound: past the
+      // cap, the oldest bucket goes (it is also the one closest to expiry).
+      if (!b && this.buckets.size >= MAX_BUCKETS) {
+        const oldest = this.buckets.keys().next().value;
+        if (oldest !== undefined) this.buckets.delete(oldest);
+      }
       b = { count: 0, resetAt: t + this.rule.windowMs };
       this.buckets.set(key, b);
     }
@@ -72,11 +80,21 @@ export function limiter(name: string, rule: RateLimit): RateLimiter {
   return l;
 }
 
-/** The caller's address as the proxy reports it, or "local" when nothing is set. */
+/**
+ * The caller's address. Forwarding headers are client-supplied unless a
+ * reverse proxy in front of the app overwrites them, so they count only when
+ * TRUST_PROXY is set; otherwise every direct caller shares one key, which
+ * for the Compose stack (bound to 127.0.0.1) is the honest answer. Next.js
+ * does not expose the socket address to route handlers.
+ */
 export function clientKey(request: Request): string {
-  const forwarded = request.headers.get("x-forwarded-for");
-  if (forwarded) return forwarded.split(",")[0]?.trim() || "local";
-  return request.headers.get("x-real-ip") ?? "local";
+  if (process.env.TRUST_PROXY === "1" || process.env.TRUST_PROXY === "true") {
+    const forwarded = request.headers.get("x-forwarded-for");
+    if (forwarded) return forwarded.split(",")[0]?.trim() || "local";
+    const real = request.headers.get("x-real-ip");
+    if (real) return real;
+  }
+  return "local";
 }
 
 /** An operator override for one limit, so a test suite (or an office behind one address) can raise it. */
