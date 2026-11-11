@@ -79,9 +79,15 @@ export function clientKey(request: Request): string {
   return request.headers.get("x-real-ip") ?? "local";
 }
 
+/** An operator override for one limit, so a test suite (or an office behind one address) can raise it. */
+function fromEnv(name: string, fallback: number): number {
+  const n = Number(process.env[name]);
+  return Number.isInteger(n) && n > 0 ? n : fallback;
+}
+
 export const LIMITS = {
-  /** Sign-in attempts per address: 20 per 10 minutes. */
-  signIn: { limit: 20, windowMs: 10 * 60_000 },
+  /** Sign-in attempts per address: 20 per 10 minutes (SIGN_IN_RATE_LIMIT overrides the count). */
+  signIn: { limit: fromEnv("SIGN_IN_RATE_LIMIT", 20), windowMs: 10 * 60_000 },
   /** Intake extractions per user: 30 per 10 minutes (a live Claude call costs money). */
   intake: { limit: 30, windowMs: 10 * 60_000 },
   /** Position batches per company: 120 per minute (the simulator sends one every 3 seconds). */

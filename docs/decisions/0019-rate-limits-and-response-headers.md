@@ -8,7 +8,7 @@ The Phase 4 review pointed out three routes with a cost and no brake: sign-in (p
 
 ## Decision
 
-- **A fixed-window limiter in process** (`apps/web/src/server/rate-limit.ts`): sign-in 20 per 10 minutes per client address, intake 30 per 10 minutes per user, positions 120 per minute per company. Over the limit the route answers `429` with `Retry-After`. The windows are generous for one dispatch office and tight for a script.
+- **A fixed-window limiter in process** (`apps/web/src/server/rate-limit.ts`): sign-in 20 per 10 minutes per client address, intake 30 per 10 minutes per user, positions 120 per minute per company. Over the limit the route answers `429` with `Retry-After`. The windows are generous for one dispatch office and tight for a script. The sign-in count can be raised with `SIGN_IN_RATE_LIMIT` for an office behind one address; the end-to-end suite sets it high because it signs in dozens of times in a few minutes, which is how the limit was first noticed: the first Phase 6 run failed every test after the twentieth sign-in.
 - **Headers in `next.config.ts`**: a Content Security Policy that allows the app's own scripts and styles, the OpenFreeMap tile host, and the event stream; `X-Content-Type-Options`, `Referrer-Policy`, `X-Frame-Options`, and no `X-Powered-By`.
 - **The service token** is compared as SHA-256 digests with `timingSafeEqual`, so a token of the wrong length is rejected in the same time as a wrong token of the right length.
 

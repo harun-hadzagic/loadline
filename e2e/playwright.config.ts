@@ -56,6 +56,8 @@ export function testEnv(): Record<string, string> {
     BETTER_AUTH_URL: baseURL,
     NEXT_PUBLIC_APP_URL: baseURL,
     SIMULATOR_TOKEN: "e2e-simulator-token",
+    // The suite signs in far more than 20 times in 10 minutes from one address.
+    SIGN_IN_RATE_LIMIT: "1000",
     NODE_ENV: "development",
   };
 }
