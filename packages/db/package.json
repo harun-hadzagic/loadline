@@ -1,0 +1,33 @@
+{
+  "name": "@loadline/db",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Loadline database: SQL migrations, roles, row-level security, withTenant and the seed.",
+  "exports": {
+    ".": "./src/index.ts",
+    "./schema": "./src/schema/index.ts",
+    "./testing": "./src/testing.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "bootstrap": "tsx src/cli.ts bootstrap",
+    "migrate": "tsx src/cli.ts migrate",
+    "seed": "tsx src/cli.ts seed",
+    "setup": "tsx src/cli.ts setup",
+    "build:cities": "node scripts/build-cities.ts",
+    "test": "vitest run --config vitest.config.ts",
+    "test:unit": "vitest run --config vitest.config.ts --project unit",
+    "test:watch": "vitest --config vitest.config.ts"
+  },
+  "dependencies": {
+    "drizzle-orm": "0.45.4",
+    "pg": "8.23.1",
+    "zod": "4.6.7"
+  },
+  "devDependencies": {
+    "@types/pg": "8.23.1",
+    "tsx": "4.23.15",
+    "vitest": "5.1.0"
+  }
+}
