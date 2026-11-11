@@ -50,20 +50,32 @@ export function geoTable(): string {
     rows: number;
     queries: Array<{
       name: string;
+      role?: string;
       withIndex: { medianMs: number; plan: string };
       withoutIndex: { medianMs: number; plan: string };
     }>;
   }>("geo.json");
   if (!r) return "_Not measured yet: run `pnpm bench:geo`._";
+  // Short labels for the README; the full descriptions stay in geo.json.
+  const label = (name: string) => {
+    if (/^Nearest free trucks/.test(name))
+      return "Five nearest free trucks for a load (`ORDER BY location <-> $pickup LIMIT 5`)";
+    if (/^Open stops within/.test(name))
+      return "Open stops within one mile of a point (`ST_DWithin`)";
+    if (/superuser/.test(name)) return "The same radius query with row security bypassed";
+    return name;
+  };
+  const role = (q: { role?: string }) =>
+    q.role === "superuser" ? "superuser" : "`loadline_app`, row security on";
   const lines = [
-    `| Query | With GiST index | Without index |`,
-    `| --- | --- | --- |`,
+    `| Query | Runs as | With GiST index | Without index |`,
+    `| --- | --- | --- | --- |`,
     ...r.queries.map(
       (q) =>
-        `| ${q.name} | ${q.withIndex.medianMs} ms (${q.withIndex.plan}) | ${q.withoutIndex.medianMs} ms (${q.withoutIndex.plan}) |`,
+        `| ${label(q.name)} | ${role(q)} | ${q.withIndex.medianMs} ms (${q.withIndex.plan}) | ${q.withoutIndex.medianMs} ms (${q.withoutIndex.plan}) |`,
     ),
     ``,
-    `${r.rows.toLocaleString("en-US")} trucks and ${r.rows.toLocaleString("en-US")} open stops, median of 20 runs after warm-up, \`EXPLAIN (ANALYZE, BUFFERS)\`, measured ${r.date.slice(0, 10)} on ${r.machine.cpu}.`,
+    `${r.rows.toLocaleString("en-US")} trucks and ${(r.rows * 2).toLocaleString("en-US")} stops in a separate benchmark database, median of 20 runs after warm-up, \`EXPLAIN (ANALYZE, BUFFERS)\`, measured ${r.date.slice(0, 10)} on ${r.machine.cpu}. The first row is the query the assign dialog runs. The second shows that under row security a PostGIS condition cannot use the index, because PostGIS functions are not \`LEAKPROOF\`; the third is the same query without row security, for scale. The app does no radius sweeps: its arrival check reads one stop by id. See [decision 0018](docs/decisions/0018-geospatial-queries-under-row-security.md).`,
   ];
   return lines.join("\n");
 }
@@ -79,10 +91,13 @@ export function intakeTable(): string {
   }>("intake-baseline.json");
   const claude = read<{
     date: string;
+    documents: number;
     documentAccuracy: number;
     fieldAccuracy: number;
-    costUsdPerDocument: number;
-    latencyMsP50: number;
+    partial?: boolean;
+    cost?: { perDocumentUsd: number };
+    latency?: { p50Ms: number };
+    fallbacks?: { total: number };
   }>("intake-claude.json");
   const pct = (x: number) => `${(x * 100).toFixed(1)}%`;
   const rows = [
@@ -92,13 +107,16 @@ export function intakeTable(): string {
       ? `| Regex baseline | ${pct(baseline.fieldAccuracy)} | ${pct(baseline.documentAccuracy)} | $0 | — |`
       : `| Regex baseline | _not measured_ | _not measured_ | $0 | — |`,
     claude
-      ? `| Claude (claude-haiku-5-5) | ${pct(claude.fieldAccuracy)} | ${pct(claude.documentAccuracy)} | $${claude.costUsdPerDocument.toFixed(4)} | ${claude.latencyMsP50} ms |`
+      ? `| Claude (claude-haiku-5-5)${claude.partial ? ` (partial: ${claude.documents} documents)` : ""} | ${pct(claude.fieldAccuracy)} | ${pct(claude.documentAccuracy)} | $${(claude.cost?.perDocumentUsd ?? 0).toFixed(4)} | ${claude.latency?.p50Ms ?? "—"} ms |`
       : `| Claude (claude-haiku-5-5) | not yet measured | not yet measured | not yet measured | not yet measured |`,
   ];
+  const claudeNote = claude
+    ? `Claude's row: ${claude.fallbacks?.total ?? 0} of ${claude.documents} documents fell back to the baseline; measured ${claude.date.slice(0, 10)}.`
+    : "Claude's row is filled in by `pnpm eval:intake --extractor claude --live`, which needs an API key and was not run in this build.";
   if (baseline)
     rows.push(
       ``,
-      `${baseline.documents} synthetic rate confirmations, measured ${baseline.date.slice(0, 10)}. Claude's row is filled in by \`pnpm eval:intake --extractor claude --live\`, which needs an API key and was not run in this build.`,
+      `${baseline.documents} synthetic rate confirmations, exact match per field after normalisation, measured ${baseline.date.slice(0, 10)}. The baseline's patterns were tuned on these same documents, so its score is an upper bound for these layouts, not a general figure. ${claudeNote}`,
     );
   return rows.join("\n");
 }

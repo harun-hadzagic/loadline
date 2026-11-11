@@ -4,6 +4,8 @@
 // them and converts to docs/media/two-browsers.gif (under 45 s, under 8 MB).
 //
 //   pnpm gif            (needs the web server from the e2e config and ffmpeg on PATH)
+//   E2E_BASE_URL=http://localhost:3000 SIMULATOR_TOKEN=... pnpm gif
+//                       (against the Compose stack: production build, no dev overlay)
 import { execFileSync } from "node:child_process";
 import { mkdirSync, readdirSync, rmSync, statSync } from "node:fs";
 import path from "node:path";
@@ -76,7 +78,9 @@ async function main(): Promise<void> {
     // Drive it a little north-east, one report per second, as the simulator would.
     for (let i = 1; i <= 10; i++) {
       await a.request.post("/api/positions", {
-        headers: { authorization: `Bearer ${testEnv().SIMULATOR_TOKEN}` },
+        headers: {
+          authorization: `Bearer ${process.env.SIMULATOR_TOKEN ?? testEnv().SIMULATOR_TOKEN}`,
+        },
         data: {
           companyId: "01930000-0000-7000-8000-00000000a001",
           positions: [

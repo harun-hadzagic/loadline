@@ -1,6 +1,6 @@
 {
   "benchmark": "sync-latency",
-  "date": "2026-11-11T18:33:14.954Z",
+  "date": "2026-11-11T19:37:24.781Z",
   "machine": {
     "platform": "darwin 27.0.0",
     "arch": "arm64",
@@ -23,12 +23,12 @@
   "duplicates": 0,
   "beforeResponse": 0,
   "latencyMs": {
-    "p50": 2.4,
-    "p95": 4.1,
-    "p99": 6.3,
-    "max": 8.5,
-    "min": 0.3,
-    "mean": 2.5
+    "p50": 2.5,
+    "p95": 4.4,
+    "p99": 7.4,
+    "max": 31.5,
+    "min": 0.4,
+    "mean": 2.7
   },
   "note": "Latency is measured from the HTTP response of the write to the SSE receipt on each client, all on one machine and one clock, so it includes no network distance. A negative value means the event reached the client before the writer had read its own response."
 }

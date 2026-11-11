@@ -109,3 +109,25 @@ One entry per phase: what was built, and the evidence it works. Figures here are
 - `pnpm test` elsewhere unchanged: db `132`, web `67`, simulator `4`.
 
 **Reviewer**: see `docs/building-with-ai.md`.
+
+## Phase 6 · Hardening, docs and release prep — done 2026-11-11
+
+**Built**
+
+- The Phase 4 review fixes: migration 0009 (stale reports ignored entirely, future reports clamped, late trucks arrive, `app.load_window` never inverts), the hub's backlog rule (a slow client is closed, never fed gaps; `hub-backlog.test.ts`), the reader keeping its snapshot only after a successful read, rate limits on sign-in, intake and positions with a `SIGN_IN_RATE_LIMIT` override, security headers and a content security policy, digest-based service-token comparison, the sync benchmark registering writes before sending them, a direct test for the five-nearest-trucks query. Decision 0019.
+- The geospatial fix the re-run benchmark forced: the nearest-trucks query takes the pickup point and the load's window as constants, so the GiST index serves it under row security; the benchmark runs that exact query as `loadline_app` and reports the radius case honestly. Decision 0018.
+- The Phase 5 review fixes: nonce-named wrapper tags with escaping of look-alikes, no silent city substitution, date-only stops left for the dispatcher, baseline time parsing anchored to the date, the baseline never throwing, the year as a parameter, live-path error handling (timeout, retries, refusal, truncation, partial results), lenient repairs before validation, MC numbers beyond the issued range, per-field injection reporting, a unit test for the server-side cap.
+- CI (`.github/workflows/ci.yml`): checks and end-to-end jobs, least-privilege permissions, actions pinned to commit SHAs, a PostGIS service container, the baseline eval re-run for reproducibility.
+- `README.md` with the three generated tables (`pnpm --filter bench readme`), the quick start and demo logins, the architecture diagram, the five questions, limits, how it was built, and the `TODO(Harun)` paragraph left for Harun. `docs/media/two-browsers.gif` (4.46 MB, 22 s) recorded by `pnpm gif` against the Compose stack's production build. `HANDOFF.md`.
+
+**Evidence**
+
+- `pnpm test` (clean test database): db `11 files, 135 tests`, intake `4 files, 24 tests`, simulator `4 tests`, web `9 files, 78 tests`; all passing. `pnpm lint`, `pnpm typecheck`: clean.
+- `pnpm e2e` against the dev server: `13 passed`; `board.spec.ts --repeat-each 10`: `30 passed`.
+- `docker compose up -d --build web simulator` on the existing stack: migration 0009 applied by the `migrate` service, web healthy, simulator running, sign-in and board 200 on the production build.
+- `bench/results/sync-latency.json`, production build, after the hub rework: 50 clients, 200 writes at 4.97/s, 10,000 of 10,000 delivered, 0 lost, 0 duplicates, 0 stray, p50 2.5 ms, p95 4.4 ms, p99 7.4 ms, max 31.5 ms.
+- `bench/results/geo.json`, as the app role under row security: nearest free trucks 0.805 ms with the index vs 49.6 ms without; radius count 322.9 ms vs 327.0 ms (no index use: PostGIS functions are not `LEAKPROOF`); the same radius query as a superuser 0.123 ms vs 125.8 ms.
+- `bench/results/intake-baseline.json`: whole-document 38.3%, field 85.6% over 60 documents; Claude not measured.
+- Nothing pushed, tagged, deployed or published; no Anthropic API call was made at any point.
+
+**Reviewer**: see `docs/building-with-ai.md`.
