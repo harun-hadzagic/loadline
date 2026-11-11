@@ -31,11 +31,12 @@ import {
  * an id is complete; it may repeat rows the browser already has, which it
  * drops by row id.
  *
- * The rules a drain follows (each one closes a hole the Phase 3 review
- * found): rows and snapshot come from one statement; the horizon advances
- * once per drain, to the horizon of the drain's *first* read; nothing
- * advances when a read fails; the previous snapshot's in-progress list keeps
- * re-reads bounded when an old transaction holds the horizon back.
+ * The rules a drain follows (each one closes a hole a review found): rows
+ * and snapshot come from one statement; the horizon advances once per drain,
+ * to the horizon of the drain's *first* read; nothing advances when a read
+ * fails and the previous snapshot stays valid; the previous snapshot's
+ * in-progress list keeps re-reads bounded when an old transaction holds the
+ * horizon back; a client that cannot keep up is closed, never skipped.
  */
 export interface StreamClient {
   id: number;
@@ -61,16 +62,19 @@ const HEARTBEAT_MS = 15_000;
 const PRUNE_MS = 10 * 60_000;
 const RETRY_MS = 2_000;
 const PAGE = 500;
-/** A client this many frames behind is dropped; it reconnects and replays. */
+/** A client this many frames behind is closed; it reconnects and replays from its last id. */
 const MAX_BACKLOG = 2_000;
 const DEBUG = process.env.LOADLINE_STREAM_DEBUG === "1";
 const debug = (...args: unknown[]) => {
   if (DEBUG) console.log("[stream:debug]", ...args);
 };
 
+class ClientClosed extends Error {}
+
 export class EventHub {
   private readonly reader: OutboxReader;
   private readonly clients = new Set<StreamClient>();
+  private readonly closed = new WeakSet<StreamClient>();
   /** The visibility-safe cursor: everything at or below it is final. */
   private horizon: Cursor | null = null;
   /** Row ids already broadcast that sit above the horizon, with their txid. */
@@ -153,37 +157,39 @@ export class EventHub {
       });
   }
 
+  /** Was this row already visible (hence already handled) at the last complete drain? */
+  private seenByLastDrain(row: OutboxRow): boolean {
+    const s = this.lastSnapshot;
+    if (!s) return false;
+    return row.cursor.txid < s.xmax && !s.xip.includes(row.cursor.txid);
+  }
+
   private async drain(): Promise<void> {
     this.drains++;
     const skip = this.lastSnapshot;
     let after = this.horizon;
     let first: Awaited<ReturnType<OutboxReader["readCommitted"]>> | null = null;
-    try {
-      for (;;) {
-        const batch = await this.reader.readCommitted(after, PAGE, skip);
-        first ??= batch;
-        debug("drain", {
-          after: after ? encodeCursor(after) : null,
-          rows: batch.rows.length,
-          horizon: encodeCursor(batch.horizon),
-        });
-        for (const row of batch.rows) {
-          if (this.sentAbove.has(row.id)) continue;
-          this.sentAbove.set(row.id, row.cursor.txid);
-          // The resume id is bounded by the *first* read's horizon: rows on
-          // later pages may sort before a row an older transaction commits
-          // between pages, and that row is above the first horizon too.
-          this.broadcast(row, minCursor(row.cursor, first.horizon));
-        }
-        if (batch.rows.length < PAGE) break;
-        after = batch.rows[batch.rows.length - 1]?.cursor ?? after;
+    // A failed read advances nothing and keeps lastSnapshot: it is still a
+    // true statement about what was visible then, so the next drain re-reads
+    // exactly the rows that could be new.
+    for (;;) {
+      const batch = await this.reader.readCommitted(after, PAGE, skip);
+      first ??= batch;
+      debug("drain", {
+        after: after ? encodeCursor(after) : null,
+        rows: batch.rows.length,
+        horizon: encodeCursor(batch.horizon),
+      });
+      for (const row of batch.rows) {
+        if (this.sentAbove.has(row.id)) continue;
+        this.sentAbove.set(row.id, row.cursor.txid);
+        // The resume id is bounded by the *first* read's horizon: rows on
+        // later pages may sort before a row an older transaction commits
+        // between pages, and that row is above the first horizon too.
+        this.broadcast(row, minCursor(row.cursor, first.horizon));
       }
-    } catch (err) {
-      // Nothing advances: the next drain re-reads from the same horizon
-      // without the skip list, so a row read before the failure is sent again
-      // only if it is not in sentAbove, and a row never read is read then.
-      this.lastSnapshot = null;
-      throw err;
+      if (batch.rows.length < PAGE) break;
+      after = batch.rows[batch.rows.length - 1]?.cursor ?? after;
     }
     if (first) {
       this.advanceHorizon(first.horizon);
@@ -209,37 +215,58 @@ export class EventHub {
     return true;
   }
 
+  /** Live fan-out: a client that gets dropped never stops the others from receiving the row. */
   private broadcast(row: OutboxRow, resumeFrom: Cursor): void {
     const chunk = formatEvent(row, resumeFrom);
-    for (const client of this.clients) {
-      if (this.matches(client, row)) this.deliver(client, chunk);
-    }
-  }
-
-  /** A row found during a replay that the live path has not sent yet goes to everyone else too. */
-  private broadcastExcept(row: OutboxRow, resumeFrom: Cursor, except: StreamClient): void {
-    const chunk = formatEvent(row, resumeFrom);
-    for (const client of this.clients) {
-      if (client !== except && this.matches(client, row)) this.deliver(client, chunk);
-    }
-  }
-
-  private deliver(client: StreamClient, chunk: string): void {
-    try {
-      if ((client.backlog?.() ?? 0) > MAX_BACKLOG) {
-        // A stalled consumer would buffer the whole feed in memory; cut it and let it replay.
-        this.unsubscribe(client);
-        return;
+    for (const client of [...this.clients]) {
+      if (!this.matches(client, row)) continue;
+      try {
+        this.deliver(client, chunk);
+      } catch {
+        // dropped; it reconnects and replays from its last id
       }
+    }
+  }
+
+  /**
+   * Send one frame. A client that is too far behind, or whose transport
+   * throws, is closed and dropped; it reconnects and replays from its last
+   * id, so nothing is skipped. Throws ClientClosed so a replay in progress
+   * for that client stops instead of silently losing frames.
+   */
+  private deliver(client: StreamClient, chunk: string): void {
+    if (this.closed.has(client)) throw new ClientClosed();
+    if ((client.backlog?.() ?? 0) > MAX_BACKLOG) {
+      this.drop(client);
+      throw new ClientClosed();
+    }
+    try {
       client.send(chunk);
       this.delivered++;
     } catch {
-      this.unsubscribe(client);
+      this.drop(client);
+      throw new ClientClosed();
+    }
+  }
+
+  private drop(client: StreamClient): void {
+    this.closed.add(client);
+    this.clients.delete(client);
+    try {
+      client.close();
+    } catch {
+      // already closed
     }
   }
 
   private heartbeat(): void {
-    for (const client of this.clients) this.deliver(client, ": ping\n\n");
+    for (const client of [...this.clients]) {
+      try {
+        this.deliver(client, ": ping\n\n");
+      } catch {
+        // dropped
+      }
+    }
   }
 
   /**
@@ -247,63 +274,77 @@ export class EventHub {
    * tell it to resync when its cursor is at or below the prune watermark),
    * then switch it to live events, all under the lock so nothing falls between.
    * Throws when the hub cannot start; the route closes the response then.
+   * A client that cannot keep up during the replay is closed and not added.
    */
   async subscribe(client: StreamClient, lastEventId: string | null): Promise<void> {
     await this.start();
-    await this.withLock(async () => {
-      const from = lastEventId ? decodeCursor(lastEventId) : null;
-      if (lastEventId && !from) {
-        this.deliver(client, hello(null));
-        this.deliver(client, resync("bad-cursor"));
-      } else if (from) {
-        // hello carries the client's own cursor: until the replay is complete,
-        // that is the only id it may safely resume from.
-        this.deliver(client, hello(from));
-        let after: Cursor | null = from;
-        let replayHorizon: Cursor | null = null;
-        for (;;) {
-          const batch = await this.reader.readCommitted(after, PAGE);
-          replayHorizon ??= batch.horizon;
-          for (const row of batch.rows) {
-            const resumeFrom = minCursor(row.cursor, replayHorizon);
-            if (this.matches(client, row)) this.deliver(client, formatEvent(row, resumeFrom));
-            // Keep the live path from sending it a second time right away.
-            if (
-              !this.sentAbove.has(row.id) &&
-              this.horizon &&
-              compareCursor(row.cursor, this.horizon) > 0
-            ) {
-              this.sentAbove.set(row.id, row.cursor.txid);
-              this.broadcastExcept(row, resumeFrom, client);
+    try {
+      await this.withLock(async () => {
+        const from = lastEventId ? decodeCursor(lastEventId) : null;
+        if (lastEventId && !from) {
+          this.deliver(client, hello(null));
+          this.deliver(client, resync("bad-cursor"));
+        } else if (from) {
+          // hello carries the client's own cursor: until the replay is complete,
+          // that is the only id it may safely resume from.
+          this.deliver(client, hello(from));
+          let after: Cursor | null = from;
+          let replayHorizon: Cursor | null = null;
+          for (;;) {
+            const batch = await this.reader.readCommitted(after, PAGE);
+            replayHorizon ??= batch.horizon;
+            for (const row of batch.rows) {
+              const resumeFrom = minCursor(row.cursor, replayHorizon);
+              if (this.matches(client, row)) this.deliver(client, formatEvent(row, resumeFrom));
+              // A row the live path has not sent yet (above the horizon, not
+              // handled by the last drain) goes to the other clients now too.
+              if (
+                !this.sentAbove.has(row.id) &&
+                this.horizon &&
+                compareCursor(row.cursor, this.horizon) > 0 &&
+                !this.seenByLastDrain(row)
+              ) {
+                this.sentAbove.set(row.id, row.cursor.txid);
+                this.broadcastExceptSafely(row, resumeFrom, client);
+              }
             }
+            if (batch.rows.length < PAGE) break;
+            after = batch.rows[batch.rows.length - 1]?.cursor ?? after;
           }
-          if (batch.rows.length < PAGE) break;
-          after = batch.rows[batch.rows.length - 1]?.cursor ?? after;
+          // Read after the replay: a prune that ran meanwhile shows up here.
+          const watermark = await this.reader.pruneWatermark();
+          if (watermark && compareCursor(from, watermark) <= 0)
+            this.deliver(client, resync("pruned"));
+        } else {
+          this.deliver(client, hello(this.horizon));
         }
-        // Read after the replay: a prune that ran meanwhile shows up here.
-        const watermark = await this.reader.pruneWatermark();
-        if (watermark && compareCursor(from, watermark) <= 0)
-          this.deliver(client, resync("pruned"));
-      } else {
-        this.deliver(client, hello(this.horizon));
-      }
-      this.clients.add(client);
-    });
+        this.clients.add(client);
+      });
+    } catch (err) {
+      if (err instanceof ClientClosed) return; // closed on purpose; the browser reconnects and replays
+      throw err;
+    }
   }
 
-  unsubscribe(client: StreamClient): void {
-    if (this.clients.delete(client)) {
+  private broadcastExceptSafely(row: OutboxRow, resumeFrom: Cursor, except: StreamClient): void {
+    const chunk = formatEvent(row, resumeFrom);
+    for (const client of [...this.clients]) {
+      if (client === except || !this.matches(client, row)) continue;
       try {
-        client.close();
+        this.deliver(client, chunk);
       } catch {
-        // already closed
+        // that client was dropped; the one being subscribed is unaffected
       }
     }
   }
 
+  unsubscribe(client: StreamClient): void {
+    if (this.clients.delete(client) || !this.closed.has(client)) this.drop(client);
+  }
+
   async stop(): Promise<void> {
     for (const t of this.timers) clearInterval(t);
-    for (const c of [...this.clients]) this.unsubscribe(c);
+    for (const c of [...this.clients]) this.drop(c);
     await this.reader.stop();
   }
 }

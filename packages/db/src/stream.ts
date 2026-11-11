@@ -115,6 +115,8 @@ export class OutboxReader {
       connectionTimeoutMillis: 10_000,
       keepAlive: true,
     });
+    // An idle pooled connection that dies must not crash the process.
+    this.pool.on("error", (err) => this.log("warn", "stream read pool error", err));
   }
 
   /** Open the LISTEN connection and call onWake on every notification. Reconnects with backoff. */

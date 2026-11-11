@@ -21,7 +21,7 @@ export interface OutboxEvent {
 export async function emit(tx: Tx, event: OutboxEvent): Promise<string> {
   // Arrays go over as a PostgreSQL array literal; the driver would otherwise
   // hand drizzle's parameter to pg as a bare string.
-  const audience = event.audience && event.audience.length ? `{${event.audience.join(",")}}` : null;
+  const audience = event.audience?.length ? `{${event.audience.join(",")}}` : null;
   const r = await tx.execute<{ id: string }>(sql`
     SELECT app.emit(
       ${event.type},

@@ -127,7 +127,7 @@ describe("EventHub", () => {
     expect(frames.map((f) => f.rowId)).toContain(id);
   });
 
-  it("survives a drain of more than one page with an old transaction committing between pages, and sends nothing twice", async () => {
+  it("drains more than one page plus an older transaction's row that sorts before them, delivers all of them once, and a second drain repeats nothing", async () => {
     const hub = makeHub();
     const client = fakeClient();
     await hub.subscribe(client, null);
@@ -136,8 +136,8 @@ describe("EventHub", () => {
     // 600 rows above the horizon (the old transaction keeps the horizon below them).
     const ids: string[] = [];
     for (let i = 0; i < 600; i++) ids.push(await emitAs(`hub.page.${i}`));
-    // Commit the old transaction right when the first page has been read: simulate by committing
-    // before the drain; the point is that its row sorts before the 600 and must still arrive.
+    // The old transaction commits before the drain; its row sorts before the 600 (lower txid)
+    // and must still arrive, once, together with the 600 across more than one page.
     await old.commit();
     await hub.drainNow();
     const got = parseFrames(client.chunks).filter((f) => f.event.startsWith("hub."));
