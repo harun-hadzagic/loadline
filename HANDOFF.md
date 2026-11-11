@@ -41,7 +41,7 @@ pnpm --filter bench readme                       # regenerates the README tables
 pnpm gif                                         # re-records docs/media/two-browsers.gif (see e2e/scripts/record-gif.ts)
 ```
 
-The database suites each reset their database; run them against a database nothing else is using. The stream tests are sensitive, by design, to long-open transactions from other sessions on the same cluster.
+The database suites each reset their database; run them against a database nothing else is using. The stream tests are sensitive, by design, to long-open transactions from other sessions on the same cluster. Two things about `pnpm e2e`: Next.js refuses to start a second `next dev` in `apps/web`, so stop any running dev server first; and because Playwright reuses an existing server on its port, make sure nothing else is listening on 3131 (or set `E2E_PORT`), or the suite would run against whatever database that server points at.
 
 ## The three results
 
@@ -53,7 +53,11 @@ All from `bench/results/`, Apple M2 Pro, 11 November 2026.
 
 ## Harun's steps, in order
 
-1. **Create the GitHub repository and push `main`.** Then replace `TODO-HARUN-GITHUB-OWNER` in the README's CI badge URL with the owner name and commit.
+1. **Create the GitHub repository and push `main`.** The local clone already has `origin` set to `https://github.com/harun-hadzagic/loadline.git` (the README badge uses that owner); the repository itself does not exist yet. Create it empty on GitHub (no README, no license), then:
+   ```sh
+   git push -u origin main
+   ```
+   If you choose another owner or name, change the remote and the badge URL in `README.md` first.
 2. **Check the first CI run** (Actions → CI). Two jobs: `checks` (lint, typecheck, every unit and database suite against a PostGIS service container, and the baseline eval re-run so the committed result is reproducible) and `e2e` (Playwright against its own dev server). The workflow has never run; expect a first-run fix or two (the pnpm version through corepack, the Playwright browser install step, the web server start-up timeout are the usual ones). The actions are pinned to commit SHAs; bump them deliberately.
 3. **Run the live intake eval with a key and commit its result.**
    ```sh
@@ -69,7 +73,9 @@ All from `bench/results/`, Apple M2 Pro, 11 November 2026.
 ## Known gaps
 
 - **The Claude extractor has never been executed.** Its request (model `claude-haiku-5-5`, `output_config.format` with the JSON schema, GA `messages.create`, 60 s timeout, two SDK retries) follows the SDK 1.8.0 documentation; it is tested only through a fake client and hand-written response fixtures. If the API rejects something, every document falls back to the baseline with `fallbacks.error` counting it, and the eval result will say so rather than hide it.
-- **CI has never run** (there is no remote). See step 2.
+- **CI has never run** (the remote repository does not exist yet). See step 2.
+- **Member and driver-login management is not built.** Admins cannot invite a user, change a role, or link a driver row to a login from the app; all of that comes from the seed. The permission model (`apps/web/src/lib/permissions.ts`) already has `member` and `invitation` statements for admins and owners, so the screen is the missing part. Driver logins therefore only exist for the sixteen seeded drivers.
+- **Sign-in rate limiting is by address only behind a proxy.** Without `TRUST_PROXY` every direct caller shares one bucket (decision 0019), which is right for the Compose stack bound to localhost; put a reverse proxy in front and set `TRUST_PROXY=1` before exposing it.
 - **Radius queries under row security cannot use the GiST index** (decision 0018). Today nothing in the product needs one; a "stops near this truck" feature would need a different approach before it is built.
 - **Fan-out and rate limiting are per process.** One web process is the deployment (decision 0015); a second replica needs a shared counter for the limiter and will read the outbox independently.
 - **Row 3 of the geo table is a superuser figure**, shown for scale only; the README says so.

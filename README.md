@@ -2,7 +2,7 @@
 
 Loadline is a dispatch board for small US trucking companies: the loads, the drivers, the trucks and the map, with every dispatcher's screen updated the moment any of them changes something. It is built for a company with a handful of dispatchers and a few dozen trucks, and it is a portfolio project: everything runs locally with `docker compose up`, all data is synthetic, and the numbers below were measured by scripts in this repository.
 
-![CI](https://github.com/TODO-HARUN-GITHUB-OWNER/loadline/actions/workflows/ci.yml/badge.svg)
+![CI](https://github.com/harun-hadzagic/loadline/actions/workflows/ci.yml/badge.svg)
 
 The tests run against a real PostgreSQL: tenant isolation under every role, the overlap constraints under concurrent writers, the status transitions, the event cursor and replay, the live hub, positions and arrival, the intake extractors, and two-browser Playwright flows on desktop and phone.
 
@@ -57,7 +57,7 @@ Paste a rate confirmation, get a pre-filled load. Two extractors share one schem
 
 ## Quick start
 
-You need Docker and nothing else.
+You need Docker, and on Apple Silicon one extra `docker build` (below).
 
 ```sh
 git clone <this repository> loadline && cd loadline
@@ -72,11 +72,11 @@ Then open <http://localhost:3000>. The first start builds the web and simulator 
 | Acme Freight (Dallas, TX) | `owner@acme-freight.example`, `admin@acme-freight.example`, `dispatch1@acme-freight.example`, `dispatch2@acme-freight.example`, `driver1@acme-freight.example` … `driver8@acme-freight.example` | `loadline-demo` |
 | Blue Ridge Haulers (Charlotte, NC) | the same names at `@blueridge-haulers.example` | `loadline-demo` |
 
-Sign in as both dispatchers in two browser windows to see the board follow itself. A driver login shows the phone page for that driver's loads. The simulator moves the trucks of in-transit loads at sixty times real speed and reports them every three seconds.
+Sign in as both dispatchers in two browser windows to see the board follow itself. A driver login shows the phone page for that driver's loads. The simulator moves the trucks of assigned and in-transit loads toward their next stop at sixty times real speed and reports them every three seconds.
 
 Two notes for local machines:
 
-- **Apple Silicon.** The official `postgis/postgis:18-3.6` image is amd64 only and PostGIS under emulation is slow enough to distort the benchmark. Build a native image once with `pnpm db:image` and set `POSTGIS_IMAGE=loadline/postgis:18-3.6` in `.env` ([decision 0001](docs/decisions/0001-postgis-image-on-apple-silicon.md)).
+- **Apple Silicon.** The official `postgis/postgis:18-3.6` image is amd64 only and PostGIS under emulation is slow enough to distort the benchmark. Build a native image once with `docker build --platform linux/arm64 -t loadline/postgis:18-3.6 docker/postgis` (or `pnpm db:image`) and set `POSTGIS_IMAGE=loadline/postgis:18-3.6` in `.env` ([decision 0001](docs/decisions/0001-postgis-image-on-apple-silicon.md)).
 - **A PostgreSQL already on 5432.** Change `DB_PORT` and the five `DATABASE_URL_*` values in `.env` together.
 
 To develop outside Docker: `pnpm install`, `pnpm db:up`, `pnpm db:setup`, `pnpm dev`. `pnpm test` runs every suite against the test database (`pnpm db:test:up`), `pnpm e2e` runs the Playwright flows, `pnpm bench:sync` and `pnpm bench:geo` reproduce the tables, and `pnpm eval:intake` scores the baseline.
@@ -107,9 +107,9 @@ The full list is in [`docs/decisions`](docs/decisions/README.md).
 
 ## Why it is built this way
 
-**Why row-level security instead of a `WHERE` clause in every query?** Because a `WHERE` clause is a habit and a policy is a rule: the one query somebody forgets is the one that leaks a competitor's loads. Every tenant table has `ENABLE` and `FORCE ROW LEVEL SECURITY` with a policy on `company_id` ([`0003_rls.sql`](packages/db/migrations/0003_rls.sql)), the app role has no way around it, and the isolation tests ([`isolation.test.ts`](packages/db/test/db/isolation.test.ts)) try every table under every role from the wrong company and expect nothing back.
+**Why row-level security instead of a `WHERE` clause in every query?** Because a `WHERE` clause is a habit and a policy is a rule: the one query somebody forgets is the one that leaks a competitor's loads. Every tenant table has `ENABLE` and `FORCE ROW LEVEL SECURITY` with a policy on `company_id` ([`0003_rls.sql`](packages/db/migrations/0003_rls.sql)), the app role has no way around it, and the isolation tests ([`isolation.test.ts`](packages/db/test/db/isolation.test.ts)) read, update and delete every tenant table from the wrong company as the app role and expect nothing back, then check what each role may do within its own company. What a driver may write is a trigger, not a convention ([`0010_driver_writes.sql`](packages/db/migrations/0010_driver_writes.sql)).
 
-**Two dispatchers assign the same load in the same second; what happens?** One of them wins and the other sees a conflict, not a double booking. The assignment row carries the driver, the truck and a time range, and three `WITHOUT OVERLAPS` constraints in [`0001_schema.sql`](packages/db/migrations/0001_schema.sql) reject the second insert at commit, whatever order the requests arrive in; the load's `version` column catches the case where both assign the same load to different trucks. The loser's screen rolls back its optimistic move and shows who got it ([`assignLoad`](apps/web/src/server/loads.ts), [`services.test.ts`](apps/web/test/db/services.test.ts) runs the race).
+**Two dispatchers assign the same load in the same second; what happens?** One of them wins and the other sees a conflict, not a double booking. The assignment row carries the driver, the truck and a time range, and three `WITHOUT OVERLAPS` constraints in [`0001_schema.sql`](packages/db/migrations/0001_schema.sql) (per driver, per truck, per load) make the second insert wait on the first transaction and fail the moment it commits, whatever order the requests arrive in; the load's `version` column catches the slower case where the second dispatcher acted on a board that had not yet heard about the first. The loser's screen rolls back its optimistic move and shows who got it ([`assignLoad`](apps/web/src/server/loads.ts), [`services.test.ts`](apps/web/test/db/services.test.ts) runs the race).
 
 **What does a browser miss while it is offline, and how does it catch up?** Nothing, for as long as the outbox keeps events (24 hours). Each event frame carries a cursor that is safe to resume from: a transaction id and a row id, never just the row id, because identities are handed out before commit and a plain `id > last` skips rows ([`0013`](docs/decisions/0013-visibility-safe-cursor.md), [`stream.ts`](packages/db/src/stream.ts)). The browser reconnects with `Last-Event-ID`, the hub replays from there under the same lock that delivers new rows ([`hub.ts`](apps/web/src/server/stream/hub.ts)), and a client whose cursor is older than the oldest kept event is told to reload instead of being fed a gap ([`cursor.test.ts`](packages/db/test/db/cursor.test.ts), [`hub.test.ts`](apps/web/test/db/hub.test.ts)).
 
@@ -124,6 +124,7 @@ The full list is in [`docs/decisions`](docs/decisions/README.md).
 - **`NOTIFY` holds a global lock at commit**; see the sync latency section for when that matters and what replaces it.
 - **Fan-out runs in one web process.** A second process would read the same outbox and serve its own clients, but nothing here coordinates two of them, and the rate limiter counts per process ([0019](docs/decisions/0019-rate-limits-and-response-headers.md)).
 - **No hours-of-service rules.** A driver can be assigned any load whose window does not overlap another; nothing checks legal driving limits.
+- **No member management yet.** Logins, roles and the link between a driver row and a login come from the seed; there is no invitation screen and no way to add a login from the app in 0.1.
 - **Intake is measured on synthetic documents only**, written for this project; real rate confirmations are messier, and the Claude extractor has not been run at all in this build.
 - **Under row security, PostGIS conditions cannot use the index** ([0018](docs/decisions/0018-geospatial-queries-under-row-security.md), the second row of the geo table); the product's only radius test is a single-row lookup, so this costs nothing today, but a feature such as "all stops near this truck" would need a different approach.
 
