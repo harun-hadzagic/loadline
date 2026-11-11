@@ -111,7 +111,7 @@ describe("recordPositions", () => {
     const result = await recordPositions(ACME.id, [
       { truckId: t.truck_id, lat: t.lat, lng: t.lng, heading: 0, speedMph: 0 },
     ]);
-    expect(result).toEqual({ written: 1, arrivals: 1 });
+    expect(result).toEqual({ written: 1, ignored: 0, arrivals: 1 });
     const events = await superPool.query<{
       type: string;
       entity_id: string;
@@ -125,5 +125,92 @@ describe("recordPositions", () => {
     const arrived = events.rows.find((e) => e.type === "stop.arrived")!;
     expect(arrived.entity_id).toBe(t.load_id);
     expect(arrived.audience).toEqual([t.driver_id]); // the driver hears about their own stop
+  });
+});
+
+describe("the five nearest free trucks (the spec's query, under row security)", () => {
+  it("returns at most five, the closest free trucks in order, and leaves out one booked in the window", async () => {
+    const { listDrivers } = await import("@/server/fleet");
+    const { assignLoad } = await import("@/server/loads");
+    // A pickup city with no seeded truck within 80 km, so only this test's trucks are near it.
+    const cities = await superPool.query<{ id: number; lng: number; lat: number }>(
+      `SELECT c.id, ST_X(c.location::geometry) AS lng, ST_Y(c.location::geometry) AS lat
+         FROM app.cities c
+        WHERE NOT EXISTS (SELECT 1 FROM app.truck_positions p WHERE ST_DWithin(p.location, c.location, 80000))
+        ORDER BY c.id LIMIT 1`,
+    );
+    const pickup = cities.rows[0]!;
+    const houston = await superPool.query<{ id: number }>(
+      "SELECT id FROM app.cities WHERE name = 'Houston' AND state = 'TX'",
+    );
+    const tag = Date.now().toString(36);
+    const inserted = await superPool.query<{ id: string }>(
+      `INSERT INTO app.trucks (company_id, unit_number, equipment)
+       SELECT $1, 'N5-' || $2 || '-' || g, 'dry_van' FROM generate_series(1, 7) g RETURNING id`,
+      [ACME.id, tag],
+    );
+    const ours = inserted.rows.map((r) => r.id);
+    const at = new Date().toISOString();
+    // Truck k sits k miles east of the pickup (1° of longitude ≈ 69 × cos(lat) miles).
+    const perDegree = 69.17 * Math.cos((pickup.lat * Math.PI) / 180);
+    await recordPositions(
+      ACME.id,
+      ours.map((truckId, i) => ({
+        truckId,
+        lat: pickup.lat,
+        lng: pickup.lng + (i + 1) / perDegree,
+        heading: 90,
+        speedMph: 0,
+        recordedAt: at,
+      })),
+    );
+    const h = (n: number) => new Date(Date.now() + (24 * 600 + n) * 3_600_000).toISOString();
+    const stops = [
+      {
+        kind: "pickup" as const,
+        cityId: pickup.id,
+        facilityName: null,
+        appointmentStart: h(0),
+        appointmentEnd: h(2),
+      },
+      {
+        kind: "delivery" as const,
+        cityId: houston.rows[0]!.id,
+        facilityName: null,
+        appointmentStart: h(10),
+        appointmentEnd: h(14),
+      },
+    ];
+    const blank = {
+      brokerName: null,
+      commodity: null,
+      weightLbs: null,
+      rateCents: null,
+      equipment: null,
+      notes: null,
+    };
+    const load = await createLoad(dispatcher, { ...blank, reference: `N5A-${tag}`, stops });
+    const first = await assignmentCandidates(dispatcher, load.id);
+    expect(first.nearestTruckIds).toEqual(ours.slice(0, 5));
+    // The pickers' full list agrees with the nearest-neighbour scan.
+    expect(
+      first.trucks
+        .filter((t) => t.free && t.distanceMiles !== null)
+        .slice(0, 5)
+        .map((t) => t.id),
+    ).toEqual(ours.slice(0, 5));
+
+    // Book the second-nearest truck on another load in the same window: it drops out, the sixth moves in.
+    const other = await createLoad(dispatcher, { ...blank, reference: `N5B-${tag}`, stops });
+    const driver = (await listDrivers(dispatcher)).find((d) => d.active)!;
+    await assignLoad(dispatcher, {
+      loadId: other.id,
+      version: other.version,
+      driverId: driver.id,
+      truckId: ours[1]!,
+    });
+    const second = await assignmentCandidates(dispatcher, load.id);
+    expect(second.nearestTruckIds).toEqual([ours[0], ours[2], ours[3], ours[4], ours[5]]);
+    expect(second.trucks.find((t) => t.id === ours[1])?.free).toBe(false);
   });
 });

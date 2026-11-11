@@ -70,7 +70,13 @@ async function tick(companyId: string): Promise<void> {
         recordedAt: now,
       };
     }
-    const next = jitterNear(t.home, current, IDLE_RADIUS_MILES);
+    const next = jitterNear(
+      t.home,
+      current,
+      IDLE_RADIUS_MILES,
+      Math.random,
+      SPEED_MPH * simulatedHours,
+    );
     return {
       truckId: t.truckId,
       lat: next.lat,

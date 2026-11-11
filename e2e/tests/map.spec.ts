@@ -19,6 +19,10 @@ test("the map shows the company's trucks and moves one when a position is posted
 
   const marker = page.getByTestId("truck-marker-110");
   const before = await marker.getAttribute("data-lng");
+  // Let the hello refetch settle, then block any further positions fetch: from
+  // here on the marker can only move because the stream delivered the event.
+  await page.waitForTimeout(1_500);
+  await page.route("**/api/positions", (route) => route.abort());
   // The company id is in the state the simulator would read; post one report as the simulator does.
   const state = await page.request.get("/api/loads");
   expect(state.ok()).toBeTruthy();
@@ -99,7 +103,7 @@ test("a truck reaching its next stop sets the arrival, and the board hears about
     },
   });
   expect(post.status(), await post.text()).toBe(200);
-  expect(await post.json()).toEqual({ written: 1, arrivals: 1 });
+  expect(await post.json()).toEqual({ written: 1, ignored: 0, arrivals: 1 });
 
   // The detail page re-renders on the stop.arrived event (board clients invalidate their loads).
   await page.goto("/board");

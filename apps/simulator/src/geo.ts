@@ -42,14 +42,21 @@ export function stepToward(from: Point, to: Point, miles: number): Point {
   return { lat: toDeg(φ2), lng: ((toDeg(λ2) + 540) % 360) - 180 };
 }
 
-/** A small random walk that stays within `radiusMiles` of `home`. */
+/**
+ * An idle truck: within `radiusMiles` of home it wanders a little; further
+ * away (it just finished a load somewhere) it drives home at `stepMiles` per
+ * tick rather than teleporting there.
+ */
 export function jitterNear(
   home: Point,
   current: Point | null,
   radiusMiles: number,
   rng: () => number = Math.random,
+  stepMiles = 2.75,
 ): Point {
-  const base = current && distanceMiles(home, current) <= radiusMiles ? current : home;
+  if (current && distanceMiles(home, current) > radiusMiles)
+    return stepToward(current, home, stepMiles);
+  const base = current ?? home;
   const angle = rng() * 2 * Math.PI;
   const dist = rng() * 0.15;
   const next = stepToward(

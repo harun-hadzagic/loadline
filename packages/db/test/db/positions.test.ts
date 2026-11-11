@@ -12,28 +12,33 @@ import {
 
 afterAll(closePools);
 
-type Arrival = {
+type Row = {
+  applied: boolean;
   arrived_stop_id: string | null;
   arrived_load_id: string | null;
   arrived_seq: number | null;
 };
 
-async function record(truckId: string, lng: number, lat: number, at = new Date()) {
+async function record(truckId: string, lng: number, lat: number, at = new Date()): Promise<Row[]> {
   return asCompany(
     ACME.id,
     async (tx) =>
       (
-        await tx.execute<Arrival>(
+        await tx.execute<Row>(
           sql`SELECT * FROM app.record_position(${truckId}, ${lng}, ${lat}, 90, 55, ${at.toISOString()}::timestamptz)`,
         )
       ).rows,
     { role: "system" },
   );
 }
+const arrivals = (rows: Row[]) => rows.filter((r) => r.arrived_stop_id !== null);
 
-async function setup() {
+async function setup(opts: { pickupAt?: Date; status?: string } = {}) {
   // A fresh truck and driver on a load whose window has opened; stops in Dallas then Houston.
-  const load = await insertLoad(ACME.id, "open", { pickupAt: hoursFromNow(-1), hours: 30 });
+  const load = await insertLoad(ACME.id, opts.status ?? "assigned", {
+    pickupAt: opts.pickupAt ?? hoursFromNow(-1),
+    hours: 30,
+  });
   const ids = await asCompany(ACME.id, async (tx) => {
     const d = await tx.execute<{ id: string }>(
       sql`INSERT INTO app.drivers (company_id, name) VALUES (${ACME.id}, 'Arrival Tester') RETURNING id`,
@@ -44,7 +49,6 @@ async function setup() {
     await tx.execute(sql`
       INSERT INTO app.assignments (company_id, load_id, driver_id, truck_id, period)
       VALUES (${ACME.id}, ${load.id}, ${d.rows[0]!.id}, ${t.rows[0]!.id}, app.load_window(${load.id}))`);
-    await tx.execute(sql`UPDATE app.loads SET status = 'assigned' WHERE id = ${load.id}`);
     return { truckId: t.rows[0]!.id, loadId: load.id };
   });
   const stops = await superPool().query<{ id: string; seq: number; lng: number; lat: number }>(
@@ -55,18 +59,43 @@ async function setup() {
 }
 
 describe("app.record_position", () => {
-  it("upserts the latest position and ignores reports older than the one it has", async () => {
-    const { truckId } = await setup();
+  it("upserts the latest position; a report older than the stored one is ignored and runs no arrival check", async () => {
+    const { truckId, stops } = await setup();
+    const pickup = stops[0]!;
     const t1 = new Date();
     const t0 = new Date(t1.getTime() - 60_000);
-    await record(truckId, -96.0, 32.0, t1);
-    await record(truckId, -95.0, 31.0, t0); // stale
-    const r = await superPool().query<{ lng: number; n: string }>(
-      "SELECT ST_X(location::geometry) AS lng, (SELECT count(*)::text FROM app.truck_positions WHERE truck_id = $1) AS n FROM app.truck_positions WHERE truck_id = $1",
-      [truckId],
+    expect((await record(truckId, -96.0, 32.0, t1))[0]?.applied).toBe(true);
+    // Stale, and placed right at the pickup: must neither move the truck nor arrive.
+    const stale = await record(truckId, pickup.lng, pickup.lat, t0);
+    expect(stale).toEqual([
+      { applied: false, arrived_stop_id: null, arrived_load_id: null, arrived_seq: null },
+    ]);
+    const r = await superPool().query<{ lng: number; n: string; arrived: string }>(
+      `SELECT ST_X(location::geometry) AS lng, (SELECT count(*)::text FROM app.truck_positions WHERE truck_id = $1) AS n,
+              (SELECT count(*)::text FROM app.stops WHERE id = $2 AND arrived_at IS NOT NULL) AS arrived
+         FROM app.truck_positions WHERE truck_id = $1`,
+      [truckId, pickup.id],
     );
     expect(Number(r.rows[0]?.n)).toBe(1);
     expect(r.rows[0]?.lng).toBeCloseTo(-96.0, 5);
+    expect(Number(r.rows[0]?.arrived)).toBe(0);
+  });
+
+  it("clamps a report dated in the future to now, so tomorrow's pickup cannot be arrived early", async () => {
+    const { truckId, stops } = await setup();
+    const pickup = stops[0]!;
+    const future = new Date(Date.now() + 36 * 3_600_000);
+    const rows = await record(truckId, pickup.lng, pickup.lat, future);
+    expect(rows[0]?.applied).toBe(true);
+    const r = await superPool().query<{ recorded: Date; arrived: Date | null }>(
+      "SELECT p.recorded_at AS recorded, s.arrived_at AS arrived FROM app.truck_positions p, app.stops s WHERE p.truck_id = $1 AND s.id = $2",
+      [truckId, pickup.id],
+    );
+    expect(r.rows[0]!.recorded.getTime()).toBeLessThanOrEqual(Date.now() + 5_000);
+    // The arrival itself is legitimate (the truck is at the pickup now); its time is now, not tomorrow.
+    expect(r.rows[0]!.arrived?.getTime() ?? 0).toBeLessThanOrEqual(Date.now() + 5_000);
+    // And a real report a moment later is not treated as stale.
+    expect((await record(truckId, pickup.lng + 0.01, pickup.lat))[0]?.applied).toBe(true);
   });
 
   it("marks the next open stop as arrived inside the radius, in order, and never the load's status", async () => {
@@ -74,18 +103,18 @@ describe("app.record_position", () => {
     const pickup = stops[0]!;
     const delivery = stops[1]!;
     // 5 miles from the pickup: nothing.
-    expect(await record(truckId, pickup.lng + 0.085, pickup.lat)).toEqual([]);
+    expect(arrivals(await record(truckId, pickup.lng + 0.085, pickup.lat))).toEqual([]);
     // Near the delivery first: still nothing, the next stop is the pickup.
-    expect(await record(truckId, delivery.lng + 0.001, delivery.lat)).toEqual([]);
+    expect(arrivals(await record(truckId, delivery.lng + 0.001, delivery.lat))).toEqual([]);
     // Within a mile of the pickup: arrival on the pickup, seq 1.
-    const a = await record(truckId, pickup.lng + 0.005, pickup.lat);
+    const a = arrivals(await record(truckId, pickup.lng + 0.005, pickup.lat));
     expect(a).toHaveLength(1);
     expect(a[0]?.arrived_stop_id).toBe(pickup.id);
     expect(a[0]?.arrived_seq).toBe(1);
     // Reporting there again does not arrive twice.
-    expect(await record(truckId, pickup.lng + 0.004, pickup.lat)).toEqual([]);
+    expect(arrivals(await record(truckId, pickup.lng + 0.004, pickup.lat))).toEqual([]);
     // Then the delivery.
-    const b = await record(truckId, delivery.lng, delivery.lat + 0.002);
+    const b = arrivals(await record(truckId, delivery.lng, delivery.lat + 0.002));
     expect(b[0]?.arrived_stop_id).toBe(delivery.id);
     const load = await superPool().query<{ status: string; arrived: string }>(
       "SELECT status, (SELECT count(*)::text FROM app.stops WHERE load_id = $1 AND arrived_at IS NOT NULL) AS arrived FROM app.loads WHERE id = $1",
@@ -95,6 +124,15 @@ describe("app.record_position", () => {
     expect(Number(load.rows[0]?.arrived)).toBe(2);
   });
 
+  it("still arrives after the planned window has closed (late deliveries happen)", async () => {
+    // Window opened two days ago and closed yesterday; the truck finally gets there.
+    const { truckId, stops } = await setup({ pickupAt: hoursFromNow(-48) });
+    const pickup = stops[0]!;
+    const delivery = stops[1]!;
+    expect(arrivals(await record(truckId, pickup.lng, pickup.lat))).toHaveLength(1);
+    expect(arrivals(await record(truckId, delivery.lng, delivery.lat))).toHaveLength(1);
+  });
+
   it("uses the company's arrival radius", async () => {
     const { truckId, stops } = await setup();
     const pickup = stops[0]!;
@@ -102,8 +140,7 @@ describe("app.record_position", () => {
       ACME.id,
     ]);
     try {
-      const a = await record(truckId, pickup.lng + 0.1, pickup.lat); // ~6 miles
-      expect(a).toHaveLength(1);
+      expect(arrivals(await record(truckId, pickup.lng + 0.1, pickup.lat))).toHaveLength(1); // ~6 miles
     } finally {
       await superPool().query("UPDATE app.companies SET arrival_radius_miles = 1 WHERE id = $1", [
         ACME.id,
@@ -117,7 +154,6 @@ describe("app.record_position", () => {
       [BLUERIDGE.id],
     );
     const truck = theirs.rows[0]!;
-    // Either the statement is refused or it touches nothing; it never moves B's truck.
     const outcome = await record(truck.id, -80, 35).then(
       (rows) => ({ rows, error: null as string | null }),
       (e: { code?: string; cause?: { code?: string } }) => ({
@@ -145,6 +181,22 @@ describe("app.record_position", () => {
       );
       return r.rows[0]!.id;
     });
-    expect(await record(t, -96.7665, 32.7933)).toEqual([]);
+    const rows = await record(t, -96.7665, 32.7933);
+    expect(rows[0]?.applied).toBe(true);
+    expect(arrivals(rows)).toEqual([]);
+  });
+
+  it("app.load_window never inverts when every appointment is in the past", async () => {
+    const load = await insertLoad(ACME.id, "open", { pickupAt: hoursFromNow(-72), hours: 24 });
+    const r = await asCompany(
+      ACME.id,
+      async (tx) =>
+        (
+          await tx.execute<{ ok: boolean }>(
+            sql`SELECT lower(app.load_window(${load.id})) < upper(app.load_window(${load.id})) AS ok`,
+          )
+        ).rows[0],
+    );
+    expect(r?.ok).toBe(true);
   });
 });

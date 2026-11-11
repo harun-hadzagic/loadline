@@ -4,7 +4,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Map as MapLibreMap, Marker, NavigationControl, Popup } from "maplibre-gl";
 import { useEffect, useRef, useState } from "react";
 import { ConnectionIndicator } from "@/components/connection-indicator";
-import { LOADS_KEY, POSITIONS_KEY, useStreamStatus } from "@/hooks/use-event-stream";
+import { ACTIVE_LOADS_KEY, POSITIONS_KEY, useStreamStatus } from "@/hooks/use-event-stream";
 import { inZone } from "@/lib/format";
 import { getStream } from "@/lib/stream-client";
 import type { LoadView } from "@/server/loads";
@@ -46,7 +46,7 @@ export function TruckMap({ initialPositions, initialLoads, companyTimezone }: Pr
     initialData: initialPositions,
   });
   const { data: loads = [] } = useQuery<LoadView[]>({
-    queryKey: LOADS_KEY,
+    queryKey: ACTIVE_LOADS_KEY,
     queryFn: async () => {
       const res = await fetch("/api/loads?status=assigned,in_transit", { cache: "no-store" });
       if (!res.ok) throw new Error("Could not load loads.");
@@ -75,7 +75,8 @@ export function TruckMap({ initialPositions, initialLoads, companyTimezone }: Pr
           return list;
         }
         const current = list[i] as TruckPositionView;
-        if (current.recordedAt >= p.recordedAt) return list;
+        // Compare instants, not strings: PostgreSQL writes "+00:00", JavaScript writes "Z".
+        if (Date.parse(current.recordedAt) >= Date.parse(p.recordedAt)) return list;
         const next = [...list];
         next[i] = { ...current, ...p };
         return next;
@@ -83,7 +84,8 @@ export function TruckMap({ initialPositions, initialLoads, companyTimezone }: Pr
     });
   }, [qc]);
 
-  // The map itself.
+  // The map itself, created once; the first position only seeds the initial centre.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: re-creating the map on every position would reset the user's view
   useEffect(() => {
     if (!container.current || map.current) return;
     const first = positions[0];
