@@ -1,5 +1,9 @@
-// Helpers for database tests. Only test code imports this.
+// Helpers for database tests and benchmarks. Application code never imports
+// this module: Biome and test/unit/no-raw-database-access.test.ts refuse it.
 import { bootstrap, dropAll } from "./bootstrap.ts";
+
+export { appPool, createDb, createPool } from "./pool.ts";
+
 import { dbEnv, withCredentials } from "./env.ts";
 import { migrate } from "./migrate.ts";
 import { seed } from "./seed/index.ts";
@@ -40,6 +44,12 @@ export async function resetTestDatabase(options: { seed?: boolean } = {}): Promi
   await dropAll(urls.superuser);
   await bootstrap(urls.superuser, TEST_PASSWORDS);
   await migrate(urls.owner);
-  if (options.seed) await seed({ appUrl: urls.app, ownerUrl: urls.owner });
+  if (options.seed)
+    await seed({
+      appUrl: urls.app,
+      ownerUrl: urls.owner,
+      authUrl: urls.auth,
+      demoPassword: "loadline-demo",
+    });
   return urls;
 }

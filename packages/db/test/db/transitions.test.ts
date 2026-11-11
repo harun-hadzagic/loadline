@@ -1,9 +1,16 @@
-import { randomUUID } from "node:crypto";
 import { sql } from "drizzle-orm";
 import { afterAll, describe, expect, it } from "vitest";
 import { ILLEGAL_TRANSITION_SQLSTATE } from "../../src/errors.ts";
 import { loadStatusEnum } from "../../src/schema/index.ts";
-import { ACME, asCompany, BLUERIDGE, closePools, expectPgError, superPool } from "./helpers.ts";
+import {
+  ACME,
+  asCompany,
+  BLUERIDGE,
+  closePools,
+  expectPgError,
+  insertLoad,
+  superPool,
+} from "./helpers.ts";
 
 afterAll(closePools);
 
@@ -17,14 +24,7 @@ const LEGAL = new Set([
   "assigned>cancelled",
 ]);
 
-async function loadIn(status: string): Promise<{ id: string; version: number }> {
-  return asCompany(ACME.id, async (tx) => {
-    const r = await tx.execute<{ id: string; version: number }>(
-      sql`INSERT INTO app.loads (company_id, reference, status) VALUES (${ACME.id}, ${`TR-${randomUUID().slice(0, 8)}`}, ${status}::app.load_status) RETURNING id, version`,
-    );
-    return r.rows[0]!;
-  });
-}
+const loadIn = (status: string) => insertLoad(ACME.id, status);
 
 describe("load transitions are enforced by the trigger", () => {
   it("app.load_transitions holds exactly the six legal moves", async () => {
@@ -103,6 +103,47 @@ describe("load transitions are enforced by the trigger", () => {
       ),
     );
     expect(err.code).toBe(ILLEGAL_TRANSITION_SQLSTATE);
+  });
+
+  it("a dispatcher cannot insert a load in any state but open, and version always starts at 1", async () => {
+    const err = await expectPgError(() =>
+      asCompany(ACME.id, (tx) =>
+        tx.execute(
+          sql`INSERT INTO app.loads (company_id, reference, status) VALUES (${ACME.id}, ${`NO-${Math.random()}`}, 'delivered')`,
+        ),
+      ),
+    );
+    expect(err.code).toBe("42501");
+    const forged = await asCompany(ACME.id, async (tx) => {
+      const r = await tx.execute<{ version: number }>(
+        sql`INSERT INTO app.loads (company_id, reference, version) VALUES (${ACME.id}, ${`V-${Math.random()}`}, 2147483647) RETURNING version`,
+      );
+      await tx.execute(sql`DELETE FROM app.loads WHERE reference LIKE 'V-%'`); // keep the deferred stop check quiet
+      return r.rows[0]?.version;
+    });
+    expect(forged).toBe(1);
+  });
+
+  it("a load needs a pickup and a delivery by the time the transaction commits", async () => {
+    const err = await expectPgError(() =>
+      asCompany(ACME.id, (tx) =>
+        tx.execute(
+          sql`INSERT INTO app.loads (company_id, reference) VALUES (${ACME.id}, ${`NS-${Math.random()}`})`,
+        ),
+      ),
+    );
+    expect(err.code).toBe("LL003");
+  });
+
+  it("only open or cancelled loads can be deleted, so delete-and-reinsert cannot reset a delivered load", async () => {
+    const delivered = await loadIn("delivered");
+    const open = await loadIn("open");
+    const counts = await asCompany(ACME.id, async (tx) => {
+      const a = await tx.execute(sql`DELETE FROM app.loads WHERE id = ${delivered.id}`);
+      const b = await tx.execute(sql`DELETE FROM app.loads WHERE id = ${open.id}`);
+      return [a.rowCount, b.rowCount];
+    });
+    expect(counts).toEqual([0, 1]);
   });
 
   it("company_id cannot be changed", async () => {

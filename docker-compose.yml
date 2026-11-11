@@ -17,7 +17,7 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres-local}
       POSTGRES_DB: ${DB_NAME:-loadline}
     ports:
-      - "${DB_PORT:-5432}:5432"
+      - "127.0.0.1:${DB_PORT:-5432}:5432"
     volumes:
       # PostgreSQL 18 images keep the cluster under /var/lib/postgresql, not .../data.
       - dbdata:/var/lib/postgresql
@@ -39,7 +39,7 @@ services:
       postgres -c fsync=off -c synchronous_commit=off -c full_page_writes=off
                -c max_connections=200 -c shared_buffers=256MB
     ports:
-      - "${TEST_DB_PORT:-5433}:5432"
+      - "127.0.0.1:${TEST_DB_PORT:-5433}:5432"
     tmpfs:
       - /var/lib/postgresql
     healthcheck:
@@ -62,6 +62,7 @@ services:
       DATABASE_URL_SUPER: postgres://postgres:${POSTGRES_PASSWORD:-postgres-local}@db:5432/${DB_NAME:-loadline}
       DATABASE_URL_OWNER: postgres://loadline_owner:${LOADLINE_OWNER_PASSWORD:-owner-local}@db:5432/${DB_NAME:-loadline}
       DATABASE_URL_APP: postgres://loadline_app:${LOADLINE_APP_PASSWORD:-app-local}@db:5432/${DB_NAME:-loadline}
+      DATABASE_URL_AUTH: postgres://loadline_auth:${LOADLINE_AUTH_PASSWORD:-auth-local}@db:5432/${DB_NAME:-loadline}
       LOADLINE_OWNER_PASSWORD: ${LOADLINE_OWNER_PASSWORD:-owner-local}
       LOADLINE_APP_PASSWORD: ${LOADLINE_APP_PASSWORD:-app-local}
       LOADLINE_AUTH_PASSWORD: ${LOADLINE_AUTH_PASSWORD:-auth-local}

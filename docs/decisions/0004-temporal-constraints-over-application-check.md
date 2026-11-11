@@ -18,7 +18,7 @@ CONSTRAINT assignments_load_no_overlap   UNIQUE (load_id,   period WITHOUT OVERL
 
 `btree_gist` lets the GiST index combine a `uuid` with a `tstzrange`. The index itself serialises concurrent writers: the overlap test opens two transactions, lets the second block on the first, commits the first and asserts the second fails.
 
-Measured, not assumed: the violation raises SQLSTATE `23P01` (`exclusion_violation`) with the constraint name in `constraint` and the clashing window in `detail`. `OVERLAP_SQLSTATE` in `packages/db/src/errors.ts` carries that value and the test asserts it. The application maps it to `409 Conflict` naming the driver or truck.
+Measured, not assumed: the violation raises SQLSTATE `23P01` (`exclusion_violation`) with the constraint name in `constraint`. Under row-level security the `detail` is only "Key conflicts with existing key." (the key values are suppressed), so the application looks the clashing assignment up itself before answering `409 Conflict` with the driver or truck and the window. `OVERLAP_SQLSTATE` in `packages/db/src/errors.ts` carries the value and the overlap test asserts it.
 
 Consequences the constraint forces on the data model: empty ranges are rejected, and the constraint cannot be partial, so an assignment that ends early is closed by cutting `period` to `now()`; if `now()` is at or before the lower bound the row is deleted and the outbox keeps the history.
 

@@ -6,6 +6,10 @@ import { repoRoot } from "../../src/env.ts";
 // Rule 7: every query in the app runs inside withTenant. Only packages/db may
 // import the driver or open a pool; Biome's noRestrictedImports says the same
 // at lint time, and this test says it at test time.
+const FORBIDDEN_IN_APPS = [
+  /from\s+["']@loadline\/db\/testing["']/,
+  /\b(appPool|createPool|createDb)\s*\(/,
+];
 const FORBIDDEN = [
   /from\s+["']pg["']/,
   /from\s+["']pg-pool["']/,
@@ -56,6 +60,10 @@ describe("only packages/db touches the database driver", () => {
         const text = readFileSync(file, "utf8");
         for (const re of FORBIDDEN)
           if (re.test(text)) offenders.push(`${path.relative(root, file)}: ${re}`);
+        if (file.startsWith(path.join(root, "apps") + path.sep)) {
+          for (const re of FORBIDDEN_IN_APPS)
+            if (re.test(text)) offenders.push(`${path.relative(root, file)}: ${re}`);
+        }
       }
     }
     expect(offenders).toEqual([]);

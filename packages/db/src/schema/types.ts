@@ -52,8 +52,9 @@ export function parseTstzRange(text: string): TimeRange {
   if (text === "empty") return { lower: null, upper: null };
   const m = rangeRe.exec(text);
   if (!m) throw new Error(`cannot parse tstzrange ${text}`);
-  const lower = m[3] ? parsePgTimestamp(m[3]) : null;
-  const upper = m[5] ? parsePgTimestamp(m[5]) : null;
+  const unbounded = (v: string | undefined) => !v || v === "infinity" || v === "-infinity";
+  const lower = unbounded(m[3]) ? null : parsePgTimestamp(m[3] as string);
+  const upper = unbounded(m[5]) ? null : parsePgTimestamp(m[5] as string);
   return { lower, upper };
 }
 

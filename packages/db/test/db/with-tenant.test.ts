@@ -51,12 +51,14 @@ describe("withTenant", () => {
     await expect(
       asCompany(ACME.id, async (tx) => {
         await tx.execute(
-          sql`INSERT INTO app.loads (company_id, reference) VALUES (${ACME.id}, ${reference})`,
+          sql`INSERT INTO app.trucks (company_id, unit_number, equipment) VALUES (${ACME.id}, ${reference}, 'reefer')`,
         );
         throw new Error("boom");
       }),
     ).rejects.toThrow("boom");
-    const r = await superPool().query("SELECT 1 FROM app.loads WHERE reference = $1", [reference]);
+    const r = await superPool().query("SELECT 1 FROM app.trucks WHERE unit_number = $1", [
+      reference,
+    ]);
     expect(r.rowCount).toBe(0);
   });
 
@@ -66,12 +68,12 @@ describe("withTenant", () => {
       { companyId: ACME.id, role: "dispatcher", userId: "user_acme_dispatcher_1" },
       (tx) =>
         tx.execute(
-          sql`INSERT INTO app.loads (company_id, reference) VALUES (${ACME.id}, ${reference})`,
+          sql`INSERT INTO app.trucks (company_id, unit_number, equipment) VALUES (${ACME.id}, ${reference}, 'reefer')`,
         ),
       { pool: appPool() },
     );
     const r = await superPool().query<{ updated_by: string }>(
-      "SELECT updated_by FROM app.loads WHERE reference = $1",
+      "SELECT updated_by FROM app.trucks WHERE unit_number = $1",
       [reference],
     );
     expect(r.rows[0]?.updated_by).toBe("user_acme_dispatcher_1");

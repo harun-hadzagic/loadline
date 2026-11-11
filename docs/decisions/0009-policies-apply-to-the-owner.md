@@ -13,7 +13,9 @@ The base `tenant_isolation` policy applies to every role (no `TO` clause), inclu
 Two explicit, narrow exceptions, both in `0003_rls.sql` where a reviewer can read them:
 
 1. `owner_resolves_companies`: `FOR SELECT TO loadline_owner USING (true)` on `app.companies` only, so `app.company_for_org()` (a `SECURITY DEFINER` function owned by `loadline_owner` with a fixed `search_path`, returning only the id) can do its one job. `loadline_owner` never logs in from the app.
-2. `prune_old_events`: `FOR DELETE TO loadline_app USING (created_at < now() - interval '24 hours')` on `app.outbox`, so the app's cleanup job can delete rows that are already too old to replay, for every company, without a second role or connection.
+2. `owner_prunes_old_events` and its SELECT twin: `TO loadline_owner USING (created_at < now() - interval '24 hours')` on `app.outbox`, so `app.prune_outbox()` (a `SECURITY DEFINER` function the app's cleanup job calls) can delete rows that are already too old to replay, for every company. A `DELETE` with a `WHERE` needs SELECT visibility of the rows, which is why there are two policies; the first version of this record had a `loadline_app` DELETE policy, which the Phase 1 review showed could not work and could wipe the caller's own live events.
+
+The app itself has no privileges on `app.outbox`: it writes through `app.emit()` (also `SECURITY DEFINER`, still under the owner's forced `tenant_isolation`, so rows are stamped with the current company and nothing else), and cannot read, update or delete events. Only `loadline_stream` reads them.
 
 ## Rejected
 

@@ -35,7 +35,7 @@ export function createDb(pool: Pool): Db {
   return drizzle(pool, { schema, casing: "snake_case" });
 }
 
-type Globals = typeof globalThis & { __loadlineAppPool?: Pool };
+type Globals = typeof globalThis & { __loadlineAppPool?: Pool; __loadlineAuthPool?: Pool };
 
 /**
  * The process-wide pool for loadline_app. Guarded on globalThis so Next.js
@@ -49,6 +49,26 @@ export function appPool(): Pool {
     });
   }
   return g.__loadlineAppPool;
+}
+
+/**
+ * The pool Better Auth uses, as loadline_auth. Its search_path is the auth
+ * schema, so Better Auth's unqualified table names land there and nowhere
+ * else; the role has no privileges on app at all.
+ */
+export function authPool(): Pool {
+  const g = globalThis as Globals;
+  if (!g.__loadlineAuthPool) {
+    g.__loadlineAuthPool = new Pool({
+      connectionString: requireEnv("DATABASE_URL_AUTH"),
+      max: 5,
+      application_name: "loadline-auth",
+      options: "-c search_path=auth",
+      connectionTimeoutMillis: 10_000,
+      idleTimeoutMillis: 30_000,
+    });
+  }
+  return g.__loadlineAuthPool;
 }
 
 export async function closeAppPool(): Promise<void> {

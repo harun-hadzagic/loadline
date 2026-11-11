@@ -20,7 +20,9 @@
       "!apps/web/next-env.d.ts",
       "!SPEC.md",
       "!CLAUDE.md",
-      "!**/*.md"
+      "!**/*.md",
+      "!apps/web/src/components/ui",
+      "!**/*.css"
     ]
   },
   "formatter": {
@@ -50,7 +52,8 @@
               "pg": "Only packages/db may open database connections. Use withTenant from @loadline/db.",
               "pg-pool": "Only packages/db may open database connections. Use withTenant from @loadline/db.",
               "drizzle-orm/node-postgres": "Only packages/db may open database connections. Use withTenant from @loadline/db.",
-              "postgres": "Only packages/db may open database connections. Use withTenant from @loadline/db."
+              "postgres": "Only packages/db may open database connections. Use withTenant from @loadline/db.",
+              "@loadline/db/testing": "Application code never opens its own pool. Use withTenant from @loadline/db."
             }
           }
         }
@@ -59,6 +62,16 @@
     }
   },
   "overrides": [
+    {
+      "includes": ["bench/**", "e2e/**"],
+      "linter": {
+        "rules": {
+          "style": {
+            "noRestrictedImports": "off"
+          }
+        }
+      }
+    },
     {
       "includes": ["packages/db/**"],
       "linter": {

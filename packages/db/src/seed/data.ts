@@ -1,5 +1,7 @@
 // Synthetic demo data. Every company, person, broker and load is invented.
-// Ids are fixed so tests, e2e flows and the auth seed can refer to them.
+// Ids are deterministic (uuidv5 of a readable name) so tests, e2e flows and
+// the auth seed can refer to them.
+import { uuidv5 } from "../ids.ts";
 
 export type DemoRole = "owner" | "admin" | "dispatcher" | "driver";
 
@@ -34,17 +36,18 @@ function users(
   domain: string,
   people: { owner: string; admin: string; dispatchers: [string, string]; drivers: string[] },
 ): DemoUser[] {
+  const id = (slot: string) => uuidv5(`loadline:user:${key}:${slot}`);
   const out: DemoUser[] = [
-    { id: `user_${key}_owner`, email: `owner@${domain}`, name: people.owner, role: "owner" },
-    { id: `user_${key}_admin`, email: `admin@${domain}`, name: people.admin, role: "admin" },
+    { id: id("owner"), email: `owner@${domain}`, name: people.owner, role: "owner" },
+    { id: id("admin"), email: `admin@${domain}`, name: people.admin, role: "admin" },
     {
-      id: `user_${key}_dispatcher_1`,
+      id: id("dispatcher-1"),
       email: `dispatch1@${domain}`,
       name: people.dispatchers[0],
       role: "dispatcher",
     },
     {
-      id: `user_${key}_dispatcher_2`,
+      id: id("dispatcher-2"),
       email: `dispatch2@${domain}`,
       name: people.dispatchers[1],
       role: "dispatcher",
@@ -52,7 +55,7 @@ function users(
   ];
   people.drivers.forEach((name, i) => {
     out.push({
-      id: `user_${key}_driver_${i + 1}`,
+      id: id(`driver-${i + 1}`),
       email: `driver${i + 1}@${domain}`,
       name,
       role: "driver",
@@ -87,7 +90,7 @@ export const DEMO_COMPANIES: DemoCompany[] = [
   {
     key: "acme",
     id: "01930000-0000-7000-8000-00000000a001",
-    orgId: "org_acme_freight",
+    orgId: uuidv5("loadline:org:acme"),
     slug: "acme-freight",
     name: "Acme Freight",
     timezone: "America/Chicago",
@@ -125,7 +128,7 @@ export const DEMO_COMPANIES: DemoCompany[] = [
   {
     key: "blueridge",
     id: "01930000-0000-7000-8000-00000000b002",
-    orgId: "org_blue_ridge_haulers",
+    orgId: uuidv5("loadline:org:blueridge"),
     slug: "blue-ridge-haulers",
     name: "Blue Ridge Haulers",
     timezone: "America/New_York",

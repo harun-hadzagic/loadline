@@ -18,10 +18,10 @@ One entry per phase: what was built, and the evidence it works. Figures here are
 
 **Evidence**
 
-- `pnpm --filter @loadline/db test` against a fresh `db-test`: `Test Files 8 passed (8) · Tests 110 passed (110)`.
+- `pnpm --filter @loadline/db test` against a fresh `db-test`: `Test Files 8 passed (8) · Tests 119 passed (119)` (110 before the review, 119 after its fixes).
 - `docker compose up --build db migrate` from nothing: migrate log ends with `applied 4, already applied 0`, `cities: 1000 rows`, `Acme Freight: seeded`, `Blue Ridge Haulers: seeded`, `migrate-1 exited with code 0`.
 - Catalog query on the seeded database: all eight tenant tables `relrowsecurity = t, relforcerowsecurity = t`; `cities` and `load_transitions` `f, f`.
-- Measured SQLSTATE for a `WITHOUT OVERLAPS` violation: `23P01`, constraint name in `constraint`, clashing window in `detail`.
+- Measured SQLSTATE for a `WITHOUT OVERLAPS` violation: `23P01`, constraint name in `constraint`; under RLS the detail only says "Key conflicts with existing key".
 - `pnpm lint` and `pnpm typecheck` clean.
 
-**Reviewer**: see `docs/building-with-ai.md`.
+**Reviewer**: eleven findings (two high: raw pool exports, a forgeable and deletable outbox), all fixed and re-tested; details in `docs/building-with-ai.md`.

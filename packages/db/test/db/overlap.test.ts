@@ -6,9 +6,11 @@ import { OVERLAP_SQLSTATE } from "../../src/errors.ts";
 import {
   ACME,
   asCompany,
+  BLUERIDGE,
   closePools,
   expectPgError,
   hoursFromNow,
+  insertLoad,
   rangeLiteral,
   superPool,
   urls,
@@ -20,14 +22,7 @@ let driverId: string;
 let truckA: string;
 let truckB: string;
 
-async function newLoad(): Promise<string> {
-  return asCompany(ACME.id, async (tx) => {
-    const r = await tx.execute<{ id: string }>(
-      sql`INSERT INTO app.loads (company_id, reference) VALUES (${ACME.id}, ${`OVL-${randomUUID().slice(0, 8)}`}) RETURNING id`,
-    );
-    return r.rows[0]!.id;
-  });
-}
+const newLoad = async () => (await insertLoad(ACME.id)).id;
 
 function assign(loadId: string, driver: string, truck: string, lower: Date, upper: Date) {
   return asCompany(ACME.id, async (tx) => {
@@ -154,6 +149,52 @@ describe("no double-booking (WITHOUT OVERLAPS)", () => {
     await expect(
       assign(load2, driverId, truckB, hoursFromNow(1), hoursFromNow(3)),
     ).resolves.toBeDefined();
+  });
+
+  it("rejects extending a period by UPDATE into another assignment", async () => {
+    const base = hoursFromNow(24 * 36);
+    const load1 = await newLoad();
+    const load2 = await newLoad();
+    const first = await assign(
+      load1,
+      driverId,
+      truckA,
+      base,
+      new Date(base.getTime() + 4 * 3_600_000),
+    );
+    await assign(
+      load2,
+      driverId,
+      truckB,
+      new Date(base.getTime() + 6 * 3_600_000),
+      new Date(base.getTime() + 8 * 3_600_000),
+    );
+    const err = await expectPgError(() =>
+      asCompany(ACME.id, (tx) =>
+        tx.execute(
+          sql`UPDATE app.assignments SET period = tstzrange(lower(period), lower(period) + interval '7 hours', '[)') WHERE id = ${first}`,
+        ),
+      ),
+    );
+    expect(err.code).toBe(OVERLAP_SQLSTATE);
+    expect(err.constraint).toBe("assignments_driver_no_overlap");
+  });
+
+  it("rejects an assignment that points at another company's driver even with the caller's own company_id", async () => {
+    const theirs = await superPool().query<{ d: string; t: string }>(
+      "SELECT (SELECT id FROM app.drivers WHERE company_id = $1 LIMIT 1) d, (SELECT id FROM app.trucks WHERE company_id = $1 LIMIT 1) t",
+      [BLUERIDGE.id],
+    );
+    const load = await newLoad();
+    const base = hoursFromNow(24 * 37);
+    const err = await expectPgError(() =>
+      assign(load, theirs.rows[0]!.d, truckA, base, new Date(base.getTime() + 3_600_000)),
+    );
+    expect(err.code).toBe("23503"); // composite FK (driver_id, company_id)
+    const err2 = await expectPgError(() =>
+      assign(load, driverId, theirs.rows[0]!.t, base, new Date(base.getTime() + 3_600_000)),
+    );
+    expect(err2.code).toBe("23503");
   });
 
   it("two concurrent transactions: one commits, the other fails on the constraint", async () => {

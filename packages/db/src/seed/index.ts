@@ -4,6 +4,7 @@ import { createPool } from "../pool.ts";
 import * as schema from "../schema/index.ts";
 import type { GeoPoint, TimeRange } from "../schema/types.ts";
 import { type Tx, withTenant } from "../with-tenant.ts";
+import { seedAuth } from "./auth.ts";
 import { BROKERS, COMMODITIES, DEMO, DEMO_COMPANIES, type DemoCompany } from "./data.ts";
 
 export { DEMO, DEMO_COMPANIES };
@@ -11,6 +12,9 @@ export { DEMO, DEMO_COMPANIES };
 export interface SeedOptions {
   appUrl: string;
   ownerUrl: string;
+  /** When given, the Better Auth tables are seeded too (users, accounts, organizations, members). */
+  authUrl?: string;
+  demoPassword?: string;
   /** Anchor time for the relative appointment windows. Defaults to now, rounded to the hour. */
   now?: Date;
 }
@@ -307,7 +311,7 @@ export async function seed(
         continue;
       }
       await withTenant(
-        { companyId: company.id, role: "system", userId: `user_${company.key}_owner` },
+        { companyId: company.id, role: "system", userId: company.users[0]?.id ?? null },
         (tx) => seedCompany(tx, company, now),
         { pool },
       );
@@ -316,6 +320,13 @@ export async function seed(
     }
   } finally {
     await pool.end();
+  }
+  if (opts.authUrl) {
+    const n = await seedAuth(
+      { authUrl: opts.authUrl, password: opts.demoPassword ?? "loadline-demo" },
+      log,
+    );
+    log(`auth: ${n} users created`);
   }
   void pg;
   return result;

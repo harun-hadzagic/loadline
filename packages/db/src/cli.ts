@@ -1,12 +1,11 @@
 import { bootstrap } from "./bootstrap.ts";
-import { dbEnv, requireEnv } from "./env.ts";
+import { requireEnv } from "./env.ts";
 import { migrate } from "./migrate.ts";
 import { seed } from "./seed/index.ts";
 
 const log = (m: string) => console.log(`[db] ${m}`);
 
 async function runBootstrap() {
-  const env = dbEnv();
   await bootstrap(
     requireEnv("DATABASE_URL_SUPER"),
     {
@@ -17,7 +16,6 @@ async function runBootstrap() {
     },
     log,
   );
-  void env;
 }
 
 async function runMigrate() {
