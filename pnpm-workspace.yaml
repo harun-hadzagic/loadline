@@ -1,0 +1,13 @@
+packages:
+  - apps/*
+  - packages/*
+  - bench
+  - e2e
+
+# pnpm 12 blocks postinstall scripts unless listed here.
+allowBuilds:
+  "@biomejs/biome": true
+  "@tailwindcss/oxide": true
+  esbuild: true
+  sharp: true
+  unrs-resolver: true

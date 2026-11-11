@@ -1,0 +1,36 @@
+# dependencies
+node_modules/
+.pnpm-store/
+
+# env and secrets
+.env
+.env.*
+!.env.example
+
+# build output
+.next/
+out/
+dist/
+*.tsbuildinfo
+next-env.d.ts
+
+# tests and tooling
+coverage/
+playwright-report/
+test-results/
+e2e/.auth/
+e2e/video/
+.vitest/
+
+# downloaded source files (never committed; the generated CSV is)
+packages/db/data/raw/
+
+# benchmark scratch (results/ is committed)
+bench/.scratch/
+
+# OS and editors
+.DS_Store
+*.log
+.idea/
+.vscode/*
+!.vscode/extensions.json

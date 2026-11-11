@@ -1,0 +1,40 @@
+{
+  "name": "loadline",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Real-time dispatch board for a small US trucking company. PostgreSQL does the hard parts.",
+  "license": "MIT",
+  "type": "module",
+  "packageManager": "pnpm@12.18.0",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "lint": "biome check .",
+    "lint:fix": "biome check --write .",
+    "typecheck": "pnpm -r --parallel run typecheck",
+    "test": "pnpm -r --workspace-concurrency=1 run test",
+    "test:unit": "pnpm -r --workspace-concurrency=1 run test:unit",
+    "test:db": "pnpm --filter @loadline/db run test",
+    "db:up": "docker compose up -d db",
+    "db:test:up": "docker compose --profile test up -d db-test",
+    "db:bootstrap": "pnpm --filter @loadline/db run bootstrap",
+    "db:migrate": "pnpm --filter @loadline/db run migrate",
+    "db:seed": "pnpm --filter @loadline/db run seed",
+    "db:setup": "pnpm --filter @loadline/db run setup",
+    "db:cities": "pnpm --filter @loadline/db run build:cities",
+    "db:image": "docker build --platform linux/arm64 -t loadline/postgis:18-3.6 docker/postgis",
+    "dev": "pnpm --filter @loadline/web run dev",
+    "build": "pnpm --filter @loadline/web run build",
+    "eval:intake": "pnpm --filter @loadline/intake run eval",
+    "bench:sync": "pnpm --filter @loadline/bench run sync-latency",
+    "bench:geo": "pnpm --filter @loadline/bench run geo",
+    "e2e": "pnpm --filter @loadline/e2e run test",
+    "gif": "pnpm --filter @loadline/e2e run gif"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.6.6",
+    "@types/node": "26.6.6",
+    "typescript": "6.0.3"
+  }
+}
