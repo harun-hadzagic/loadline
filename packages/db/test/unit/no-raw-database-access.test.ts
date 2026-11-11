@@ -60,7 +60,8 @@ describe("only packages/db touches the database driver", () => {
         const text = readFileSync(file, "utf8");
         for (const re of FORBIDDEN)
           if (re.test(text)) offenders.push(`${path.relative(root, file)}: ${re}`);
-        if (file.startsWith(path.join(root, "apps") + path.sep)) {
+        const isTest = /[\\/]test[\\/]|\.test\.[cm]?[jt]sx?$/.test(file);
+        if (file.startsWith(path.join(root, "apps") + path.sep) && !isTest) {
           for (const re of FORBIDDEN_IN_APPS)
             if (re.test(text)) offenders.push(`${path.relative(root, file)}: ${re}`);
         }

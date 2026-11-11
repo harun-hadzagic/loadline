@@ -25,3 +25,23 @@ One entry per phase: what was built, and the evidence it works. Figures here are
 - `pnpm lint` and `pnpm typecheck` clean.
 
 **Reviewer**: eleven findings (two high: raw pool exports, a forgeable and deletable outbox), all fixed and re-tested; details in `docs/building-with-ai.md`.
+
+## Phase 2 · Auth, roles and the load lifecycle — done 2026-11-11
+
+**Built**
+
+- Better Auth 1.7.20 (email + password, organization plugin, Loadline's four roles through its access-control API) over the `loadline_auth` pool with `search_path = auth`; tables in migration `0005_auth_schema.sql`; the active organization is set at sign-in by a session hook. Decision 0011.
+- Request context (`apps/web/src/server/context.ts`): session → organization → membership role → company (through `app.company_for_org`) → linked driver, passed to `withTenant`. One permission table (`src/lib/permissions.ts`) and one enforcement point (`assertCan`).
+- Services: load create/edit with stops, transitions through one function that checks the role and lets the trigger check legality, assignment with the optimistic version check and a named 409 on overlap (looked up inside a savepoint because RLS hides the clashing key), unassign/cancel/deliver closing the open assignment, fleet CRUD for drivers and trucks, the driver's load list. Every mutation emits its outbox event through `emit()`.
+- Pages: sign-in, loads list, new load (stops with local-time windows converted in the stop's zone), load detail with assign and action buttons, edit, fleet pages for admins (dialog forms), and the phone-sized driver page with Picked up / Delivered.
+- Auth seed: 24 demo logins (`DEMO_PASSWORD`), two organizations, memberships.
+- Tests: role matrix (every role × every action), service tests against the real database (concurrent assigns → one 409, named overlap, stale version with current state, unassign frees driver and truck, every transition × every role, a driver cannot act on another driver's load), and Playwright: sign-in per company, wrong password, driver on a Pixel 7 viewport sees exactly their two loads with no horizontal overflow and delivers one.
+
+**Evidence**
+
+- `pnpm test`: db `8 files, 119 tests passed`; web `2 files, 32 tests passed`.
+- `pnpm --filter @loadline/e2e test`: `5 passed` (3 desktop, 2 phone).
+- `pnpm --filter @loadline/web build`: standalone build, exit 0, all routes dynamic.
+- `pnpm lint`, `pnpm typecheck`: clean.
+
+**Reviewer**: see `docs/building-with-ai.md`.

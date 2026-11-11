@@ -78,3 +78,16 @@ export async function closeAppPool(): Promise<void> {
     delete g.__loadlineAppPool;
   }
 }
+
+/**
+ * The first organization a user belongs to, from Better Auth's member table.
+ * Used by the session hook to set the active organization at sign-in, so every
+ * request after that already knows the company.
+ */
+export async function firstOrganizationForUser(userId: string): Promise<string | null> {
+  const r = await authPool().query<{ organizationId: string }>(
+    'SELECT "organizationId" FROM "member" WHERE "userId" = $1 ORDER BY "createdAt" ASC LIMIT 1',
+    [userId],
+  );
+  return r.rows[0]?.organizationId ?? null;
+}

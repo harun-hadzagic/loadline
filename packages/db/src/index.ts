@@ -4,7 +4,14 @@ export { emit, type OutboxEvent } from "./events.ts";
 // Deliberately not exported here: appPool, createPool, createDb. The app reaches
 // tenant data only through withTenant; tests and benchmarks import them from
 // "@loadline/db/testing". authPool is for Better Auth's own schema only.
-export { authPool, closeAppPool, type Db, type Pool, type PoolClient } from "./pool.ts";
+export {
+  authPool,
+  closeAppPool,
+  type Db,
+  firstOrganizationForUser,
+  type Pool,
+  type PoolClient,
+} from "./pool.ts";
 export * as schema from "./schema/index.ts";
 export {
   type Equipment,

@@ -9,8 +9,9 @@
     "start": "next start --port 3000",
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "test": "vitest run",
-    "test:unit": "vitest run",
-    "auth:generate": "pnpm dlx @better-auth/cli@1.7.20 generate --config src/lib/auth.ts --output ../../packages/db/migrations/0005_auth_schema.generated.sql --yes"
+    "test:unit": "vitest run --project web-unit",
+    "auth:generate": "pnpm dlx @better-auth/cli@1.7.20 generate --config src/lib/auth.ts --output ../../packages/db/migrations/0005_auth_schema.generated.sql --yes",
+    "test:db": "vitest run --project web-db"
   },
   "dependencies": {
     "@base-ui/react": "^1.9.0",

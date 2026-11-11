@@ -32,3 +32,19 @@ Per phase: what Claude Code wrote, what its independent reviewer caught, and whe
 11. *Low: assorted.* The role check was `IS DISTINCT FROM 'driver'`, which fails open on an unset role; it is now the allowlist `app.is_staff()`. Decision 0004 claimed the overlap `detail` names the window; under RLS it does not. `parseTstzRange` threw on `infinity`. Compose published both database ports on all interfaces; they are bound to loopback now. The spec's "at least one pickup and one delivery per load" had no database rule; a deferred constraint trigger enforces it at commit.
 
 Held up under attack: isolation on every table with and without a company, `FORCE` and `row_security = off`, the generated `company_id`, upserts against another company's truck, `company_for_org`, the overlap constraints under `UPDATE`, instant ranges, infinite bounds and concurrent writers, all twenty transitions through `UPDATE`, `MERGE` and `ON CONFLICT`, and the grants of every role.
+
+## Phase 2 · Auth, roles and the load lifecycle
+
+**What Claude Code wrote.** Better Auth configuration and migration, the request context, the permission table, the load/fleet/driver services, server actions, all pages, the auth seed, the role-matrix and service tests, and the Playwright suite with its phone project.
+
+**Where the AI was wrong, and how it was caught.**
+
+- *Active organization.* The first context resolver set the active organization and then called `getActiveMember` on the same request; Better Auth answered "No active organization" because the session cookie had not been reissued. Caught by the first Playwright run (every signed-in page was a 500). Fixed with a sign-in hook plus `getFullOrganization`.
+- *Arrays through drizzle's `sql` tag.* `${array}::uuid[]` hands pg a bare string (or expands to a tuple), so `emit` failed with "malformed array literal" and the driver page with "cannot cast type record to app.load_status[]". Both now pass a PostgreSQL array literal. Caught by the service tests and the driver e2e.
+- *Zod 4 and `.partial()`.* `loadInputSchema.partial()` throws at import time when the schema has refinements, which took down every server action with a 500. The edit schema now derives from an unrefined base and re-applies the stop checks. Caught by the driver "Delivered" e2e. The first fix attempt was applied to the wrong text and silently did nothing; verifying the file afterwards is now part of the routine.
+- *Base UI, not Radix.* The shadcn CLI's current default preset composes with `render` props; `asChild` does not exist. Type errors caught it.
+- *Drivers and `board:read`.* `listLoads` demanded the board permission, which drivers lack, so the driver page threw. Permission checks moved to the pages; the service relies on row-level security for scope.
+- *Test windows collided.* Service tests that assigned "a free driver" picked the same driver for overlapping future windows; each test load now has its own window.
+- *Playwright projects.* The driver spec ran on both projects against one database, so the second run found the load already delivered; the desktop project now ignores it.
+
+**What the reviewer caught.** _Appended after the Phase 2 review._

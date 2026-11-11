@@ -14,3 +14,4 @@ One short record per choice that shaped Loadline, and for anything that departs 
 | [0008](0008-sql-migrations-and-drizzle-mirror.md) | Hand-written SQL migrations with a Drizzle mirror |
 | [0009](0009-policies-apply-to-the-owner.md) | Policies apply to `loadline_owner` too, with two narrow exceptions |
 | [0010](0010-system-role.md) | A fifth database-level role, `system`, for service writes |
+| [0011](0011-auth-and-app-shell.md) | Better Auth set-up, role resolution and the app shell |

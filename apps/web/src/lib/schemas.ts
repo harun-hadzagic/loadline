@@ -1,13 +1,7 @@
 import { z } from "zod";
 
 export const equipmentSchema = z.enum(["dry_van", "reefer", "flatbed"]);
-export const loadStatusSchema = z.enum([
-  "open",
-  "assigned",
-  "in_transit",
-  "delivered",
-  "cancelled",
-]);
+export const loadStatusSchema = z.enum(["open", "assigned", "in_transit", "delivered", "cancelled"]);
 export const stopKindSchema = z.enum(["pickup", "delivery"]);
 
 const isoDate = z.iso.datetime({ offset: true }).or(z.iso.datetime());
@@ -25,41 +19,43 @@ export const stopInputSchema = z
     path: ["appointmentEnd"],
   });
 
-export const loadInputSchema = z
-  .object({
-    reference: z.string().trim().min(1).max(40),
-    brokerName: z.string().trim().max(120).nullish(),
-    commodity: z.string().trim().max(120).nullish(),
-    weightLbs: z.coerce.number().int().min(0).max(200_000).nullish(),
-    rateCents: z.coerce.number().int().min(0).max(100_000_000).nullish(),
-    equipment: equipmentSchema.nullish(),
-    notes: z.string().trim().max(2000).nullish(),
-    stops: z.array(stopInputSchema).min(2).max(10),
-  })
-  .refine((l) => l.stops[0]?.kind === "pickup", {
-    message: "The first stop must be a pickup.",
-    path: ["stops"],
-  })
-  .refine((l) => l.stops[l.stops.length - 1]?.kind === "delivery", {
-    message: "The last stop must be a delivery.",
-    path: ["stops"],
-  })
-  .refine(
-    (l) =>
-      l.stops.every(
-        (s, i) =>
-          i === 0 ||
-          new Date(s.appointmentStart) >= new Date(l.stops[i - 1]?.appointmentStart ?? 0),
-      ),
-    { message: "Stops must be in time order.", path: ["stops"] },
-  );
-
-export type LoadInput = z.infer<typeof loadInputSchema>;
 export type StopInput = z.infer<typeof stopInputSchema>;
 
-export const loadPatchSchema = loadInputSchema
+/** Stop list rules shared by create and edit: pickup first, delivery last, time order. */
+function checkStops(stops: StopInput[], ctx: z.RefinementCtx): void {
+  if (stops[0]?.kind !== "pickup") {
+    ctx.addIssue({ code: "custom", message: "The first stop must be a pickup.", path: ["stops"] });
+  }
+  if (stops[stops.length - 1]?.kind !== "delivery") {
+    ctx.addIssue({ code: "custom", message: "The last stop must be a delivery.", path: ["stops"] });
+  }
+  const ordered = stops.every(
+    (s, i) => i === 0 || new Date(s.appointmentStart) >= new Date(stops[i - 1]?.appointmentStart ?? 0),
+  );
+  if (!ordered) ctx.addIssue({ code: "custom", message: "Stops must be in time order.", path: ["stops"] });
+}
+
+// Kept free of refinements so .partial() works for the edit schema.
+const loadBaseSchema = z.object({
+  reference: z.string().trim().min(1).max(40),
+  brokerName: z.string().trim().max(120).nullish(),
+  commodity: z.string().trim().max(120).nullish(),
+  weightLbs: z.coerce.number().int().min(0).max(200_000).nullish(),
+  rateCents: z.coerce.number().int().min(0).max(100_000_000).nullish(),
+  equipment: equipmentSchema.nullish(),
+  notes: z.string().trim().max(2000).nullish(),
+  stops: z.array(stopInputSchema).min(2).max(10),
+});
+
+export const loadInputSchema = loadBaseSchema.superRefine((l, ctx) => checkStops(l.stops, ctx));
+export type LoadInput = z.infer<typeof loadInputSchema>;
+
+export const loadPatchSchema = loadBaseSchema
   .partial()
-  .extend({ id: z.uuid(), version: z.number().int().positive() });
+  .extend({ id: z.uuid(), version: z.number().int().positive() })
+  .superRefine((l, ctx) => {
+    if (l.stops) checkStops(l.stops, ctx);
+  });
 export type LoadPatch = z.infer<typeof loadPatchSchema>;
 
 export const assignInputSchema = z.object({

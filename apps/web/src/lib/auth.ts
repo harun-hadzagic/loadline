@@ -1,4 +1,4 @@
-import { authPool } from "@loadline/db";
+import { authPool, firstOrganizationForUser } from "@loadline/db";
 import { betterAuth } from "better-auth";
 import { nextCookies } from "better-auth/next-js";
 import { organization } from "better-auth/plugins/organization";
@@ -31,6 +31,18 @@ export const auth = betterAuth({
       (process.env.BETTER_AUTH_URL ?? "").startsWith("https"),
   },
   telemetry: { enabled: false },
+  databaseHooks: {
+    session: {
+      create: {
+        // A person belongs to one company in 0.1: make it active at sign-in,
+        // so the organization is on the session from the first request.
+        before: async (session) => {
+          const organizationId = await firstOrganizationForUser(session.userId);
+          return { data: { ...session, activeOrganizationId: organizationId } };
+        },
+      },
+    },
+  },
   plugins: [
     organization({
       ac,

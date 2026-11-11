@@ -63,7 +63,7 @@
   },
   "overrides": [
     {
-      "includes": ["bench/**", "e2e/**"],
+      "includes": ["bench/**", "e2e/**", "apps/*/test/**"],
       "linter": {
         "rules": {
           "style": {
