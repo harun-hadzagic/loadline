@@ -1,0 +1,33 @@
+{
+  "benchmark": "sync-latency",
+  "date": "2026-11-11T17:51:56.183Z",
+  "machine": {
+    "platform": "darwin 27.0.0",
+    "arch": "arm64",
+    "cpu": "Apple M2 Pro",
+    "cores": 10,
+    "memoryGb": 16,
+    "node": "v24.22.1"
+  },
+  "config": {
+    "clients": 50,
+    "writes": 200,
+    "targetWritesPerSecond": 5,
+    "baseUrl": "http://localhost:3131"
+  },
+  "achievedWritesPerSecond": 4.97,
+  "expectedDeliveries": 10000,
+  "deliveries": 10000,
+  "lost": 0,
+  "stray": 0,
+  "beforeResponse": 0,
+  "latencyMs": {
+    "p50": 1.6,
+    "p95": 2.6,
+    "p99": 3.1,
+    "max": 4.1,
+    "min": 0.3,
+    "mean": 1.7
+  },
+  "note": "Latency is measured from the HTTP response of the write to the SSE receipt on each client, all on one machine and one clock, so it includes no network distance. A negative value means the event reached the client before the writer had read its own response."
+}

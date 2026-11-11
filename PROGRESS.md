@@ -45,3 +45,24 @@ One entry per phase: what was built, and the evidence it works. Figures here are
 - `pnpm lint`, `pnpm typecheck`: clean.
 
 **Reviewer**: see `docs/building-with-ai.md`.
+
+## Phase 3 · Live board — done 2026-11-11
+
+**Built**
+
+- `OutboxReader` (`packages/db/src/stream.ts`): the single `LISTEN` connection with health checks and exponential reconnect, `readVisible` (the spec's xmin rule), `readCommitted` (committed rows plus the safe horizon), `latestCursor`/`oldestCursor`. `pruneOutbox()` job. Decisions 0012–0015.
+- `EventHub` (`apps/web/src/server/stream/hub.ts`): one per process on `globalThis`; fan-out by company and driver audience; replay from `Last-Event-ID` under the same lock as live delivery; `resync` for pruned or malformed cursors; 15-second heartbeat, 5-second safety poll, 10-minute prune; `/api/events/stats` for diagnostics.
+- `GET /api/events` (Node runtime, `text/event-stream`, `retry:` hint, `?after=` for manual reconnects). JSON routes: `GET/POST /api/loads`, `GET/PATCH /api/loads/:id`, `POST …/transition`, `POST …/assign`, `GET …/candidates`.
+- Browser: `LoadlineStream` (status, de-duplication by row id, pause/resume test hook on `window.__loadlineStream`), `useEventStream` applying events to the TanStack Query cache by entity id and version, the board (`/board`) with five columns, dnd-kit drag from Open to Assigned, an assign dialog fed by the candidates query (free first, nearest trucks first), optimistic updates rolled back with the server's current state on a 409, and the connection indicator.
+- Phase 2 review fixes (see `docs/building-with-ai.md`): `memberRole`, `app.end_assignment()`, `app.load_window()`, one membership per user, closed sign-up, active-only assignment, deactivation guard, validated ids, FK → 404, same-state 409s.
+- Tests: cursor (out-of-order commits, exactly-once replay from every cursor and across page boundaries, eager delivery with the horizon, NOTIFY wake-up); two-browser Playwright tests (assign in one and see it in the other; cut the second's stream, three changes, restore, all three exactly once; two dispatchers assign the same load and one sees the conflict); service tests grew to 57.
+- `bench/sync-latency.ts` and `bench/readme-tables.ts`.
+
+**Evidence**
+
+- `pnpm test`: db `9 files, 124 tests`; web `2 files, 57 tests`; all passing.
+- `pnpm --filter @loadline/e2e test`: `8 passed`. `playwright test tests/board.spec.ts --repeat-each 10`: `30 passed (1.5m)`. Cursor test run ten times: `10/10`.
+- `bench/results/sync-latency.json` (dev server, `next dev`, one machine): 50 clients, 200 writes at 4.97/s, 10,000 of 10,000 deliveries, 0 lost, p50 1.6 ms, p95 2.6 ms, p99 3.1 ms, max 4.1 ms from the write's response to the client's receipt. To be re-run against the standalone build in Phase 6 for the README.
+- `pnpm lint`, `pnpm typecheck`: clean.
+
+**Reviewer**: see `docs/building-with-ai.md`.

@@ -36,6 +36,8 @@ test("a driver marks the current load delivered and it leaves the page", async (
   await signIn(page, USERS.acmeDriver2);
   await expect(page.getByTestId("driver-load-ACM-1002")).toBeVisible();
   await page.getByTestId("driver-deliver").click();
+  await expect(page.getByText("Marked delivered")).toBeVisible();
+  // The delivered load leaves the page at once; whatever else the dispatchers
+  // assigned to this driver during the run may remain.
   await expect(page.getByTestId("driver-load-ACM-1002")).toHaveCount(0);
-  await expect(page.getByTestId("no-current-load")).toBeVisible();
 });

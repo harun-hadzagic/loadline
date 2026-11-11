@@ -13,6 +13,7 @@ import { getLoad } from "@/server/loads";
 
 export default async function LoadPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
+  if (!/^[0-9a-f-]{36}$/i.test(id)) notFound();
   const ctx = await requireContext();
   if (ctx.role === "driver")
     return <Forbidden message="Drivers see their loads on the driver page." />;

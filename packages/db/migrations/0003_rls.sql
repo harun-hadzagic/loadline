@@ -81,8 +81,13 @@ CREATE POLICY driver_scope ON app.stops AS RESTRICTIVE
     )
   );
 
+-- A driver sees their own assignments, open or ended. (Not "open only": an
+-- UPDATE that reads columns re-checks the SELECT policies against the new
+-- row, so app.end_assignment() closing a driver's assignment would fail if
+-- ended rows were invisible to them. Loads and stops above do require an
+-- open assignment, so a closed load still disappears from the driver.)
 CREATE POLICY driver_scope ON app.assignments AS RESTRICTIVE
-  USING (app.is_staff() OR (driver_id = app.current_driver() AND ended_reason IS NULL));
+  USING (app.is_staff() OR driver_id = app.current_driver());
 
 -- Drivers see their own driver row only, and may not see other drivers' phones.
 CREATE POLICY driver_scope ON app.drivers AS RESTRICTIVE
@@ -96,8 +101,12 @@ CREATE POLICY staff_only_delete ON app.loads AS RESTRICTIVE FOR DELETE USING (ap
 CREATE POLICY staff_only_insert ON app.stops AS RESTRICTIVE FOR INSERT WITH CHECK (app.is_staff());
 CREATE POLICY staff_only_delete ON app.stops AS RESTRICTIVE FOR DELETE USING (app.is_staff());
 CREATE POLICY staff_only_insert ON app.assignments AS RESTRICTIVE FOR INSERT WITH CHECK (app.is_staff());
-CREATE POLICY staff_only_update ON app.assignments AS RESTRICTIVE FOR UPDATE USING (app.is_staff());
-CREATE POLICY staff_only_delete ON app.assignments AS RESTRICTIVE FOR DELETE USING (app.is_staff());
+-- UPDATE and DELETE on assignments are staff-only for the app role. The owner
+-- is left out on purpose: app.end_assignment() (SECURITY DEFINER, 0006) runs
+-- as the owner so a driver's "Delivered" can close the one assignment they
+-- hold; driver_scope above still limits the owner to that row for a driver.
+CREATE POLICY staff_only_update ON app.assignments AS RESTRICTIVE FOR UPDATE TO loadline_app USING (app.is_staff());
+CREATE POLICY staff_only_delete ON app.assignments AS RESTRICTIVE FOR DELETE TO loadline_app USING (app.is_staff());
 CREATE POLICY staff_only_insert ON app.drivers AS RESTRICTIVE FOR INSERT WITH CHECK (app.is_staff());
 CREATE POLICY staff_only_update ON app.drivers AS RESTRICTIVE FOR UPDATE USING (app.is_staff());
 CREATE POLICY staff_only_delete ON app.drivers AS RESTRICTIVE FOR DELETE USING (app.is_staff());

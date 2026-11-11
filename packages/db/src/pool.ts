@@ -91,3 +91,17 @@ export async function firstOrganizationForUser(userId: string): Promise<string |
   );
   return r.rows[0]?.organizationId ?? null;
 }
+
+/**
+ * The role a user holds in one specific organization, straight from Better
+ * Auth's member table. One query for the exact (user, organization) pair, so
+ * a session whose active organization changes between two reads cannot pair
+ * one company with another company's role.
+ */
+export async function memberRole(userId: string, organizationId: string): Promise<string | null> {
+  const r = await authPool().query<{ role: string }>(
+    'SELECT role FROM "member" WHERE "userId" = $1 AND "organizationId" = $2',
+    [userId, organizationId],
+  );
+  return r.rows[0]?.role ?? null;
+}

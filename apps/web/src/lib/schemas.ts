@@ -1,7 +1,13 @@
 import { z } from "zod";
 
 export const equipmentSchema = z.enum(["dry_van", "reefer", "flatbed"]);
-export const loadStatusSchema = z.enum(["open", "assigned", "in_transit", "delivered", "cancelled"]);
+export const loadStatusSchema = z.enum([
+  "open",
+  "assigned",
+  "in_transit",
+  "delivered",
+  "cancelled",
+]);
 export const stopKindSchema = z.enum(["pickup", "delivery"]);
 
 const isoDate = z.iso.datetime({ offset: true }).or(z.iso.datetime());
@@ -30,9 +36,11 @@ function checkStops(stops: StopInput[], ctx: z.RefinementCtx): void {
     ctx.addIssue({ code: "custom", message: "The last stop must be a delivery.", path: ["stops"] });
   }
   const ordered = stops.every(
-    (s, i) => i === 0 || new Date(s.appointmentStart) >= new Date(stops[i - 1]?.appointmentStart ?? 0),
+    (s, i) =>
+      i === 0 || new Date(s.appointmentStart) >= new Date(stops[i - 1]?.appointmentStart ?? 0),
   );
-  if (!ordered) ctx.addIssue({ code: "custom", message: "Stops must be in time order.", path: ["stops"] });
+  if (!ordered)
+    ctx.addIssue({ code: "custom", message: "Stops must be in time order.", path: ["stops"] });
 }
 
 // Kept free of refinements so .partial() works for the edit schema.

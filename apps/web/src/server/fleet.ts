@@ -70,6 +70,7 @@ export async function saveDriver(
     }
     void userId;
     if (id) {
+      if (!input.active) await refuseIfBooked(tx, "driver_id", id, "driver");
       const r = await tx.execute(sql`
         UPDATE app.drivers SET name = ${input.name}, phone = ${input.phone ?? null},
                home_city_id = ${input.homeCityId ?? null}, active = ${input.active}
@@ -96,6 +97,7 @@ export async function saveTruck(
   assertCan(ctx, "fleet", "manage");
   return withTenant(tenant(ctx), async (tx) => {
     if (id) {
+      if (!input.active) await refuseIfBooked(tx, "truck_id", id, "truck");
       const r = await tx.execute(sql`
         UPDATE app.trucks SET unit_number = ${input.unitNumber}, equipment = ${input.equipment}::app.equipment,
                home_city_id = ${input.homeCityId ?? null}, active = ${input.active}
@@ -112,6 +114,21 @@ export async function saveTruck(
     await emit(tx, { type: "truck.created", entityId: newId, payload: {} });
     return newId;
   });
+}
+
+/** A driver or truck with an open assignment stays active until it is unassigned. */
+async function refuseIfBooked(
+  tx: Parameters<Parameters<typeof withTenant>[1]>[0],
+  column: "driver_id" | "truck_id",
+  id: string,
+  what: string,
+): Promise<void> {
+  const r = await tx.execute<{ reference: string }>(sql`
+    SELECT l.reference FROM app.assignments a JOIN app.loads l ON l.id = a.load_id
+     WHERE ${sql.raw(`a.${column}`)} = ${id} AND a.ended_reason IS NULL AND upper(a.period) > now()
+     ORDER BY lower(a.period) LIMIT 1`);
+  const ref = r.rows[0]?.reference;
+  if (ref) throw new AppError(409, `This ${what} is still assigned to ${ref}. Unassign it first.`);
 }
 
 export type CityOption = {

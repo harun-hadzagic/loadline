@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { z } from "zod";
 import {
   assignInputSchema,
   driverInputSchema,
@@ -60,7 +61,11 @@ export async function transitionLoadAction(input: unknown): Promise<ActionResult
 export async function saveDriverAction(input: unknown, id?: string): Promise<ActionResult<string>> {
   return toActionResult(async () => {
     const ctx = await requireContextOrThrow();
-    const result = await saveDriver(ctx, driverInputSchema.parse(input), id);
+    const result = await saveDriver(
+      ctx,
+      driverInputSchema.parse(input),
+      z.uuid().optional().parse(id),
+    );
     revalidatePath("/fleet/drivers");
     return result;
   });
@@ -69,7 +74,11 @@ export async function saveDriverAction(input: unknown, id?: string): Promise<Act
 export async function saveTruckAction(input: unknown, id?: string): Promise<ActionResult<string>> {
   return toActionResult(async () => {
     const ctx = await requireContextOrThrow();
-    const result = await saveTruck(ctx, truckInputSchema.parse(input), id);
+    const result = await saveTruck(
+      ctx,
+      truckInputSchema.parse(input),
+      z.uuid().optional().parse(id),
+    );
     revalidatePath("/fleet/trucks");
     return result;
   });

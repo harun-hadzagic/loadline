@@ -6,7 +6,7 @@ export const dynamic = "force-dynamic";
 
 export default async function SignInPage() {
   const ctx = await getContext().catch(() => null);
-  if (ctx) redirect(ctx.role === "driver" ? "/driver" : "/loads");
+  if (ctx) redirect(ctx.role === "driver" ? "/driver" : "/board");
   return (
     <main className="mx-auto flex min-h-screen max-w-sm flex-col justify-center gap-6 p-6">
       <div>

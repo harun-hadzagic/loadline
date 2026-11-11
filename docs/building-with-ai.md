@@ -47,4 +47,29 @@ Held up under attack: isolation on every table with and without a company, `FORC
 - *Test windows collided.* Service tests that assigned "a free driver" picked the same driver for overlapping future windows; each test load now has its own window.
 - *Playwright projects.* The driver spec ran on both projects against one database, so the second run found the load already delivered; the desktop project now ignores it.
 
-**What the reviewer caught.** _Appended after the Phase 2 review._
+**What the reviewer caught.** Twelve findings, two of them high; all fixed in the Phase 3 commit:
+
+1. *High: a role/company race.* The context read the organization from one session read and the role from a second (`getActiveMember`), so a person who belonged to two companies could switch the active organization between the reads and act in company A with company B's role; the reviewer proved it by creating trucks as a driver. Fix: the role is read for the exact `(user, organization)` pair in one query (`memberRole`), memberships with more than one role are refused, and a unique index makes one membership per user the rule in 0.1.
+2. *High: a driver's "Delivered" never closed the assignment.* The close ran as the driver, whose restrictive policies on `assignments` silently matched zero rows, so the driver and truck stayed booked and the load stayed visible. Fix: `app.end_assignment()` (SECURITY DEFINER, allowed for staff or the holding driver). Getting it to work took three more database lessons: the owner was also under the staff-only policies (now `TO loadline_app`), a `FOR ALL` policy's `USING` is re-checked against the *new* row of an `UPDATE` that reads columns (so drivers now see their ended assignments too), and a future assignment is deleted rather than cut, which the first test did not expect.
+3. *Medium-high: no reassignment after unassigning once the window opened.* The new period started at the pickup time and overlapped the closed row. Fix: `app.load_window()` starts at `GREATEST(pickup, now())`, used by assign, edit and the candidates query alike.
+4. *Medium: open sign-up and unverified invitation acceptance.* `disableSignUp` and `requireEmailVerificationOnInvitation` are set.
+5. *Medium: inactive drivers and trucks could be assigned, and a booked driver deactivated.* The insert now selects only active rows; deactivation is refused while an open assignment exists.
+6. *Medium: test gaps.* Added a test that lets the database (not the pre-check) decide a race, role × service tests for every mutating service, a driver-delivery test that asserts `ended_reason` and the cut period, same-state transitions, and the reopened-window reassignment.
+7. *Low:* multi-role memberships, `in` versus `Object.hasOwn`, same-state transitions bumping the version, a 500 for a session with no active organization, unvalidated ids in two actions and a page, a stale `current` in 409 payloads, a misleading overlap message for the load constraint, and two different period formulas. All fixed as suggested.
+
+Held up: cross-company access through every Better Auth endpoint, member management limits, CSRF and cookie flags, tenant isolation in the services, the atomic version check, the cut semantics for started/future/ended assignments, and the driver page.
+
+
+## Phase 3 · Live board
+
+**What Claude Code wrote.** The outbox reader with the visibility-safe cursor (`packages/db/src/stream.ts`), the event hub with fan-out, replay, heartbeat, poll and prune, the SSE route, the browser stream client and TanStack Query integration, the board with drag-to-assign and optimistic rollback, the assignment candidates query, the JSON routes, the two-browser Playwright tests, the cursor test and the sync-latency benchmark.
+
+**Where the AI was wrong, and how it was caught.**
+
+- *The two-browser tests failed for a day's worth of wrong reasons before the right one.* The first suspect was the stream; it was innocent twice. (1) A reviewer agent was running the test suite against the same database, resetting it under the e2e run; the e2e now has its own database. (2) The spec's xmin rule stalled delivery whenever any transaction in the cluster was open, including the reviewer's; see decision 0013 for the fix. (3) The real bug: the assign dialog defaulted to the first driver who was free *now*, who was busy in the load's window, so the assignment failed with a 409 while the test read the optimistic card state. The dialog now asks the server for candidates free in the window, and the test waits for the server's version number.
+- *Globals survive hot reloads.* Changing the hub did nothing until the dev server restarted, because the `globalThis` guard kept the old instance (which is exactly its job in production). Noted in the hub file.
+- *Zod `.partial()` on a refined schema*, drizzle's array parameters, and a stale Turbopack module after adding an export each cost one failed run; all caught by the e2e suite.
+- *The benchmark undercounted itself.* Events could reach a client before the writer had read its own HTTP response, so 13% were counted as stray. Writes are now registered before they are sent, and a receipt that beats the response is reported as such (none did).
+- *Ten in a row.* Repeating the two-browser tests exhausted the free drivers (every test load had the same window) and then pushed cards off-screen; test loads now get their own windows and the board's columns scroll independently.
+
+**What the reviewer caught.** _Appended after the Phase 3 review._

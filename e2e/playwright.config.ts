@@ -26,7 +26,7 @@ export default defineConfig({
   ],
   webServer: {
     command: `pnpm --filter @loadline/web exec next dev --port ${port}`,
-    url: baseURL,
+    url: `${baseURL}/sign-in`,
     reuseExistingServer: !process.env.CI,
     timeout: 180_000,
     env: {

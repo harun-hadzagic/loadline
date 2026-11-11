@@ -58,6 +58,8 @@ export function fromDbError(err: unknown): AppError | null {
       return new ConflictError("duplicate", duplicateMessage(e.constraint), {
         constraint: e.constraint,
       });
+    case "23503":
+      return new AppError(404, "That refers to something that does not exist in your company.");
     case "42501":
       return new ForbiddenError();
     default:

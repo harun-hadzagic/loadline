@@ -86,6 +86,8 @@ async function selectLoads(tx: Tx, where: ReturnType<typeof sql>): Promise<LoadV
   return r.rows;
 }
 
+const BY_FIRST_PICKUP = sql`ORDER BY (SELECT min(lower(appointment)) FROM app.stops s WHERE s.load_id = l.id) NULLS LAST, l.reference`;
+
 /** Loads visible to this request. Drivers get only their own through row-level security. */
 export async function listLoads(
   ctx: RequestContext,
@@ -97,8 +99,8 @@ export async function listLoads(
     selectLoads(
       tx,
       statuses
-        ? sql`WHERE l.status = ANY(${statuses}::app.load_status[]) ORDER BY (SELECT min(lower(appointment)) FROM app.stops s WHERE s.load_id = l.id) NULLS LAST, l.reference`
-        : sql`ORDER BY (SELECT min(lower(appointment)) FROM app.stops s WHERE s.load_id = l.id) NULLS LAST, l.reference`,
+        ? sql`WHERE l.status = ANY(${statuses}::app.load_status[]) ${BY_FIRST_PICKUP}`
+        : BY_FIRST_PICKUP,
     ),
   );
 }
@@ -112,6 +114,12 @@ export async function getLoad(ctx: RequestContext, id: string): Promise<LoadView
 
 async function getLoadTx(tx: Tx, id: string): Promise<LoadView | null> {
   return (await selectLoads(tx, sql`WHERE l.id = ${id}`))[0] ?? null;
+}
+
+async function requireLoadTx(tx: Tx, id: string): Promise<LoadView> {
+  const load = await getLoadTx(tx, id);
+  if (!load) throw new NotFoundError("Load not found.");
+  return load;
 }
 
 function audienceOf(load: LoadView | null, extra: string[] = []): string[] | null {
@@ -149,25 +157,31 @@ export async function createLoad(ctx: RequestContext, input: LoadInput): Promise
     const row = r.rows[0];
     if (!row) throw new AppError(500, "Insert returned nothing.");
     await insertStops(tx, ctx.companyId, row.id, input.stops);
-    const load = await getLoadTx(tx, row.id);
+    const load = await requireLoadTx(tx, row.id);
     await emit(tx, {
       type: "load.created",
       entityId: row.id,
       payload: { version: row.version, status: "open" },
     });
-    return load as LoadView;
+    return load;
   }).catch(rethrow);
 }
 
 export async function updateLoad(ctx: RequestContext, patch: LoadPatch): Promise<LoadView> {
   assertCan(ctx, "load", "update");
   return withTenant(tenant(ctx), async (tx) => {
-    const current = await getLoadTx(tx, patch.id);
-    if (!current) throw new NotFoundError("Load not found.");
+    const current = await requireLoadTx(tx, patch.id);
     if (current.status === "delivered" || current.status === "cancelled") {
       throw new ConflictError("transition", `A ${current.status} load cannot be edited.`, {
         current,
       });
+    }
+    if (patch.stops && current.status === "in_transit") {
+      throw new ConflictError(
+        "transition",
+        "Stops cannot be replaced while the load is in transit.",
+        { current },
+      );
     }
     const r = await tx.execute<{ version: number }>(sql`
       UPDATE app.loads SET
@@ -181,24 +195,28 @@ export async function updateLoad(ctx: RequestContext, patch: LoadPatch): Promise
       WHERE id = ${patch.id} AND version = ${patch.version}
       RETURNING version`);
     if ((r.rowCount ?? 0) === 0) {
+      const latest = await requireLoadTx(tx, patch.id);
       throw new ConflictError(
         "stale",
         "Someone else changed this load. Review the latest version and try again.",
-        { current },
+        {
+          current: latest,
+        },
       );
     }
     if (patch.stops) {
       await tx.execute(sql`DELETE FROM app.stops WHERE load_id = ${patch.id}`);
       await insertStops(tx, ctx.companyId, patch.id, patch.stops);
       if (current.assignment) {
-        // Keep the assignment's period in step with the new windows; the database rejects a new overlap.
+        // Keep the assignment's period in step with the new windows, from the
+        // same definition assign uses; the database rejects a new overlap.
         await tx.execute(sql`
-          UPDATE app.assignments a SET period = (
-            SELECT tstzrange(min(lower(s.appointment)), max(upper(s.appointment)), '[)') FROM app.stops s WHERE s.load_id = ${patch.id}
-          ) WHERE a.id = ${current.assignment.id}`);
+          UPDATE app.assignments a
+             SET period = tstzrange(LEAST(lower(a.period), lower(app.load_window(${patch.id}))), upper(app.load_window(${patch.id})), '[)')
+           WHERE a.id = ${current.assignment.id}`);
       }
     }
-    const load = (await getLoadTx(tx, patch.id)) as LoadView;
+    const load = await requireLoadTx(tx, patch.id);
     await emit(tx, {
       type: "load.updated",
       entityId: patch.id,
@@ -224,8 +242,9 @@ const TRANSITIONS: Transition[] = [
 /**
  * Move a load along app.load_transitions. Who may do it is decided here, in
  * one place, from the permission table; whether the move is legal is decided
- * by the database trigger. Ending states close the open assignment, which
- * frees the driver and truck from now on.
+ * by the database trigger (and checked here too, so a same-state request is a
+ * 409 rather than a silent edit). Ending states close the open assignment,
+ * which frees the driver and truck from now on.
  */
 export async function transitionLoad(
   ctx: RequestContext,
@@ -235,14 +254,23 @@ export async function transitionLoad(
   if (!t) throw new AppError(400, `Loads become ${input.to} through assignment, not directly.`);
   assertCan(ctx, "load", t.permission);
   return withTenant(tenant(ctx), async (tx) => {
-    const before = await getLoadTx(tx, input.loadId);
-    if (!before) throw new NotFoundError("Load not found.");
+    const before = await requireLoadTx(tx, input.loadId);
+    if (!t.from.includes(before.status)) {
+      throw new ConflictError(
+        "transition",
+        `A ${before.status.replace("_", " ")} load cannot become ${input.to.replace("_", " ")}.`,
+        {
+          current: before,
+        },
+      );
+    }
     const r = await tx.execute(sql`
       UPDATE app.loads SET status = ${input.to}::app.load_status
-      WHERE id = ${input.loadId} AND version = ${input.version}`);
+      WHERE id = ${input.loadId} AND version = ${input.version} AND status = ${before.status}::app.load_status`);
     if ((r.rowCount ?? 0) === 0) {
+      const latest = await requireLoadTx(tx, input.loadId);
       throw new ConflictError("stale", "This load changed under you. Showing the current state.", {
-        current: before,
+        current: latest,
       });
     }
     if (input.to === "in_transit") {
@@ -257,9 +285,19 @@ export async function transitionLoad(
     }
     if (input.to === "delivered" || input.to === "cancelled" || input.to === "open") {
       const reason = input.to === "open" ? "unassigned" : input.to;
-      await endOpenAssignment(tx, input.loadId, reason);
+      // SECURITY DEFINER: a driver may close only the assignment they hold.
+      await tx.execute(sql`SELECT app.end_assignment(${input.loadId}, ${reason})`);
     }
-    const after = (await getLoadTx(tx, input.loadId)) as LoadView;
+    // After a driver delivers, the load is no longer theirs to see: build the
+    // result from what we know rather than re-reading an invisible row.
+    const after =
+      (await getLoadTx(tx, input.loadId)) ??
+      ({
+        ...before,
+        status: input.to,
+        version: before.version + 1,
+        assignment: null,
+      } satisfies LoadView);
     await emit(tx, {
       type: "load.updated",
       entityId: input.loadId,
@@ -270,64 +308,47 @@ export async function transitionLoad(
   }).catch(rethrow);
 }
 
-/**
- * Close the load's open assignment. The period is cut to now(), which frees
- * the driver and truck from this moment; if the period has not started yet
- * the row is deleted instead (an empty range is not allowed), and the outbox
- * keeps the history.
- */
-async function endOpenAssignment(
-  tx: Tx,
-  loadId: string,
-  reason: "unassigned" | "cancelled" | "delivered",
-): Promise<void> {
-  await tx.execute(sql`
-    DELETE FROM app.assignments WHERE load_id = ${loadId} AND ended_reason IS NULL AND lower(period) >= now()`);
-  await tx.execute(sql`
-    UPDATE app.assignments
-       SET ended_reason = ${reason},
-           period = tstzrange(lower(period), LEAST(upper(period), now()), '[)')
-     WHERE load_id = ${loadId} AND ended_reason IS NULL`);
-}
-
 export async function assignLoad(ctx: RequestContext, input: AssignInput): Promise<LoadView> {
   assertCan(ctx, "load", "assign");
   return withTenant(tenant(ctx), async (tx) => {
-    const before = await getLoadTx(tx, input.loadId);
-    if (!before) throw new NotFoundError("Load not found.");
+    const before = await requireLoadTx(tx, input.loadId);
     if (before.status !== "open") {
       throw new ConflictError("stale", `This load is already ${before.status.replace("_", " ")}.`, {
         current: before,
       });
     }
-    const first = before.stops[0];
-    const last = before.stops[before.stops.length - 1];
-    if (!first || !last) throw new AppError(400, "The load has no stops.");
+    if (!before.stops.length) throw new AppError(400, "The load has no stops.");
     try {
       // A nested transaction is a savepoint: if the constraint rejects the row,
       // the outer transaction stays usable so the clash can be described.
-      await tx.transaction((sp) =>
+      // Only active drivers and trucks qualify (the SELECT yields no row otherwise).
+      const inserted = await tx.transaction((sp) =>
         sp.execute(sql`
           INSERT INTO app.assignments (company_id, load_id, driver_id, truck_id, period)
-          VALUES (${ctx.companyId}, ${input.loadId}, ${input.driverId}, ${input.truckId},
-                  tstzrange(${first.appointmentStart}::timestamptz, ${last.appointmentEnd}::timestamptz, '[)'))`),
+          SELECT ${ctx.companyId}, ${input.loadId}, d.id, t.id, app.load_window(${input.loadId})
+            FROM app.drivers d, app.trucks t
+           WHERE d.id = ${input.driverId} AND d.active AND t.id = ${input.truckId} AND t.active`),
       );
+      if ((inserted.rowCount ?? 0) === 0) {
+        throw new AppError(409, "That driver or truck is inactive or does not exist.");
+      }
     } catch (err) {
-      const app = fromDbError(err);
+      const app = err instanceof AppError ? err : fromDbError(err);
       if (app instanceof ConflictError && app.kind === "overlap") {
-        throw await describeOverlap(tx, app, input, first.appointmentStart, last.appointmentEnd);
+        throw await describeOverlap(tx, app, input);
       }
       if (app) throw app;
       throw err;
     }
     const r = await tx.execute(sql`
-      UPDATE app.loads SET status = 'assigned' WHERE id = ${input.loadId} AND version = ${input.version}`);
+      UPDATE app.loads SET status = 'assigned' WHERE id = ${input.loadId} AND version = ${input.version} AND status = 'open'`);
     if ((r.rowCount ?? 0) === 0) {
+      const latest = await requireLoadTx(tx, input.loadId);
       throw new ConflictError("stale", "Another dispatcher changed this load first.", {
-        current: before,
+        current: latest,
       });
     }
-    const after = (await getLoadTx(tx, input.loadId)) as LoadView;
+    const after = await requireLoadTx(tx, input.loadId);
     await emit(tx, {
       type: "load.updated",
       entityId: input.loadId,
@@ -343,27 +364,31 @@ async function describeOverlap(
   tx: Tx,
   err: ConflictError,
   input: AssignInput,
-  start: string,
-  end: string,
 ): Promise<ConflictError> {
   const constraint = String(err.details?.constraint ?? "");
-  const column = constraint.includes("truck")
+  if (constraint === "assignments_load_no_overlap") {
+    return new ConflictError("overlap", "This load was assigned by someone else just now.", {
+      constraint,
+    });
+  }
+  const byTruck = constraint === "assignments_truck_no_overlap";
+  const column = byTruck
     ? sql`a.truck_id = ${input.truckId}`
     : sql`a.driver_id = ${input.driverId}`;
   const clash = await tx
     .execute<{ reference: string; lower: string; upper: string; name: string }>(sql`
       SELECT l.reference, lower(a.period) AS lower, upper(a.period) AS upper,
-             CASE WHEN ${constraint.includes("truck")} THEN t.unit_number ELSE d.name END AS name
-      FROM app.assignments a
-      JOIN app.loads l ON l.id = a.load_id
-      JOIN app.drivers d ON d.id = a.driver_id
-      JOIN app.trucks t ON t.id = a.truck_id
-      WHERE ${column} AND a.period && tstzrange(${start}::timestamptz, ${end}::timestamptz, '[)')
-      ORDER BY lower(a.period) LIMIT 1`)
+             CASE WHEN ${byTruck} THEN t.unit_number ELSE d.name END AS name
+        FROM app.assignments a
+        JOIN app.loads l ON l.id = a.load_id
+        JOIN app.drivers d ON d.id = a.driver_id
+        JOIN app.trucks t ON t.id = a.truck_id
+       WHERE ${column} AND a.period && app.load_window(${input.loadId})
+       ORDER BY lower(a.period) LIMIT 1`)
     .catch(() => null);
   const c = clash?.rows[0];
   if (!c) return err;
-  const what = constraint.includes("truck") ? `Truck ${c.name}` : c.name;
+  const what = byTruck ? `Truck #${c.name}` : c.name;
   return new ConflictError(
     "overlap",
     `${what} is already on ${c.reference} from ${c.lower} to ${c.upper}.`,
@@ -372,6 +397,52 @@ async function describeOverlap(
       clash: c,
     },
   );
+}
+
+export type Candidate = {
+  id: string;
+  label: string;
+  /** Free for this load's window (no open assignment overlapping it). */
+  free: boolean;
+  /** Straight-line miles from the truck's last position to the first pickup, when known. */
+  distanceMiles: number | null;
+  equipment?: Equipment;
+};
+
+/**
+ * Drivers and trucks for the assign dialog: free ones first. Trucks are
+ * ordered by straight-line distance from their last reported position to the
+ * load's first pickup, which the GiST index on truck_positions serves
+ * (ORDER BY location <-> pickup), so the five nearest free trucks lead.
+ */
+export async function assignmentCandidates(
+  ctx: RequestContext,
+  loadId: string,
+): Promise<{ drivers: Candidate[]; trucks: Candidate[] }> {
+  assertCan(ctx, "load", "assign");
+  return withTenant(tenant(ctx), async (tx) => {
+    await requireLoadTx(tx, loadId);
+    const drivers = await tx.execute<Candidate>(sql`
+      SELECT d.id, d.name AS label, NULL::float AS "distanceMiles",
+             NOT EXISTS (SELECT 1 FROM app.assignments a
+                          WHERE a.driver_id = d.id AND a.ended_reason IS NULL AND a.period && app.load_window(${loadId})) AS free
+        FROM app.drivers d WHERE d.active
+       ORDER BY free DESC, d.name`);
+    const trucks = await tx.execute<Candidate>(sql`
+      WITH pickup AS (
+        SELECT s.location FROM app.stops s WHERE s.load_id = ${loadId} ORDER BY s.seq LIMIT 1
+      )
+      SELECT t.id, '#' || t.unit_number AS label, t.equipment,
+             ROUND((ST_Distance(p.location, pickup.location) / 1609.344)::numeric, 1)::float AS "distanceMiles",
+             NOT EXISTS (SELECT 1 FROM app.assignments a
+                          WHERE a.truck_id = t.id AND a.ended_reason IS NULL AND a.period && app.load_window(${loadId})) AS free
+        FROM app.trucks t
+        LEFT JOIN app.truck_positions p ON p.truck_id = t.id
+        CROSS JOIN pickup
+       WHERE t.active
+       ORDER BY free DESC, p.location <-> pickup.location NULLS LAST, t.unit_number`);
+    return { drivers: drivers.rows, trucks: trucks.rows };
+  });
 }
 
 function rethrow(err: unknown): never {

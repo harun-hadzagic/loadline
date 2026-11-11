@@ -1,4 +1,11 @@
-import { type AppRole, companyIdForOrg, type TenantContext, withTenant } from "@loadline/db";
+import {
+  type AppRole,
+  companyIdForOrg,
+  firstOrganizationForUser,
+  memberRole,
+  type TenantContext,
+  withTenant,
+} from "@loadline/db";
 import { sql } from "drizzle-orm";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
@@ -35,20 +42,25 @@ async function resolve(): Promise<RequestContext | null> {
   const session = await auth.api.getSession({ headers: h });
   if (!session) return null;
 
-  let orgId = session.session.activeOrganizationId ?? null;
-  if (!orgId) {
-    const orgs = await auth.api.listOrganizations({ headers: h });
-    const first = orgs[0];
-    if (!first) throw new AppError(403, "Your account is not a member of any company.");
-    orgId = first.id;
-    await auth.api.setActiveOrganization({ headers: h, body: { organizationId: orgId } });
-  }
+  // The organization comes from the session (set at sign-in). Sessions from
+  // before the sign-in hook fall back to the user's first membership; a page
+  // render cannot set cookies, so nothing is written here.
+  const orgId =
+    session.session.activeOrganizationId ?? (await firstOrganizationForUser(session.user.id));
+  if (!orgId) throw new AppError(403, "Your account is not a member of any company.");
 
-  const member = await auth.api.getActiveMember({ headers: h });
-  // Better Auth may store several roles comma-separated; Loadline gives one per membership.
-  const roleName = (member?.role ?? "").split(",")[0]?.trim() ?? "";
+  // The role for exactly this organization and this user, in one read, so a
+  // session switched between two reads cannot pair one company with another
+  // company's role. Loadline gives one role per membership and refuses more.
+  const stored = await memberRole(session.user.id, orgId);
+  if (stored === null) throw new AppError(403, "Your account is not a member of this company.");
+  const parts = stored
+    .split(",")
+    .map((r) => r.trim())
+    .filter(Boolean);
+  const roleName = parts.length === 1 ? (parts[0] as string) : "";
   if (!isRoleName(roleName))
-    throw new AppError(403, `Unknown role "${roleName}" on this membership.`);
+    throw new AppError(403, `Unsupported role "${stored}" on this membership.`);
 
   const companyId = await companyIdForOrg(orgId);
   if (!companyId)

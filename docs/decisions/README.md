@@ -15,3 +15,7 @@ One short record per choice that shaped Loadline, and for anything that departs 
 | [0009](0009-policies-apply-to-the-owner.md) | Policies apply to `loadline_owner` too, with two narrow exceptions |
 | [0010](0010-system-role.md) | A fifth database-level role, `system`, for service writes |
 | [0011](0011-auth-and-app-shell.md) | Better Auth set-up, role resolution and the app shell |
+| [0012](0012-outbox-and-notify-over-a-broker.md) | An outbox with `NOTIFY` over a message broker, and when to replace it |
+| [0013](0013-visibility-safe-cursor.md) | The visibility-safe cursor, and eager delivery above it |
+| [0014](0014-server-sent-events-over-websockets.md) | Server-sent events over WebSockets |
+| [0015](0015-self-hosting-over-serverless.md) | Self-hosting over serverless |

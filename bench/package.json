@@ -1,0 +1,20 @@
+{
+  "name": "@loadline/bench",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "sync-latency": "tsx src/sync-latency.ts",
+    "geo": "tsx src/geo.ts",
+    "readme": "tsx src/readme-tables.ts"
+  },
+  "dependencies": {
+    "@loadline/db": "workspace:*",
+    "eventsource": "5.1.5",
+    "zod": "4.6.7"
+  },
+  "devDependencies": {
+    "tsx": "4.23.15"
+  }
+}

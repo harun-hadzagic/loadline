@@ -49,7 +49,7 @@ export type RoleName = keyof typeof roles;
 export const ROLE_NAMES = Object.keys(roles) as RoleName[];
 
 export function isRoleName(value: string): value is RoleName {
-  return value in roles;
+  return Object.hasOwn(roles, value);
 }
 
 type Resource = keyof typeof statements;

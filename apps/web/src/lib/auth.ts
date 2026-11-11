@@ -18,6 +18,8 @@ export const auth = betterAuth({
     enabled: true,
     minPasswordLength: 8,
     autoSignIn: true,
+    // Accounts come from the seed or from an admin's invitation, never from an open form.
+    disableSignUp: true,
   },
   session: {
     expiresIn: 60 * 60 * 24 * 7,
@@ -25,7 +27,9 @@ export const auth = betterAuth({
     cookieCache: { enabled: true, maxAge: 60 },
   },
   advanced: {
-    database: { generateId: "uuid" },
+    // The auth schema is migrated by packages/db, not by Better Auth, and a
+    // process may start before the migrate step has run (Compose, Playwright).
+    database: { generateId: "uuid", validateSchema: false },
     useSecureCookies:
       process.env.NODE_ENV === "production" &&
       (process.env.BETTER_AUTH_URL ?? "").startsWith("https"),
@@ -51,6 +55,7 @@ export const auth = betterAuth({
       // Companies are created by the seed or by an owner; sign-up alone does not make one.
       allowUserToCreateOrganization: false,
       disableOrganizationDeletion: true,
+      requireEmailVerificationOnInvitation: true,
     }),
     nextCookies(),
   ],
