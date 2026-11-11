@@ -21,3 +21,5 @@ One short record per choice that shaped Loadline, and for anything that departs 
 | [0015](0015-self-hosting-over-serverless.md) | Self-hosting over serverless |
 | [0016](0016-positions-arrival-and-the-simulator.md) | Positions, automatic arrival and the simulator |
 | [0017](0017-load-intake.md) | Load intake: the regex baseline, the Claude extractor, and the eval |
+| [0018](0018-geospatial-queries-under-row-security.md) | Geospatial queries under row-level security: constants in, PostGIS left as shipped |
+| [0019](0019-rate-limits-and-response-headers.md) | Rate limits and response headers |

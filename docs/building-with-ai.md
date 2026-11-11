@@ -98,7 +98,18 @@ Held up: the lock, the company and audience filters on every path, payload conte
 - *The e2e token came from the wrong place.* The Playwright global setup loads the repository `.env` into the runner process, so a test that read `process.env.SIMULATOR_TOKEN` sent the local token, not the one the web server under test was started with. The test now takes it from the same config that starts the server.
 - *"0 moving" was read as a bug.* At 600× speed the three in-transit trucks had already reached both stops (six arrivals in the log) before the log was read; the assigned loads start tomorrow, so their trucks correctly stayed home.
 
-**What the reviewer caught.** _Appended after the Phase 4 review._
+**What the reviewer caught** (an Opus reviewer with a fresh context, briefed to break tenant isolation, the overlap constraints and the event replay). Everything below was fixed before Phase 6 started, with a test for each.
+
+- *A stale position report still ran the arrival check.* `app.record_position()` skipped the upsert for an older report but went on to test the arrival radius at the stale coordinates, so a delayed packet from the pickup could arrive a stop the truck had left. The function now returns early with `applied = false` (migration 0009).
+- *A future-dated report could arrive tomorrow's pickup today.* The arrival check used the report's own timestamp. Reports are clamped to `now()`.
+- *A late truck could never arrive.* The active assignment was found with `period @> recorded_at`; once the planned window closed, the arrival check found nothing, and late deliveries are the normal case. The rule is now "not ended, on an assigned or in-transit load, earliest first", and `app.load_window` can no longer produce an inverted range when every appointment is in the past.
+- *The hub dropped frames for a slow client.* A client whose socket buffer was full had frames skipped, which broke the promise that every frame id is a complete resume point. Such a client is now closed and reconnects from its last id; `hub-backlog.test.ts` proves the prefix it got has no holes.
+- *A failed drain could lose its snapshot.* The reader kept the newer snapshot even when the read threw, so the rows between the two were never re-read. The snapshot is kept only after a successful read.
+- *Nothing limited sign-in attempts, intake calls or position posts.* Decision 0019: a fixed-window limiter per route, and security headers that were simply missing.
+- *The service-token comparison leaked the token's length.* `timingSafeEqual` throws on different lengths; both sides are hashed first now.
+- *The sync benchmark counted early arrivals as strays.* An event could reach a client before the benchmark had registered the write it belonged to. Writes are registered before they are sent.
+- *The geo benchmark measured the index, not the product.* It ran as a superuser with a literal point. The reviewer asked for the app's exact query as the app role under row security. Doing that in Phase 6 showed the index was not used at all in the real query; see Phase 6 and decision 0018.
+- Smaller: the "commits between pages" hub test did not do what its name said (renamed to what it does), the five-nearest-trucks `LIMIT 5` had no direct test (it has one), and the arrival e2e asserted a response shape the service no longer returned.
 
 ## Phase 5 · Load intake
 
@@ -112,4 +123,30 @@ Held up: the lock, the company and audience filters on every path, payload conte
 - *Two drizzle instances.* Adding the intake package to the web app changed pnpm's hoisting, and the `sql` tag imported in the app no longer type-matched the `Tx` from the db package. The db package now re-exports `sql` and the app has no drizzle dependency of its own.
 - *Reviewer interference again.* Three cursor tests failed while the Phase 4 reviewer held transactions open on the shared test database; the same suite passed on a private database. Noted for the HANDOFF: the stream tests are sensitive to other sessions' open transactions on the same cluster, by design.
 
-**What the reviewer caught.** _Appended after the Phase 5 review._
+**What the reviewer caught.** All fixed in Phase 6 before the README was written; the baseline eval was re-run afterwards.
+
+- *The nonce did not protect the closing tag* (the one finding rated high). The document was wrapped as `<document nonce="…">` … `</document>`, so a pasted text containing `</document>` could end the document and speak as the user; only tags carrying the real nonce were stripped. The tag name now carries the nonce (`<document-N>` … `</document-N>`), every `<document` or `</document` in the text is escaped, and a test pastes both kinds of forged tag and checks exactly one opening and one closing tag survive.
+- *A city in the wrong state was substituted silently.* "Tulsa, TX" became Tulsa, OK with no warning. The draft now refuses a state mismatch, names the alternatives, and only assumes a state when the name is unambiguous and says so.
+- *Four-digit times lost their minutes.* The time token tried `\d{1,2}` before `\d{4}`, so "0830-1630" read as 08:00-16:00. Order swapped; a test pins it.
+- *Street numbers and print stamps became appointment times.* A time was any number within sixty characters of a date. A time must now follow the date on its line, or stand alone on the next line.
+- *A date with no time became a midnight appointment.* The extractors encode "date only" as T00:00 with no end, and the form widened that to 00:00-01:00 with a cheerful warning. The draft now leaves the window empty and says only a date was found.
+- *The baseline's score was presented as a figure.* It was tuned on the sixty documents it is scored on. The result file, the README and the baseline's own header now say it is an upper bound for those layouts.
+- *The live path hid failures.* A thrown client error aborted the whole eval with nothing written; there was no timeout; a refusal or a `max_tokens` stop was treated as prose. The extractor now reports the error and answers with the baseline, the SDK client has a 60-second timeout and two retries, refusals are not retried, truncation is retried once, and a run that stops early writes a result marked `partial`.
+- *The schema was stricter than the model's likely output.* A lower-case state code or seconds on a time failed the whole answer. Small lossless repairs run before validation; anything else still fails.
+- *The baseline could throw.* Its final `extractionSchema.parse` would raise on a malformed stop; it now drops the stop, and a hostile-input test feeds it junk.
+- *The year was hard-coded.* `2026` in the baseline and the prompt. Both take the year as a parameter; the app passes the current year, the eval passes the fixtures' year and records it.
+- *The fixtures' MC numbers were in a real range.* Rewritten into a range beyond anything issued.
+- Smaller: the e2e "20,000-character cap" test only exercised the textarea (the server action has a unit test now), the eval's injection figure only tracked the rate (it tracks every field the injections aim at), and the scorer's limits are written at the top of its file.
+
+## Phase 6 · Hardening, docs and release prep
+
+**What Claude Code wrote.** The fixes for the Phase 4 and 5 reviews listed above (migration 0009, the hub's backlog rule, rate limits and headers, the nonce-named wrapper, the baseline and draft fixes), the CI workflow with pinned actions, the GIF recording script, the README with its generated tables, decision records 0018 and 0019, `HANDOFF.md`, and this file.
+
+**Where the AI was wrong, and how it was caught.**
+
+- *The geospatial index was never used by the real query.* Phase 4's benchmark ran as a superuser with a literal point and reported a fast index scan. The Phase 4 reviewer asked for the app's exact SQL as the app role under row security; the first such run showed the same time with and without the index for both queries. Two causes, both in the plans: PostGIS functions are not `LEAKPROOF`, so row security keeps `ST_DWithin` out of any index condition, and the nearest query's `ORDER BY` referenced a joined column, so the planner sorted every row instead of walking the GiST index. The app's query now takes the pickup point and the window as constants and the benchmark reports the row-security case honestly, with the superuser figure beside it for scale (decision 0018). Had the reviewer not insisted, the README would have carried a number no dispatcher ever sees.
+- *The README table generator read fields that did not exist.* It expected `costUsdPerDocument` and `latencyMsP50` in the Claude result file; the eval writes `cost.perDocumentUsd` and `latency.p50Ms`. Nothing ran it against a Claude file, because none exists; caught by reading both files side by side. Had Harun run the live eval first, the generator would have thrown.
+- *A hot-reload loop looked like a broken sign-in.* After a config file was reformatted, the development server restarted itself and then reloaded the sign-in page about once a second; the first end-to-end run of Phase 6 timed out on sign-in. A headless probe of the page's console showed the loop; a clean restart cleared it. Not a product bug, but an hour it would have cost a human too.
+- *Plan labels mislabelled the slow case.* The benchmark named a plan after the first index it found anywhere in the tree, so a sequential scan of `stops` was reported as "Index Scan on assignments_driver_no_overlap" (an unrelated sub-plan). Fixed to name the scan that reached the geometry.
+
+**What the reviewer caught.** _Appended after the Phase 6 review._

@@ -72,7 +72,7 @@ export function Board({ initialLoads, drivers, trucks, canAssign }: Props) {
 
   const onDragEnd = (e: DragEndEvent) => {
     const load = loads.find((l) => l.id === e.active.id);
-    if (!load || load.status !== "open") return;
+    if (load?.status !== "open") return;
     if (e.over?.id === "column-assigned" && canAssign) setAssigning(load);
   };
 

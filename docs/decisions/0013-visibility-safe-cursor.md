@@ -25,6 +25,7 @@ So: the *resume cursor* is still exactly the spec's visibility-safe cursor; the 
 3. Every SSE frame's `id:` is `min(row cursor, horizon of the read that produced it)`; `hello` during a replay carries the client's own cursor. Resuming from any frame's id yields every later row.
 4. The next drain reads only rows from transactions that were in progress at the previous snapshot or newer than its `xmax`, so one long transaction does not make every drain re-read everything.
 5. "Can this client be replayed from its cursor?" is answered by a prune watermark (`app.outbox_watermark`, the highest cursor ever deleted), read after the replay, not by the oldest surviving row.
+6. A client that cannot keep up is closed, never skipped (added after the Phase 4 review). When a client's unsent backlog passes 2,000 frames, or a write to it fails, the hub closes it; the browser reconnects from its last frame id and replays the rest. Dropping frames to a live client would silently break the guarantee that every frame id is a complete resume point. `apps/web/test/db/hub-backlog.test.ts` replays 2,300 rows into a client that stops reading after 100 and checks that what it got is a gapless prefix and that a reconnect from its last id gets everything else.
 
 `apps/web/test/db/hub.test.ts` and `packages/db/test/db/cursor-committed.test.ts` exercise each rule against the real database.
 

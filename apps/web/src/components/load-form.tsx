@@ -277,6 +277,7 @@ export function LoadForm({ cities, load, initial, onSaved }: Props) {
         </div>
         {draft.stops.map((s, i) => (
           <div
+            // biome-ignore lint/suspicious/noArrayIndexKey: a stop is its position (seq); there is no other identity before it is saved
             key={`${i}-${s.kind}`}
             className="grid gap-3 rounded-md border p-3 sm:grid-cols-6"
             data-testid={`stop-${i}`}
