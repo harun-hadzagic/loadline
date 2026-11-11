@@ -99,3 +99,17 @@ Held up: the lock, the company and audience filters on every path, payload conte
 - *"0 moving" was read as a bug.* At 600× speed the three in-transit trucks had already reached both stops (six arrivals in the log) before the log was read; the assigned loads start tomorrow, so their trucks correctly stayed home.
 
 **What the reviewer caught.** _Appended after the Phase 4 review._
+
+## Phase 5 · Load intake
+
+**What Claude Code wrote.** The extraction schema and its JSON-schema twin, the regex baseline, the Claude extractor and its fake-client tests, the scorer and eval runner, the intake panel and the draft mapping, and the e2e test. A Sonnet subagent wrote the 60 fixtures and the check script from a brief; the brief fixed the schema, the layout mix, the date formats, the eight injection slots and the synthetic-names rule.
+
+**Where the AI was wrong, and how it was caught.**
+
+- *The baseline obeyed an injection.* Its total-rate pattern accepted "carrier pay", so fixture 023's note "the carrier pays $0" became the rate. The injection test caught it; labelled totals only now.
+- *An injection marker missed fixture 015.* The marker regex anchored `SYSTEM:` to a line start; the fixture has it mid-line. Caught by the fixture-count test.
+- *A single appointment time made an empty window.* The extractor returns start = end for "Appointment: 0800"; the form's schema (and the database's range check) refuse a zero-length window, so the first intake e2e could not create the load. The draft mapping now widens it to one hour and says so.
+- *Two drizzle instances.* Adding the intake package to the web app changed pnpm's hoisting, and the `sql` tag imported in the app no longer type-matched the `Tx` from the db package. The db package now re-exports `sql` and the app has no drizzle dependency of its own.
+- *Reviewer interference again.* Three cursor tests failed while the Phase 4 reviewer held transactions open on the shared test database; the same suite passed on a private database. Noted for the HANDOFF: the stream tests are sensitive to other sessions' open transactions on the same cluster, by design.
+
+**What the reviewer caught.** _Appended after the Phase 5 review._

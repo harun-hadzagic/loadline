@@ -3,10 +3,10 @@ import {
   companyIdForOrg,
   firstOrganizationForUser,
   memberRole,
+  sql,
   type TenantContext,
   withTenant,
 } from "@loadline/db";
-import { sql } from "drizzle-orm";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { cache } from "react";

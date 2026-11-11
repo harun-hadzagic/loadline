@@ -91,3 +91,21 @@ One entry per phase: what was built, and the evidence it works. Figures here are
 - `pnpm lint`, `pnpm typecheck`: clean.
 
 **Reviewer**: see `docs/building-with-ai.md`.
+
+## Phase 5 · Load intake — done 2026-11-11
+
+**Built**
+
+- `packages/intake`: one Zod schema with a matching JSON Schema (`src/schema.ts`), 60 synthetic rate confirmations with expected answers in `fixtures/` (8 with prompt-injection attempts; a Sonnet subagent wrote them from a brief, `scripts/check-fixtures.ts` validates them), the regex baseline (`src/baseline.ts`), the Claude extractor (`src/claude.ts`: `claude-haiku-5-5`, `output_config.format` with the JSON schema, a random nonce around the document, data-not-instructions prompt, Zod re-validation, one retry, baseline fallback with a notice, cost from `usage` and the 10 November 2026 price table), the scorer (`src/eval/score.ts`) and the eval runner (`pnpm eval:intake`, `--extractor claude --live` with a key check, a printed estimate and a $1 hard cap). Decision 0017.
+- `/loads/new`: paste, Extract, review the pre-filled form (cities matched against the bundled table, single appointment times widened to one hour with a warning, other references in the notes), Create. Says which extractor answered; uses the baseline when no key is set. 20,000-character cap in the box and in the server action.
+- Hand-written Claude response fixtures in `packages/intake/fixtures-claude/` (labelled `.hand-written.json`): a valid answer, prose, a schema violation.
+
+**Evidence**
+
+- `bench/results/intake-baseline.json` (`pnpm eval:intake`): regex baseline over 60 documents, whole-document 33.3%, field 84.6% (loadReference 100%, rateUsd 100%, equipment 100%, commodity 93.3%, brokerName 90%, weightLbs 85%, otherReferences 55%, stops 53.3%); injection: 3 of 8 fully correct, rate untouched in all 8. Claude: not measured in this build (no key, no calls).
+- `pnpm --filter @loadline/intake test`: `4 files, 15 tests` (fixtures and injection flags, date and window parsing, baseline floor and injection resistance, the Claude extractor through the fake client: valid, retry, fallback, forged-tag stripping; JSON-schema parity; no static SDK import, no `fetch`, no key in the test environment).
+- `pnpm --filter @loadline/e2e test`: `13 passed`, including paste → pre-filled form → create for fixture 001 and the 20,000-character cap.
+- No test, script, page or build calls the Anthropic API: `liveMessagesClient()` is the only place the SDK is imported, lazily, and it throws without a key.
+- `pnpm test` elsewhere unchanged: db `132`, web `67`, simulator `4`.
+
+**Reviewer**: see `docs/building-with-ai.md`.

@@ -1,0 +1,11 @@
+{
+  "_note": "Hand-written stand-in for a Claude response to fixtures/001-email-st-louis-to-tulsa.txt. No API was called to produce this file.",
+  "content": [
+    {
+      "type": "text",
+      "text": "{\"brokerName\":\"Northwind Freight Brokerage LLC\",\"loadReference\":\"NW-293350\",\"stops\":[{\"kind\":\"pickup\",\"facilityName\":\"Silverleaf Poultry\",\"city\":\"St. Louis\",\"state\":\"MO\",\"appointmentStart\":\"2026-11-20T08:00\",\"appointmentEnd\":\"2026-11-20T08:00\"},{\"kind\":\"delivery\",\"facilityName\":\"Sterling Plastics Inc\",\"city\":\"Tulsa\",\"state\":\"OK\",\"appointmentStart\":\"2026-11-22T10:00\",\"appointmentEnd\":\"2026-11-22T16:00\"}],\"rateUsd\":2575,\"weightLbs\":41000,\"commodity\":\"Building materials\",\"equipment\":\"flatbed\",\"otherReferences\":[{\"type\":\"pickup number\",\"value\":\"PU77589\"},{\"type\":\"BOL\",\"value\":\"BOL92937\"}]}"
+    }
+  ],
+  "usage": { "input_tokens": 1180, "output_tokens": 240 },
+  "stop_reason": "end_turn"
+}

@@ -1,0 +1,11 @@
+{
+  "_note": "Hand-written stand-in for a Claude response that is JSON but breaks the schema (rate as text, bad time format, unknown equipment). No API was called to produce this file.",
+  "content": [
+    {
+      "type": "text",
+      "text": "{\"brokerName\":\"Northwind Freight Brokerage LLC\",\"loadReference\":\"NW-293350\",\"stops\":[{\"kind\":\"pickup\",\"facilityName\":\"Silverleaf Poultry\",\"city\":\"St. Louis\",\"state\":\"MO\",\"appointmentStart\":\"Nov 20 0800\",\"appointmentEnd\":null}],\"rateUsd\":\"$2,575.00\",\"weightLbs\":41000,\"commodity\":\"Building materials\",\"equipment\":\"48' Flatbed\",\"otherReferences\":[]}"
+    }
+  ],
+  "usage": { "input_tokens": 1180, "output_tokens": 150 },
+  "stop_reason": "end_turn"
+}

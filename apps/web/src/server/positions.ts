@@ -1,5 +1,4 @@
-import { type AppRole, emit, withTenant } from "@loadline/db";
-import { sql } from "drizzle-orm";
+import { type AppRole, emit, sql, withTenant } from "@loadline/db";
 import { z } from "zod";
 import type { RequestContext } from "./context";
 import { tenant } from "./context";

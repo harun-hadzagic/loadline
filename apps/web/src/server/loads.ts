@@ -1,5 +1,4 @@
-import { emit, type Tx, withTenant } from "@loadline/db";
-import { sql } from "drizzle-orm";
+import { emit, sql, type Tx, withTenant } from "@loadline/db";
 import type { AssignInput, LoadInput, LoadPatch, StopInput } from "@/lib/schemas";
 import { assertCan } from "./authorize";
 import type { RequestContext } from "./context";

@@ -1,3 +1,5 @@
+// The one drizzle instance: apps import the sql tag from here, so types line up with Tx.
+export { sql } from "drizzle-orm";
 export { dbEnv, loadDotEnv, repoRoot, requireEnv, withCredentials } from "./env.ts";
 export * from "./errors.ts";
 export { emit, type OutboxEvent } from "./events.ts";

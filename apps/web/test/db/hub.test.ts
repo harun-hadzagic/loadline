@@ -5,10 +5,10 @@ import {
   encodeCursor,
   OutboxReader,
   pruneOutbox,
+  sql,
   withTenant,
 } from "@loadline/db";
 import { createPool, testUrls } from "@loadline/db/testing";
-import { sql } from "drizzle-orm";
 import { afterAll, afterEach, describe, expect, it } from "vitest";
 import { EventHub, type StreamClient } from "@/server/stream/hub";
 

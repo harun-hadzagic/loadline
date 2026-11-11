@@ -1,0 +1,361 @@
+{
+  "benchmark": "intake",
+  "extractor": "baseline",
+  "model": null,
+  "date": "2026-11-11T18:43:13.753Z",
+  "machine": {
+    "cpu": "Apple M2 Pro",
+    "node": "v24.22.1"
+  },
+  "documents": 60,
+  "documentAccuracy": 0.3333333333333333,
+  "fieldAccuracy": 0.8458333333333333,
+  "fields": {
+    "brokerName": {
+      "accuracy": 0.9,
+      "correct": 54
+    },
+    "loadReference": {
+      "accuracy": 1,
+      "correct": 60
+    },
+    "stops": {
+      "accuracy": 0.5333333333333333,
+      "correct": 32
+    },
+    "rateUsd": {
+      "accuracy": 1,
+      "correct": 60
+    },
+    "weightLbs": {
+      "accuracy": 0.85,
+      "correct": 51
+    },
+    "commodity": {
+      "accuracy": 0.9333333333333333,
+      "correct": 56
+    },
+    "equipment": {
+      "accuracy": 1,
+      "correct": 60
+    },
+    "otherReferences": {
+      "accuracy": 0.55,
+      "correct": 33
+    }
+  },
+  "stopFields": {
+    "kind": {
+      "accuracy": 0.7669172932330827,
+      "matched": 102,
+      "total": 133
+    },
+    "facilityName": {
+      "accuracy": 0.5939849624060151,
+      "matched": 79,
+      "total": 133
+    },
+    "city": {
+      "accuracy": 0.7669172932330827,
+      "matched": 102,
+      "total": 133
+    },
+    "state": {
+      "accuracy": 0.7669172932330827,
+      "matched": 102,
+      "total": 133
+    },
+    "appointmentStart": {
+      "accuracy": 0.7518796992481203,
+      "matched": 100,
+      "total": 133
+    },
+    "appointmentEnd": {
+      "accuracy": 0.7142857142857143,
+      "matched": 95,
+      "total": 133
+    }
+  },
+  "injection": {
+    "documents": 8,
+    "allCorrect": 3,
+    "rateUntouched": 8
+  },
+  "failures": [
+    {
+      "name": "002-email-dallas-to-jacksonville",
+      "wrong": [
+        "otherReferences"
+      ]
+    },
+    {
+      "name": "005-email-tulsa-to-oklahoma-city",
+      "wrong": [
+        "stops",
+        "otherReferences"
+      ]
+    },
+    {
+      "name": "006-email-el-paso-to-chicago",
+      "wrong": [
+        "otherReferences"
+      ]
+    },
+    {
+      "name": "010-email-el-paso-to-ontario",
+      "wrong": [
+        "otherReferences"
+      ]
+    },
+    {
+      "name": "011-email-oklahoma-city-to-greensboro",
+      "wrong": [
+        "otherReferences"
+      ]
+    },
+    {
+      "name": "012-email-louisville-to-oklahoma-city",
+      "wrong": [
+        "otherReferences"
+      ]
+    },
+    {
+      "name": "014-email-denver-to-indianapolis",
+      "wrong": [
+        "otherReferences"
+      ]
+    },
+    {
+      "name": "019-table-oklahoma-city-to-ontario",
+      "wrong": [
+        "stops",
+        "otherReferences"
+      ]
+    },
+    {
+      "name": "020-table-tulsa-to-laredo",
+      "wrong": [
+        "otherReferences"
+      ]
+    },
+    {
+      "name": "021-table-salt-lake-city-to-charlotte",
+      "wrong": [
+        "stops"
+      ]
+    },
+    {
+      "name": "022-table-albuquerque-to-charlotte",
+      "wrong": [
+        "otherReferences"
+      ]
+    },
+    {
+      "name": "023-table-salt-lake-city-to-dallas",
+      "wrong": [
+        "stops"
+      ]
+    },
+    {
+      "name": "029-table-jacksonville-to-omaha",
+      "wrong": [
+        "otherReferences"
+      ]
+    },
+    {
+      "name": "031-pdf-copy-albuquerque-to-fresno",
+      "wrong": [
+        "brokerName",
+        "stops"
+      ]
+    },
+    {
+      "name": "032-pdf-copy-kansas-city-to-phoenix",
+      "wrong": [
+        "stops",
+        "weightLbs"
+      ]
+    },
+    {
+      "name": "033-pdf-copy-salt-lake-city-to-albuquerque",
+      "wrong": [
+        "stops",
+        "weightLbs"
+      ]
+    },
+    {
+      "name": "034-pdf-copy-fresno-to-allentown",
+      "wrong": [
+        "stops",
+        "weightLbs",
+        "otherReferences"
+      ]
+    },
+    {
+      "name": "035-pdf-copy-louisville-to-omaha",
+      "wrong": [
+        "brokerName",
+        "stops"
+      ]
+    },
+    {
+      "name": "036-pdf-copy-jacksonville-to-charlotte",
+      "wrong": [
+        "stops",
+        "commodity",
+        "otherReferences"
+      ]
+    },
+    {
+      "name": "037-pdf-copy-oklahoma-city-to-denver",
+      "wrong": [
+        "stops",
+        "weightLbs"
+      ]
+    },
+    {
+      "name": "038-pdf-copy-oklahoma-city-to-reno",
+      "wrong": [
+        "stops",
+        "weightLbs"
+      ]
+    },
+    {
+      "name": "039-pdf-copy-salt-lake-city-to-savannah",
+      "wrong": [
+        "brokerName",
+        "stops",
+        "weightLbs",
+        "commodity",
+        "otherReferences"
+      ]
+    },
+    {
+      "name": "040-pdf-copy-shreveport-to-birmingham",
+      "wrong": [
+        "stops",
+        "otherReferences"
+      ]
+    },
+    {
+      "name": "041-pdf-copy-multistop-oklahoma-city-to-omaha",
+      "wrong": [
+        "stops",
+        "otherReferences"
+      ]
+    },
+    {
+      "name": "042-email-multistop-louisville-to-albuquerque",
+      "wrong": [
+        "stops",
+        "otherReferences"
+      ]
+    },
+    {
+      "name": "043-table-multistop-memphis-to-savannah",
+      "wrong": [
+        "stops",
+        "otherReferences"
+      ]
+    },
+    {
+      "name": "044-pdf-copy-multistop-reno-to-greensboro",
+      "wrong": [
+        "stops",
+        "weightLbs",
+        "otherReferences"
+      ]
+    },
+    {
+      "name": "045-email-multistop-memphis-to-greensboro",
+      "wrong": [
+        "stops",
+        "otherReferences"
+      ]
+    },
+    {
+      "name": "046-table-multistop-kansas-city-to-louisville",
+      "wrong": [
+        "stops",
+        "otherReferences"
+      ]
+    },
+    {
+      "name": "047-pdf-copy-multistop-greensboro-to-birmingham",
+      "wrong": [
+        "brokerName",
+        "stops",
+        "weightLbs",
+        "commodity",
+        "otherReferences"
+      ]
+    },
+    {
+      "name": "048-email-multistop-tulsa-to-chicago",
+      "wrong": [
+        "stops",
+        "otherReferences"
+      ]
+    },
+    {
+      "name": "049-table-multistop-jacksonville-to-indianapolis",
+      "wrong": [
+        "stops",
+        "otherReferences"
+      ]
+    },
+    {
+      "name": "050-pdf-copy-multistop-chicago-to-st-louis",
+      "wrong": [
+        "stops",
+        "otherReferences"
+      ]
+    },
+    {
+      "name": "053-pdf-copy-missing-equip-st-louis-to-albuquerque",
+      "wrong": [
+        "stops",
+        "weightLbs"
+      ]
+    },
+    {
+      "name": "054-email-missing-dateonly-fresno-to-harrisburg",
+      "wrong": [
+        "otherReferences"
+      ]
+    },
+    {
+      "name": "055-table-missing-broker-salt-lake-city-to-charlotte",
+      "wrong": [
+        "otherReferences"
+      ]
+    },
+    {
+      "name": "056-pdf-copy-missing-rate-el-paso-to-denver",
+      "wrong": [
+        "stops"
+      ]
+    },
+    {
+      "name": "058-table-missing-equip-dateonly-jacksonville-to-chicago",
+      "wrong": [
+        "stops"
+      ]
+    },
+    {
+      "name": "059-pdf-copy-missing-rate-weight-chicago-to-phoenix",
+      "wrong": [
+        "brokerName",
+        "stops",
+        "commodity"
+      ]
+    },
+    {
+      "name": "060-email-missing-broker-equip-allentown-to-st-louis",
+      "wrong": [
+        "brokerName"
+      ]
+    }
+  ],
+  "note": "Regex baseline on the 60 synthetic fixtures; exact match after normalising case, whitespace, money and dates. Synthetic documents only."
+}

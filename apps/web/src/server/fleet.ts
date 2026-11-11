@@ -1,5 +1,4 @@
-import { emit, withTenant } from "@loadline/db";
-import { sql } from "drizzle-orm";
+import { emit, sql, withTenant } from "@loadline/db";
 import type { DriverInput, TruckInput } from "@/lib/schemas";
 import { assertCan } from "./authorize";
 import type { RequestContext } from "./context";

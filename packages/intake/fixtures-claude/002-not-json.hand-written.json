@@ -1,0 +1,11 @@
+{
+  "_note": "Hand-written stand-in for a malformed Claude response: prose instead of JSON. No API was called to produce this file.",
+  "content": [
+    {
+      "type": "text",
+      "text": "Here is the extracted load: broker Northwind Freight Brokerage LLC, order NW-293350, rate $2,575.00."
+    }
+  ],
+  "usage": { "input_tokens": 1180, "output_tokens": 40 },
+  "stop_reason": "end_turn"
+}

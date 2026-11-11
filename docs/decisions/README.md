@@ -20,3 +20,4 @@ One short record per choice that shaped Loadline, and for anything that departs 
 | [0014](0014-server-sent-events-over-websockets.md) | Server-sent events over WebSockets |
 | [0015](0015-self-hosting-over-serverless.md) | Self-hosting over serverless |
 | [0016](0016-positions-arrival-and-the-simulator.md) | Positions, automatic arrival and the simulator |
+| [0017](0017-load-intake.md) | Load intake: the regex baseline, the Claude extractor, and the eval |
