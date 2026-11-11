@@ -2,6 +2,17 @@ import type { ExtractedStop, Extraction } from "../schema.ts";
 
 // Scoring: exact match after normalising case, whitespace, money and dates.
 // Per field, over all documents, plus whole-document accuracy.
+//
+// What the numbers do and do not say:
+// - "stops" is one field: the whole list must match, in order, every
+//   sub-field. One wrong minute on one stop fails the field. The stopFields
+//   breakdown is only counted when the stop counts agree; a missing or extra
+//   stop counts every sub-field of that document as a miss.
+// - Field accuracy is the unweighted mean of the eight per-field accuracies,
+//   so a rare field weighs as much as the rate.
+// - Text fields are compared after lower-casing and stripping punctuation;
+//   "Sterling Plastics Inc." and "sterling plastics inc" match, a different
+//   spelling does not. There is no partial credit.
 
 export const FIELDS = [
   "brokerName",

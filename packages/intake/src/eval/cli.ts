@@ -48,6 +48,7 @@ const result = await runEval({
 });
 const file = writeResult(result);
 console.log("");
+if (result.partial) console.log(`PARTIAL RESULT: ${result.note}`);
 console.log(
   `${result.extractor}: whole-document ${(result.documentAccuracy * 100).toFixed(1)}%, field ${(result.fieldAccuracy * 100).toFixed(1)}% over ${result.documents} documents`,
 );
@@ -58,6 +59,6 @@ console.log(
 );
 if (result.cost)
   console.log(
-    `  cost $${result.cost.totalUsd.toFixed(4)} ($${result.cost.perDocumentUsd.toFixed(5)}/doc), latency p50 ${result.latency?.p50Ms} ms`,
+    `  cost $${result.cost.totalUsd.toFixed(4)} ($${result.cost.perDocumentUsd.toFixed(5)}/doc), latency p50 ${result.latency?.p50Ms} ms, baseline fallbacks ${result.fallbacks?.total ?? 0}`,
   );
 console.log(`wrote ${file}`);

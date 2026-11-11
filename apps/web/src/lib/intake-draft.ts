@@ -8,19 +8,41 @@ export interface DraftFromExtraction {
   warnings: string[];
 }
 
-function matchCity(
+/**
+ * Find the extracted city in the city table. A city with a state must match
+ * both; a same-named city in another state is never substituted silently.
+ * Without a state, only an unambiguous name matches.
+ */
+export function matchCity(
   cities: CityOption[],
   city: string | null,
   state: string | null,
-): CityOption | null {
-  if (!city) return null;
-  const c = city.trim().toLowerCase();
-  const s = state?.trim().toUpperCase() ?? null;
-  return (
-    cities.find((x) => x.name.toLowerCase() === c && (!s || x.state === s)) ??
-    cities.find((x) => x.name.toLowerCase() === c) ??
-    null
-  );
+): { city: CityOption | null; note: string | null } {
+  if (!city) return { city: null, note: null };
+  const wanted = city.trim().toLowerCase();
+  const s = state?.trim().toUpperCase() || null;
+  const byName = cities.filter((x) => x.name.toLowerCase() === wanted);
+  const label = (x: CityOption) => `${x.name}, ${x.state}`;
+  if (s) {
+    const exact = byName.find((x) => x.state === s);
+    if (exact) return { city: exact, note: null };
+    return {
+      city: null,
+      note: byName.length
+        ? `"${city}, ${s}" is not in the city table (it has ${byName.map(label).join(" and ")}); pick one.`
+        : null,
+    };
+  }
+  if (byName.length === 1) {
+    const only = byName[0] as CityOption;
+    return { city: only, note: `no state was given; ${label(only)} was assumed.` };
+  }
+  if (byName.length > 1)
+    return {
+      city: null,
+      note: `"${city}" has no state and matches ${byName.map(label).join(", ")}; pick one.`,
+    };
+  return { city: null, note: null };
 }
 
 /** "YYYY-MM-DDTHH:mm" plus one hour, as wall-clock arithmetic (no zone involved). */
@@ -47,24 +69,32 @@ function localValue(iso: string | null, fallback: string): string {
 export function draftFromExtraction(x: Extraction, cities: CityOption[]): DraftFromExtraction {
   const warnings: string[] = [];
   const stops: StopDraft[] = x.stops.map((s, i) => {
-    const city = matchCity(cities, s.city, s.state);
-    if (!city)
+    const where = `Stop ${i + 1}`;
+    const match = matchCity(cities, s.city, s.state);
+    if (!match.city)
       warnings.push(
-        `Stop ${i + 1}: "${[s.city, s.state].filter(Boolean).join(", ") || "no city"}" is not in the city table; pick one.`,
+        `${where}: ${match.note ?? `"${[s.city, s.state].filter(Boolean).join(", ") || "no city"}" is not in the city table; pick one.`}`,
       );
-    const start = localValue(s.appointmentStart, "");
+    else if (match.note) warnings.push(`${where}: ${match.note}`);
+    let start = localValue(s.appointmentStart, "");
     let end = localValue(s.appointmentEnd, start);
-    if (!start) warnings.push(`Stop ${i + 1}: no appointment time was found.`);
-    if (start && end === start) {
+    if (!start) warnings.push(`${where}: no appointment time was found.`);
+    else if (start.endsWith("T00:00") && s.appointmentEnd === null) {
+      // The extractors encode "a date, no time" as T00:00 with no end. That is
+      // not an appointment at midnight: leave the window for the dispatcher.
+      warnings.push(
+        `${where}: only a date (${start.slice(0, 10)}) was found, no time; enter the appointment window.`,
+      );
+      start = "";
+      end = "";
+    } else if (end === start) {
       // A single appointment time: the form needs a window, so assume one hour.
       end = plusOneHour(start);
-      warnings.push(
-        `Stop ${i + 1}: one appointment time was given; a one-hour window was assumed.`,
-      );
+      warnings.push(`${where}: one appointment time was given; a one-hour window was assumed.`);
     }
     return {
       kind: s.kind,
-      cityId: city ? String(city.id) : "",
+      cityId: match.city ? String(match.city.id) : "",
       facilityName: s.facilityName ?? "",
       appointmentStart: start,
       appointmentEnd: end,

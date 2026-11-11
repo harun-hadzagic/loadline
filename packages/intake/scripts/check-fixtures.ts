@@ -25,7 +25,7 @@ for (const t of txts) {
   let json: unknown;
   try {
     json = JSON.parse(readFileSync(join(dir, `${base}.expected.json`), "utf8"));
-  } catch (e) {
+  } catch (_e) {
     problems.push(`${base}: missing or unreadable expected json`);
     continue;
   }

@@ -25,7 +25,13 @@ test("paste a rate confirmation, review the pre-filled form, create the load", a
   await expect(page.getByLabel("Rate (USD)")).toHaveValue("2575");
   await expect(page.getByLabel("Weight (lb)")).toHaveValue("41000");
   await expect(page.getByLabel("Equipment")).toHaveValue("flatbed");
-  await expect(page.getByTestId("stop-0").getByLabel("City")).toHaveValue(/\d+/);
+  // The city was matched by name and state, not by name alone.
+  await expect(page.getByTestId("stop-0").getByLabel("City").locator("option:checked")).toHaveText(
+    "St. Louis, MO",
+  );
+  await expect(page.getByTestId("stop-1").getByLabel("City").locator("option:checked")).toHaveText(
+    "Tulsa, OK",
+  );
   await expect(page.getByTestId("stop-0").getByLabel("Window start (local)")).toHaveValue(
     "2026-11-20T08:00",
   );
@@ -46,13 +52,13 @@ test("paste a rate confirmation, review the pre-filled form, create the load", a
   await expect(page.getByText("Building materials")).toBeVisible();
 });
 
-test("the paste box refuses more than 20,000 characters", async ({ page }) => {
+test("the paste box caps input at 20,000 characters (the server's own cap is unit-tested)", async ({
+  page,
+}) => {
   await signIn(page, USERS.acmeDispatcher1);
-  const res = await page.request.post("/api/loads", { data: {} }); // sanity: API alive
-  expect([400, 401, 422]).toContain(res.status());
   await page.goto("/loads/new");
   const huge = "x".repeat(20_001);
-  // The textarea caps input; the server action caps it too.
+  // The textarea's maxLength; apps/web/test/unit/intake.test.ts covers the server action's limit.
   await page.getByTestId("intake-text").fill(huge);
   const value = await page.getByTestId("intake-text").inputValue();
   expect(value.length).toBeLessThanOrEqual(20_000);

@@ -2,14 +2,17 @@ import {
   EMPTY_EXTRACTION,
   type ExtractedStop,
   type Extraction,
+  extractedStopSchema,
   extractionSchema,
 } from "./schema.ts";
 
 /**
  * The regex baseline. No API key, no network: a set of patterns tuned on the
  * layouts in fixtures/. It exists so the new-load page works without a key
- * and so the Claude extractor has a measured bar to clear. It is expected to
- * be wrong often on the awkward layouts; the eval says how often.
+ * and so the Claude extractor has a measured bar to clear. Because it was
+ * tuned on the same sixty documents the eval scores, its score is an upper
+ * bound for those layouts, not a general figure; on a layout it has not seen
+ * it is expected to be wrong often.
  */
 
 const MONTHS: Record<string, number> = {
@@ -27,7 +30,14 @@ const MONTHS: Record<string, number> = {
   nov: 11,
   dec: 12,
 };
-const DEFAULT_YEAR = 2026;
+/** Documents often omit the year; callers pass the one to assume (the app: this year). */
+const thisYear = () => new Date().getFullYear();
+
+/** True for a real calendar date (no 13th month, no 31 November). */
+function validDate(y: number, m: number, d: number): boolean {
+  const t = new Date(Date.UTC(y, m - 1, d));
+  return t.getUTCFullYear() === y && t.getUTCMonth() === m - 1 && t.getUTCDate() === d;
+}
 const STATES = new Set(
   "AL AK AZ AR CA CO CT DE DC FL GA HI ID IL IN IA KS KY LA ME MD MA MI MN MS MO MT NE NV NH NJ NM NY NC ND OH OK OR PA RI SC SD TN TX UT VT VA WA WV WI WY".split(
     " ",
@@ -37,7 +47,10 @@ const STATES = new Set(
 const pad = (n: number) => String(n).padStart(2, "0");
 
 /** Parse a date in any of the fixture formats to YYYY-MM-DD, or null. */
-export function parseDate(text: string): { date: string; end: number } | null {
+export function parseDate(
+  text: string,
+  defaultYear: number = thisYear(),
+): { date: string; end: number } | null {
   const iso = /(\d{4})-(\d{2})-(\d{2})/.exec(text);
   const us = /\b(\d{1,2})[/-](\d{1,2})(?:[/-](\d{2,4}))?\b/.exec(text);
   const mon =
@@ -45,17 +58,17 @@ export function parseDate(text: string): { date: string; end: number } | null {
       text,
     );
   const candidates: Array<{ idx: number; date: string; end: number }> = [];
-  if (iso)
+  if (iso && validDate(Number(iso[1]), Number(iso[2]), Number(iso[3])))
     candidates.push({
       idx: iso.index,
       date: `${iso[1]}-${iso[2]}-${iso[3]}`,
       end: iso.index + iso[0].length,
     });
   if (us) {
-    const y = us[3] ? (us[3].length === 2 ? 2000 + Number(us[3]) : Number(us[3])) : DEFAULT_YEAR;
+    const y = us[3] ? (us[3].length === 2 ? 2000 + Number(us[3]) : Number(us[3])) : defaultYear;
     const m = Number(us[1]);
     const d = Number(us[2]);
-    if (m >= 1 && m <= 12 && d >= 1 && d <= 31)
+    if (validDate(y, m, d))
       candidates.push({
         idx: us.index,
         date: `${y}-${pad(m)}-${pad(d)}`,
@@ -66,8 +79,8 @@ export function parseDate(text: string): { date: string; end: number } | null {
     const m =
       MONTHS[(mon[1] as string).toLowerCase().slice(0, 4)] ??
       MONTHS[(mon[1] as string).toLowerCase().slice(0, 3)];
-    const y = mon[3] ? Number(mon[3]) : DEFAULT_YEAR;
-    if (m)
+    const y = mon[3] ? Number(mon[3]) : defaultYear;
+    if (m && validDate(y, m, Number(mon[2])))
       candidates.push({
         idx: mon.index,
         date: `${y}-${pad(m)}-${pad(Number(mon[2]))}`,
@@ -97,34 +110,53 @@ function parseTime(raw: string): string | null {
   return `${pad(h)}:${pad(min)}`;
 }
 
-const TIME_TOKEN = String.raw`\d{1,2}(?::\d{2})?\s*(?:am|pm|a\.m\.|p\.m\.)?|\d{4}`;
+// "0830" must be tried before "08", or "0830-1630" reads as 08:00-16:00.
+const TIME_TOKEN = String.raw`\d{4}(?!\d)|\d{1,2}(?::\d{2})?\s*(?:am|pm|a\.m\.|p\.m\.)?`;
+// Both anchored at the start of what follows the date: a time is "right
+// after the date", never a number found somewhere later in the text, so a
+// street number or a print stamp two lines down cannot become an appointment.
+const LEAD = String.raw`^\s*(?:@|at|appt\.?|appointment:?|fcfs)?\s*`;
 const TIME_RANGE = new RegExp(
-  String.raw`(${TIME_TOKEN})\s*(?:-|–|to|thru|through)\s*(${TIME_TOKEN})`,
+  String.raw`${LEAD}(${TIME_TOKEN})\s*(?:-|–|to|thru|through)\s*(${TIME_TOKEN})(?![\d:])`,
   "i",
 );
-const TIME_SINGLE = new RegExp(
-  String.raw`(?:@|at|appt\.?|appointment:?)?\s*(${TIME_TOKEN})(?![\d:/-])`,
-  "i",
-);
+const TIME_SINGLE = new RegExp(String.raw`${LEAD}(${TIME_TOKEN})(?![\d:/-])`, "i");
 
-/** Parse an appointment window following a date: "0800", "10:00-16:00", "FCFS 0600-1400", "8:00 AM to 4:00 PM". */
-export function parseWindow(text: string): { start: string | null; end: string | null } {
-  const d = parseDate(text);
+/**
+ * Parse an appointment window following a date: "0800", "10:00-16:00",
+ * "FCFS 0600-1400", "8:00 AM to 4:00 PM". The time must follow the date on
+ * the same line, or stand alone on the next line when the date ends its
+ * line (the PDF layout). A date with no time is T00:00 with no end.
+ */
+export function parseWindow(
+  text: string,
+  defaultYear: number = thisYear(),
+): { start: string | null; end: string | null } {
+  const d = parseDate(text, defaultYear);
   if (!d) return { start: null, end: null };
-  const rest = text
-    .slice(d.end)
-    .replace(/^\s*(?:@|at|,)?\s*/i, "")
-    .slice(0, 60);
-  const range = TIME_RANGE.exec(rest);
-  if (range) {
-    const a = parseTime(range[1] as string);
-    const b = parseTime(range[2] as string);
-    if (a && b) return { start: `${d.date}T${a}`, end: `${d.date}T${b}` };
-  }
-  const single = TIME_SINGLE.exec(rest.replace(/^fcfs\s*/i, ""));
-  if (single) {
-    const t = parseTime(single[1] as string);
-    if (t) return { start: `${d.date}T${t}`, end: `${d.date}T${t}` };
+  const after = text.slice(d.end);
+  const sameLine = (after.split("\n")[0] ?? "").replace(/^\s*(?:@|at|,)?\s*/i, "").slice(0, 60);
+  const nextLine = (after.split("\n")[1] ?? "").trim().slice(0, 60);
+  // The next line counts only when it is nothing but a time or a time range.
+  const wholeLineTime = new RegExp(
+    String.raw`${LEAD}(?:${TIME_TOKEN})(?:\s*(?:-|–|to|thru|through)\s*(?:${TIME_TOKEN}))?\s*\.?$`,
+    "i",
+  );
+  const candidates = /\S/.test(sameLine)
+    ? [sameLine]
+    : [nextLine].filter((l) => wholeLineTime.test(l));
+  for (const rest of candidates) {
+    const range = TIME_RANGE.exec(rest);
+    if (range) {
+      const a = parseTime(range[1] as string);
+      const b = parseTime(range[2] as string);
+      if (a && b) return { start: `${d.date}T${a}`, end: `${d.date}T${b}` };
+    }
+    const single = TIME_SINGLE.exec(rest);
+    if (single) {
+      const t = parseTime(single[1] as string);
+      if (t) return { start: `${d.date}T${t}`, end: `${d.date}T${t}` };
+    }
   }
   return { start: `${d.date}T00:00`, end: null };
 }
@@ -291,7 +323,7 @@ function segments(text: string): Segment[] {
   return out;
 }
 
-function parseStop(seg: Segment): ExtractedStop | null {
+function parseStop(seg: Segment, defaultYear: number): ExtractedStop | null {
   const t = seg.text.replace(/\r/g, "");
   // City, ST: allow the PDF layout's "City,\nST".
   const cs = /([A-Z][A-Za-z.'-]+(?: [A-Z][A-Za-z.'-]+){0,3}),\s*\n?\s*([A-Z]{2})\b/.exec(t);
@@ -318,7 +350,7 @@ function parseStop(seg: Segment): ExtractedStop | null {
     facility = facility.slice(0, facility.indexOf(city)).trim() || null;
   const apptText =
     t.includes("Appointment") || t.includes("Appt") ? t.slice(t.search(/Appointment|Appt/i)) : t;
-  const win = parseWindow(apptText);
+  const win = parseWindow(apptText, defaultYear);
   if (!city && !win.start) return null;
   return {
     kind: seg.kind,
@@ -330,22 +362,32 @@ function parseStop(seg: Segment): ExtractedStop | null {
   };
 }
 
-export function extractWithBaseline(input: string): Extraction {
+export interface BaselineOptions {
+  /** Year assumed when a document omits it; defaults to the current year. */
+  defaultYear?: number;
+}
+
+export function extractWithBaseline(input: string, opts: BaselineOptions = {}): Extraction {
+  const defaultYear = opts.defaultYear ?? thisYear();
   const text = input.replace(/\r\n/g, "\n");
   const loadReference = findLoadReference(text);
   const stops = segments(text)
-    .map(parseStop)
-    .filter((s): s is ExtractedStop => s !== null);
+    .map((seg) => parseStop(seg, defaultYear))
+    // A stop the patterns mangled (an odd state code, a malformed time) is dropped, never thrown.
+    .filter((s): s is ExtractedStop => s !== null && extractedStopSchema.safeParse(s).success);
+  const finite = (n: number | null) => (n !== null && Number.isFinite(n) ? n : null);
   const result: Extraction = {
     ...EMPTY_EXTRACTION,
     brokerName: findBroker(text),
     loadReference,
     stops,
-    rateUsd: parseRate(text),
-    weightLbs: parseWeight(text),
+    rateUsd: finite(parseRate(text)),
+    weightLbs: finite(parseWeight(text)),
     commodity: parseCommodity(text),
     equipment: parseEquipment(text),
     otherReferences: parseOtherReferences(text, loadReference),
   };
-  return extractionSchema.parse(result);
+  // The baseline must always answer; whatever still fails validation is blanked rather than thrown.
+  const parsed = extractionSchema.safeParse(result);
+  return parsed.success ? parsed.data : { ...EMPTY_EXTRACTION, stops: [] };
 }
