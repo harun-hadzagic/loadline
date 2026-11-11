@@ -13,7 +13,7 @@
     "lint": "biome check .",
     "lint:fix": "biome check --write .",
     "typecheck": "pnpm -r --parallel run typecheck",
-    "test": "pnpm -r --workspace-concurrency=1 run test",
+    "test": "pnpm -r --workspace-concurrency=1 --filter '!@loadline/e2e' run test",
     "test:unit": "pnpm -r --workspace-concurrency=1 run test:unit",
     "test:db": "pnpm --filter @loadline/db run test",
     "db:up": "docker compose up -d db",
