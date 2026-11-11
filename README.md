@@ -125,8 +125,7 @@ The full list is in [`docs/decisions`](docs/decisions/README.md).
 - **Fan-out runs in one web process.** A second process would read the same outbox and serve its own clients, but nothing here coordinates two of them, and the rate limiter counts per process ([0019](docs/decisions/0019-rate-limits-and-response-headers.md)).
 - **No hours-of-service rules.** A driver can be assigned any load whose window does not overlap another; nothing checks legal driving limits.
 - **Intake is measured on synthetic documents only**, written for this project; real rate confirmations are messier, and the Claude extractor has not been run at all in this build.
-- **Under row security, PostGIS conditions cannot use the index** ([0018](docs/decisions/0018-geospatial-queries-under-row-security.md)); the product's only radius test is a single-row lookup, so this costs nothing today, but a feature such as "all stops near this truck" would need a different approach.
-- **Geospatial queries under row security**: see the second row of the geo table.
+- **Under row security, PostGIS conditions cannot use the index** ([0018](docs/decisions/0018-geospatial-queries-under-row-security.md), the second row of the geo table); the product's only radius test is a single-row lookup, so this costs nothing today, but a feature such as "all stops near this truck" would need a different approach.
 
 ## How this was built
 
