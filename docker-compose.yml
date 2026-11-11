@@ -1,0 +1,72 @@
+# Loadline local stack. `docker compose up` starts the database, runs the
+# one-shot migrate step (roles, migrations, seed) and then the app and the
+# simulator. Copy .env.example to .env first; nothing else is needed.
+#
+# On Apple Silicon the official postgis/postgis:18-3.6 image is amd64 only and
+# runs under emulation. Build a native one with `pnpm db:image` and set
+# POSTGIS_IMAGE=loadline/postgis:18-3.6 in .env. See docs/decisions.
+
+name: loadline
+
+x-db-image: &db-image ${POSTGIS_IMAGE:-postgis/postgis:18-3.6}
+
+services:
+  db:
+    image: *db-image
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres-local}
+      POSTGRES_DB: ${DB_NAME:-loadline}
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    volumes:
+      # PostgreSQL 18 images keep the cluster under /var/lib/postgresql, not .../data.
+      - dbdata:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d ${DB_NAME:-loadline}"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  # Throwaway database for the test suite: tmpfs storage, durability off.
+  # Start with: docker compose --profile test up -d db-test
+  db-test:
+    image: *db-image
+    profiles: ["test"]
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres-local}
+      POSTGRES_DB: loadline_test
+    command: >
+      postgres -c fsync=off -c synchronous_commit=off -c full_page_writes=off
+               -c max_connections=200 -c shared_buffers=256MB
+    ports:
+      - "${TEST_DB_PORT:-5433}:5432"
+    tmpfs:
+      - /var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d loadline_test"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+  # One shot: creates the roles, applies migrations, loads the city table and
+  # seeds the two demo companies. Idempotent, so it is safe on every start.
+  migrate:
+    build:
+      context: .
+      dockerfile: docker/migrate.Dockerfile
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: "no"
+    environment:
+      DATABASE_URL_SUPER: postgres://postgres:${POSTGRES_PASSWORD:-postgres-local}@db:5432/${DB_NAME:-loadline}
+      DATABASE_URL_OWNER: postgres://loadline_owner:${LOADLINE_OWNER_PASSWORD:-owner-local}@db:5432/${DB_NAME:-loadline}
+      DATABASE_URL_APP: postgres://loadline_app:${LOADLINE_APP_PASSWORD:-app-local}@db:5432/${DB_NAME:-loadline}
+      LOADLINE_OWNER_PASSWORD: ${LOADLINE_OWNER_PASSWORD:-owner-local}
+      LOADLINE_APP_PASSWORD: ${LOADLINE_APP_PASSWORD:-app-local}
+      LOADLINE_AUTH_PASSWORD: ${LOADLINE_AUTH_PASSWORD:-auth-local}
+      LOADLINE_STREAM_PASSWORD: ${LOADLINE_STREAM_PASSWORD:-stream-local}
+      DEMO_PASSWORD: ${DEMO_PASSWORD:-loadline-demo}
+
+volumes:
+  dbdata:
