@@ -1,0 +1,36 @@
+{
+  "brokerName": "Meridian Cargo Group",
+  "loadReference": "MR-898272",
+  "stops": [
+    {
+      "kind": "pickup",
+      "facilityName": "Copper Kettle Canning",
+      "city": "Salt Lake City",
+      "state": "UT",
+      "appointmentStart": "2026-12-01T11:00",
+      "appointmentEnd": "2026-12-01T15:00"
+    },
+    {
+      "kind": "delivery",
+      "facilityName": "Foxglove Packaging",
+      "city": "Oklahoma City",
+      "state": "OK",
+      "appointmentStart": "2026-12-02T10:00",
+      "appointmentEnd": "2026-12-02T16:00"
+    }
+  ],
+  "rateUsd": 1787.5,
+  "weightLbs": 24500,
+  "commodity": "Frozen vegetables",
+  "equipment": "reefer",
+  "otherReferences": [
+    {
+      "type": "trailer",
+      "value": "TRL-82756"
+    },
+    {
+      "type": "PO",
+      "value": "PO-65989"
+    }
+  ]
+}

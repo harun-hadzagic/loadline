@@ -1,0 +1,53 @@
+NORTHWIND FREIGHT BROKERAGE LLC
+RATE CONFIRMATION
+Page 1 of 2
+Load No.
+NW-480190
+Carrier Acme Freight
+Broker Contact
+Jonah Pruitt (312) 555-0151
+Stop 1 of 3
+PICKUP
+Foxglove Packaging
+12 Quarry Rd
+Oklahoma City, OK
+Appt 11/30/2026
+09:30
+PU# PU374637
+Stop 2 of 3
+PICKUP
+Silverleaf Poultry
+350 Commerce Blvd
+Columbus, OH
+Appt Dec 1, 2026
+0800
+PU# PU856824
+Page 1 of 2
+NORTHWIND FREIGHT BROKERAGE LLC
+RATE CONFIRMATION (continued)
+Load No.
+NW-480190
+Stop 3 of 3
+DELIVERY
+Cobalt Electronics
+Distribution
+1200 Industrial Pkwy
+Omaha, NE
+Appt 12-04-26
+@ 09:30
+DEL# DA152366
+Equipment Type
+48' Flatbed
+Total Weight
+25000 LBS
+Commodity
+Steel coils
+Trailer
+TRL-54354
+Carrier Rate
+$4,675.00
+Special Instructions
+Terms and Conditions
+Carrier must call for check calls
+every 4 hours and at each stop.
+Page 2 of 2

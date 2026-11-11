@@ -4,11 +4,15 @@
 // sends Last-Event-ID; this wrapper adds a status for the indicator, a tiny
 // subscriber API, and a debug handle (window.__loadlineStream) the two-browser
 // Playwright tests use to cut and restore the connection on purpose.
+//
+// De-duplication by row id lives in the cache bridge (use-event-stream.ts),
+// which marks a row id as applied only after the cache update succeeded: a
+// frame whose fetch failed is not "seen", so a replay can deliver it again.
 
 export type StreamStatus = "connecting" | "live" | "reconnecting" | "offline";
 
 export interface StreamEvent {
-  /** The outbox row id: unique per change, the de-duplication key. */
+  /** The outbox row id: unique per change, the de-duplication key. Empty for hello/resync. */
   id: string;
   /** The resume cursor that came with the frame (the server's safe horizon). */
   cursor: string;
@@ -34,6 +38,9 @@ const EVENT_TYPES = [
   "stop.arrived",
 ];
 
+/** Row ids remembered per tab; older ones are forgotten (a replay that far back is a resync anyway). */
+const MAX_APPLIED = 5_000;
+
 export class LoadlineStream {
   private source: EventSource | null = null;
   private listeners = new Set<Listener>();
@@ -41,9 +48,9 @@ export class LoadlineStream {
   private _status: StreamStatus = "connecting";
   private lastEventId: string | null = null;
   private paused = false;
-  /** Every event id received, in order: lets a test assert exactly-once delivery. */
+  /** Row ids applied to the cache, in order: lets a test assert exactly-once delivery. */
   readonly received: string[] = [];
-  private seen = new Set<string>();
+  private applied = new Set<string>();
 
   constructor(private readonly url = "/api/events") {}
 
@@ -51,13 +58,11 @@ export class LoadlineStream {
     return this._status;
   }
 
-  connect(): void {
+  /** @param after a cursor to resume from on the first connection (a manual reconnect uses the last id). */
+  connect(after?: string | null): void {
     if (this.source || this.paused) return;
-    // A manual reconnect carries the cursor as a query parameter, because a
-    // fresh EventSource has no Last-Event-ID yet.
-    const url = this.lastEventId
-      ? `${this.url}?after=${encodeURIComponent(this.lastEventId)}`
-      : this.url;
+    const cursor = this.lastEventId ?? after ?? null;
+    const url = cursor ? `${this.url}?after=${encodeURIComponent(cursor)}` : this.url;
     const es = new EventSource(url);
     this.source = es;
     this.setStatus(this.lastEventId ? "reconnecting" : "connecting");
@@ -77,41 +82,35 @@ export class LoadlineStream {
 
   private handle(type: string, raw: MessageEvent<string>): void {
     if (raw.lastEventId) this.lastEventId = raw.lastEventId;
-    if (type === "hello") {
-      this.setStatus("live");
-      return;
-    }
     let data: Partial<StreamEvent> = {};
     try {
       data = JSON.parse(raw.data) as Partial<StreamEvent>;
     } catch {
       return;
     }
-    if (type === "resync") {
-      this.emit({
-        id: "",
-        cursor: raw.lastEventId,
-        type,
-        entityId: null,
-        payload: data as Record<string, unknown>,
-        createdAt: "",
-      });
-      return;
-    }
-    const id = String((data as { id?: unknown }).id ?? "");
-    if (id && this.seen.has(id)) return; // a replay may repeat a row: harmless, and ignored
-    if (id) {
-      this.seen.add(id);
-      this.received.push(id);
-    }
+    if (type === "hello") this.setStatus("live");
+    const id =
+      type === "hello" || type === "resync" ? "" : String((data as { id?: unknown }).id ?? "");
+    if (id && this.applied.has(id)) return; // a replay may repeat a row the cache already has
     this.emit({
       id,
       cursor: raw.lastEventId,
       type,
       entityId: data.entityId ?? null,
-      payload: data.payload ?? {},
+      payload: (data.payload ?? data ?? {}) as Record<string, unknown>,
       createdAt: data.createdAt ?? "",
     });
+  }
+
+  /** Called by the cache bridge once an event has been applied; only then does it count as seen. */
+  markApplied(id: string): void {
+    if (!id || this.applied.has(id)) return;
+    this.applied.add(id);
+    this.received.push(id);
+    if (this.applied.size > MAX_APPLIED) {
+      const oldest = this.received.shift();
+      if (oldest) this.applied.delete(oldest);
+    }
   }
 
   private emit(event: StreamEvent): void {

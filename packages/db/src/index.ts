@@ -41,6 +41,7 @@ export {
   OutboxReader,
   type OutboxReaderOptions,
   type OutboxRow,
+  type SnapshotInfo,
 } from "./stream.ts";
 export {
   APP_ROLES,

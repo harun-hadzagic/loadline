@@ -6,55 +6,89 @@ import { getStream, type StreamEvent, type StreamStatus } from "@/lib/stream-cli
 import type { LoadView } from "@/server/loads";
 
 export const LOADS_KEY = ["loads"] as const;
+export const POSITIONS_KEY = ["positions"] as const;
 
 /**
- * Apply stream events to the TanStack Query cache by entity id and version.
- * A load event carries only {version, status}; the row itself is fetched, and
- * it is only written to the cache when it is at least as new as what the
- * cache holds. That makes duplicate or late delivery harmless.
+ * The cache bridge: mounted once per tab (in Providers), so events are applied
+ * to the TanStack Query cache whether or not the board is on screen. A load
+ * event carries only {version, status}; the row itself is fetched, and it is
+ * only written to the cache when it is at least as new as what the cache
+ * holds. A row id counts as "applied" only after that succeeded; a failed
+ * fetch invalidates the list instead, so nothing is silently lost. On every
+ * hello (first connection and each reconnect) the lists are refetched: that
+ * closes the gap between a page's server-rendered data and the moment the hub
+ * added this client.
  */
-export function useEventStream(): StreamStatus {
+export function useStreamBridge(): void {
   const qc = useQueryClient();
-  const [status, setStatus] = useState<StreamStatus>("connecting");
-
   useEffect(() => {
     const stream = getStream();
-    const offStatus = stream.onStatus(setStatus);
     const off = stream.subscribe((event) => void apply(event));
 
     async function apply(event: StreamEvent): Promise<void> {
-      if (event.type === "resync") {
-        await qc.invalidateQueries({ queryKey: LOADS_KEY });
-        return;
-      }
-      if (event.type === "load.created" || event.type === "load.updated") {
-        if (!event.entityId) return;
-        const version = Number(event.payload.version ?? 0);
-        const cached = qc.getQueryData<LoadView[]>(LOADS_KEY)?.find((l) => l.id === event.entityId);
-        if (cached && cached.version >= version) return; // older than what we have
-        const res = await fetch(`/api/loads/${event.entityId}`, { cache: "no-store" });
-        if (res.status === 404) {
-          qc.setQueryData<LoadView[]>(LOADS_KEY, (old) =>
-            old?.filter((l) => l.id !== event.entityId),
-          );
+      try {
+        if (event.type === "hello" || event.type === "resync") {
+          await Promise.all([
+            qc.invalidateQueries({ queryKey: LOADS_KEY }),
+            qc.invalidateQueries({ queryKey: POSITIONS_KEY }),
+            qc.invalidateQueries({ queryKey: ["fleet"] }),
+          ]);
           return;
         }
-        if (!res.ok) return;
-        const { load } = (await res.json()) as { load: LoadView };
-        qc.setQueryData<LoadView[]>(LOADS_KEY, (old) => mergeLoad(old ?? [], load));
-        return;
-      }
-      if (event.type.startsWith("driver.") || event.type.startsWith("truck.")) {
-        await qc.invalidateQueries({ queryKey: ["fleet"] });
+        if (
+          event.type === "load.created" ||
+          event.type === "load.updated" ||
+          event.type === "stop.arrived"
+        ) {
+          if (!event.entityId) return;
+          const version = Number(event.payload.version ?? 0);
+          const cached = qc
+            .getQueryData<LoadView[]>(LOADS_KEY)
+            ?.find((l) => l.id === event.entityId);
+          if (cached && version && cached.version >= version && event.type !== "stop.arrived") {
+            stream.markApplied(event.id); // older than what we have: nothing to do
+            return;
+          }
+          const res = await fetch(`/api/loads/${event.entityId}`, { cache: "no-store" });
+          if (res.status === 404) {
+            qc.setQueryData<LoadView[]>(LOADS_KEY, (old) =>
+              old?.filter((l) => l.id !== event.entityId),
+            );
+            stream.markApplied(event.id);
+            return;
+          }
+          if (!res.ok) throw new Error(`fetch load ${res.status}`);
+          const { load } = (await res.json()) as { load: LoadView };
+          qc.setQueryData<LoadView[]>(LOADS_KEY, (old) => mergeLoad(old ?? [], load));
+          stream.markApplied(event.id);
+          return;
+        }
+        if (event.type === "position.updated") {
+          // The map keeps its own cache of positions; the payload is complete.
+          stream.markApplied(event.id);
+          return;
+        }
+        if (event.type.startsWith("driver.") || event.type.startsWith("truck.")) {
+          await Promise.all([
+            qc.invalidateQueries({ queryKey: ["fleet"] }),
+            qc.invalidateQueries({ queryKey: LOADS_KEY }),
+          ]);
+          stream.markApplied(event.id);
+        }
+      } catch (err) {
+        console.warn("[stream] could not apply event; refetching", err);
+        await qc.invalidateQueries({ queryKey: LOADS_KEY });
       }
     }
 
-    return () => {
-      off();
-      offStatus();
-    };
+    return off;
   }, [qc]);
+}
 
+/** The connection status for indicators. */
+export function useStreamStatus(): StreamStatus {
+  const [status, setStatus] = useState<StreamStatus>("connecting");
+  useEffect(() => getStream().onStatus(setStatus), []);
   return status;
 }
 

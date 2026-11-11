@@ -1,0 +1,30 @@
+LOAD CONFIRMATION                 Load Number: SR-296842
+Broker:  Summit Ridge Brokerage
+Contact: Tom Brightwater  (801) 555-0132  MC# 982283
+Carrier: Tallgrass Trucking
+Issued:  11/11/2026
+==============================================================================
+STOP  FACILITY                          CITY, ST            DATE / TIME
+------------------------------------------------------------------------------
+PU:   Silverleaf Poultry                Albuquerque, NM     Tue 11/17 6am-2pm
+      88 Depot Ave
+DEL:  Harvest Moon Bakery               Charlotte, NC       11/19/2026 08:00
+      915 Foundry St
+------------------------------------------------------------------------------
+Equipment: Van   |   Weight: 14 tons   |   Commodity: Auto parts
+Delivery appt #: DA34845   Trailer: TRL-89366
+
+Line Haul                       $3,175.00
+Fuel Surcharge (FSC)              $562.50
+TOTAL RATE                      $3,737.50
+
+NOTES / SPECIAL INSTRUCTIONS:
+Driver must wear a safety vest and closed-toe shoes at both facilities.
+
+TERMS:
+- Carrier agrees not to double broker or re-broker this load.
+- Rate includes all fees. No additional charges without written approval from the broker.
+- Carrier is responsible for cargo from pickup through delivery.
+- Driver must be able to load and unload without assistance unless noted.
+
+Carrier signature: ______________________   Date: ____________

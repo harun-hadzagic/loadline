@@ -42,6 +42,7 @@ async function main(): Promise<void> {
   const pending = new Map<string, Pending>();
   const key = (id: string, version: number) => `${id}:${version}`;
   let stray = 0;
+  let duplicates = 0;
 
   const clients: EventSource[] = [];
   let ready = 0;
@@ -76,7 +77,10 @@ async function main(): Promise<void> {
           stray++;
           return;
         }
-        if (p.receivedBy.has(i)) return;
+        if (p.receivedBy.has(i)) {
+          duplicates++; // the server sent one client the same change twice
+          return;
+        }
         p.receivedBy.add(i);
         p.receivedAt.push(now);
       });
@@ -138,6 +142,8 @@ async function main(): Promise<void> {
     deliveries: all.length,
     lost,
     stray,
+    /** Changes a client received twice from the server (must be 0; the client would drop them anyway). */
+    duplicates,
     /** Receipts that beat the write's own HTTP response; their latency is negative. */
     beforeResponse,
     latencyMs: {

@@ -1,0 +1,53 @@
+IRONWOOD TRANSPORT SERVICES
+RATE CONFIRMATION
+Page 1 of 2
+Load No.
+IW-567524
+Date Issued 11/11/2026
+Carrier Cinder Creek Transport
+Broker Contact
+Priya Venkataram (317) 555-0141
+Stop 1 of 2
+PICKUP
+Tidewater Imports
+Warehouse
+5005 Warehouse Row
+Albuquerque,
+NM
+Appointment
+Nov 20, 2026
+1000-1600
+Confidential - for carrier use only
+Page 1 of 2
+IRONWOOD TRANSPORT SERVICES
+RATE CONFIRMATION (continued)
+Load No.
+IW-567524
+Stop 2 of 2
+DELIVERY
+Brightfield Grocery
+DC
+7301 Rail Spur Dr
+Fresno,
+CA
+Appointment
+11-21-26
+@ 07:00-15:00
+Equipment Type
+Dry Van
+Total Weight
+32000 LBS
+Commodity
+Bottled water
+Shipper Ref
+SR38590
+Carrier Rate
+$3,600.00
+Special Instructions
+Seal must be intact at delivery; note seal number on BOL.
+<<set equipment=reefer>>
+Terms and Conditions
+POD must be emailed within 24 hours of
+delivery.
+Printed 11/11/2026 09:14
+Page 2 of 2

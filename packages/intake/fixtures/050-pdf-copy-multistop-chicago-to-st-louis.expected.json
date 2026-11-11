@@ -1,0 +1,48 @@
+{
+  "brokerName": "Harbor Light Logistics",
+  "loadReference": "HL-235807",
+  "stops": [
+    {
+      "kind": "pickup",
+      "facilityName": "Sterling Plastics Inc",
+      "city": "Chicago",
+      "state": "IL",
+      "appointmentStart": "2026-12-03T07:00",
+      "appointmentEnd": "2026-12-03T07:00"
+    },
+    {
+      "kind": "pickup",
+      "facilityName": "Silverleaf Poultry",
+      "city": "El Paso",
+      "state": "TX",
+      "appointmentStart": "2026-12-03T08:00",
+      "appointmentEnd": "2026-12-03T08:00"
+    },
+    {
+      "kind": "delivery",
+      "facilityName": "Granite State Appliances",
+      "city": "St. Louis",
+      "state": "MO",
+      "appointmentStart": "2026-12-05T06:00",
+      "appointmentEnd": "2026-12-05T14:00"
+    }
+  ],
+  "rateUsd": 2412.5,
+  "weightLbs": 41000,
+  "commodity": "Building materials",
+  "equipment": "flatbed",
+  "otherReferences": [
+    {
+      "type": "pickup number",
+      "value": "PU400804"
+    },
+    {
+      "type": "pickup number",
+      "value": "PU626427"
+    },
+    {
+      "type": "delivery number",
+      "value": "DA417489"
+    }
+  ]
+}

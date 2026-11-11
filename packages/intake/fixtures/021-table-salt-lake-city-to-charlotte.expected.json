@@ -1,0 +1,32 @@
+{
+  "brokerName": "Bluewater Cargo Partners",
+  "loadReference": "BW-153639",
+  "stops": [
+    {
+      "kind": "pickup",
+      "facilityName": "Sterling Plastics Inc",
+      "city": "Salt Lake City",
+      "state": "UT",
+      "appointmentStart": "2026-12-10T14:00",
+      "appointmentEnd": "2026-12-10T14:00"
+    },
+    {
+      "kind": "delivery",
+      "facilityName": "Redfield Cold Storage",
+      "city": "Charlotte",
+      "state": "NC",
+      "appointmentStart": "2026-12-11T05:30",
+      "appointmentEnd": "2026-12-11T09:30"
+    }
+  ],
+  "rateUsd": 2300,
+  "weightLbs": 31000,
+  "commodity": "Frozen vegetables",
+  "equipment": "reefer",
+  "otherReferences": [
+    {
+      "type": "shipper ref",
+      "value": "SR76888"
+    }
+  ]
+}

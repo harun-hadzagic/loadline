@@ -1,0 +1,32 @@
+LOAD CONFIRMATION                 PRO #: NW-388923
+Broker:  Northwind Freight Brokerage LLC
+Contact: Tom Brightwater  (312) 555-0159  MC# 984996
+Carrier: Blue Ridge Haulers
+Issued:  11/11/2026
+==============================================================================
+STOP  FACILITY                          CITY, ST            DATE / TIME
+------------------------------------------------------------------------------
+1)PU: Anvil Steel Supply                Jacksonville, FL    Nov 26, 2026 1300-1700
+      1200 Industrial Pkwy    PU# PU675447
+2)DEL:Harvest Moon Bakery               Allentown, PA       11-29-26 @ 11:00-15:00
+      915 Foundry St    DEL# DA197556
+3)DEL:Summit Hardware DC                Harrisburg, PA      11/30/2026 09:30
+      12 Quarry Rd    DEL# DA221475
+4)DEL:Willow Creek Dairy                Indianapolis, IN    Nov 30, 2026 0700-1500
+      1200 Industrial Pkwy    DEL# DA674374
+------------------------------------------------------------------------------
+Equipment: DV   |   Weight: 40,000   |   Commodity: Household appliances
+PO #: PO-42649   BOL #: BOL44349
+
+Rate: $4,400.00
+
+NOTES / SPECIAL INSTRUCTIONS:
+Please call the receiver 1 hour before arrival.
+
+TERMS:
+- Phone-app tracking is required for the full trip.
+- Carrier must call for check calls every 4 hours and at each stop.
+- Driver must be able to load and unload without assistance unless noted.
+- Detention: 2 hours free time, then $50/hr with prior approval and signed in/out times.
+
+Carrier signature: ______________________   Date: ____________

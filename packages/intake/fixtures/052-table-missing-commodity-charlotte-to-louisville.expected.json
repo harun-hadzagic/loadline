@@ -1,0 +1,36 @@
+{
+  "brokerName": "Copperline Freight",
+  "loadReference": "CF-197547",
+  "stops": [
+    {
+      "kind": "pickup",
+      "facilityName": "Highline Lumber Yard",
+      "city": "Charlotte",
+      "state": "NC",
+      "appointmentStart": "2026-11-17T05:30",
+      "appointmentEnd": "2026-11-17T09:30"
+    },
+    {
+      "kind": "delivery",
+      "facilityName": "Evergreen Pallet Co",
+      "city": "Louisville",
+      "state": "KY",
+      "appointmentStart": "2026-11-18T14:00",
+      "appointmentEnd": "2026-11-18T14:00"
+    }
+  ],
+  "rateUsd": 4630,
+  "weightLbs": 28000,
+  "commodity": null,
+  "equipment": "dry_van",
+  "otherReferences": [
+    {
+      "type": "trailer",
+      "value": "TRL-29651"
+    },
+    {
+      "type": "PO",
+      "value": "PO-31438"
+    }
+  ]
+}

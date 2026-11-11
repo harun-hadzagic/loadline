@@ -1,0 +1,36 @@
+{
+  "brokerName": "Copperline Freight",
+  "loadReference": "CF-105451",
+  "stops": [
+    {
+      "kind": "pickup",
+      "facilityName": "Cedar Valley Foods DC",
+      "city": "Jacksonville",
+      "state": "FL",
+      "appointmentStart": "2026-11-25T07:00",
+      "appointmentEnd": "2026-11-25T15:00"
+    },
+    {
+      "kind": "delivery",
+      "facilityName": "Willow Creek Dairy",
+      "city": "Charlotte",
+      "state": "NC",
+      "appointmentStart": "2026-11-28T14:00",
+      "appointmentEnd": "2026-11-28T14:00"
+    }
+  ],
+  "rateUsd": 2680,
+  "weightLbs": 27000,
+  "commodity": "Fresh cut flowers",
+  "equipment": "reefer",
+  "otherReferences": [
+    {
+      "type": "pickup number",
+      "value": "PU87814"
+    },
+    {
+      "type": "delivery number",
+      "value": "DA40503"
+    }
+  ]
+}

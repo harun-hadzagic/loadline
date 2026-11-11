@@ -1,0 +1,40 @@
+{
+  "brokerName": "Copperline Freight",
+  "loadReference": "CF-787091",
+  "stops": [
+    {
+      "kind": "pickup",
+      "facilityName": "Prairie Gold Milling",
+      "city": "Tulsa",
+      "state": "OK",
+      "appointmentStart": "2026-12-03T09:30",
+      "appointmentEnd": "2026-12-03T09:30"
+    },
+    {
+      "kind": "delivery",
+      "facilityName": "Ballast Point Tile",
+      "city": "Laredo",
+      "state": "TX",
+      "appointmentStart": "2026-12-05T10:00",
+      "appointmentEnd": "2026-12-05T16:00"
+    }
+  ],
+  "rateUsd": 1735,
+  "weightLbs": 39000,
+  "commodity": "Household appliances",
+  "equipment": "dry_van",
+  "otherReferences": [
+    {
+      "type": "trailer",
+      "value": "TRL-79447"
+    },
+    {
+      "type": "shipper ref",
+      "value": "SR24966"
+    },
+    {
+      "type": "delivery number",
+      "value": "DA76589"
+    }
+  ]
+}

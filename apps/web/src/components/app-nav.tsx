@@ -21,6 +21,7 @@ export function AppNav({ role, userName, companyName, canSeeFleet }: Props) {
       ? [{ href: "/driver", label: "My loads" }]
       : [
           { href: "/board", label: "Board" },
+          { href: "/map", label: "Map" },
           { href: "/loads", label: "Loads" },
           ...(canSeeFleet
             ? [

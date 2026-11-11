@@ -1,0 +1,36 @@
+{
+  "brokerName": "Ironwood Transport Services",
+  "loadReference": "IW-941564",
+  "stops": [
+    {
+      "kind": "pickup",
+      "facilityName": "Brightfield Grocery DC",
+      "city": "El Paso",
+      "state": "TX",
+      "appointmentStart": "2026-11-28T14:00",
+      "appointmentEnd": "2026-11-28T14:00"
+    },
+    {
+      "kind": "delivery",
+      "facilityName": "Evergreen Pallet Co",
+      "city": "Fresno",
+      "state": "CA",
+      "appointmentStart": "2026-12-01T10:00",
+      "appointmentEnd": "2026-12-01T16:00"
+    }
+  ],
+  "rateUsd": 1425,
+  "weightLbs": 32000,
+  "commodity": "Structural steel beams",
+  "equipment": "flatbed",
+  "otherReferences": [
+    {
+      "type": "PO",
+      "value": "PO-25534"
+    },
+    {
+      "type": "trailer",
+      "value": "TRL-21425"
+    }
+  ]
+}

@@ -1,0 +1,40 @@
+{
+  "brokerName": "Summit Ridge Brokerage",
+  "loadReference": "SR-778381",
+  "stops": [
+    {
+      "kind": "pickup",
+      "facilityName": "Quarry Road Aggregates",
+      "city": "Oklahoma City",
+      "state": "OK",
+      "appointmentStart": "2026-12-09T14:00",
+      "appointmentEnd": "2026-12-09T14:00"
+    },
+    {
+      "kind": "delivery",
+      "facilityName": "Ballast Point Tile",
+      "city": "Reno",
+      "state": "NV",
+      "appointmentStart": "2026-12-10T08:00",
+      "appointmentEnd": "2026-12-10T08:00"
+    }
+  ],
+  "rateUsd": 4882.5,
+  "weightLbs": 31000,
+  "commodity": "Consumer electronics",
+  "equipment": "dry_van",
+  "otherReferences": [
+    {
+      "type": "pickup number",
+      "value": "PU73139"
+    },
+    {
+      "type": "BOL",
+      "value": "BOL48156"
+    },
+    {
+      "type": "shipper ref",
+      "value": "SR10161"
+    }
+  ]
+}

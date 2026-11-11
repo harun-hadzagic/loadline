@@ -1,0 +1,37 @@
+From: priya@copperlinefreight.example
+To: dispatch@acmefreight.example
+Subject: Rate Confirmation - Load CF-509821 - Louisville KY to Oklahoma City OK
+
+Hi Acme Freight team,
+
+Good talking with you. Here is the rate confirmation for the load.
+
+Load #: CF-509821
+Booked with Copperline Freight (MC 981248)
+
+Pickup is at Harvest Moon Bakery, 3300 Distribution Dr, Louisville, KY. Appointment: 12/07/2026 14:00.
+
+Delivery is at Anvil Steel Supply, 2150 Harbor Way, Oklahoma City, OK. Appointment: 2026-12-10 8:00 AM to 12:00 PM.
+
+Equipment is a Reefer, weight is 13 tons, commodity is Dairy products.
+
+Keep the reefer unit on continuous and set at 34F, please.
+
+Rate breakdown:
+  Line Haul               $4,200.00
+  Fuel Surcharge (FSC)      $612.50
+  Stop-off                  $125.00
+  TOTAL RATE              $4,937.50
+
+Reference numbers: Delivery appt # DA40616.
+
+Notes: Please call the receiver 1 hour before arrival.
+
+Driver must carry a copy of this confirmation to the shipper and receiver.
+Carrier agrees not to double broker or re-broker this load.
+Lumper receipts require pre-approval.
+
+Thanks and safe travels,
+Priya Venkataram
+Carrier Sales | Copperline Freight
+(602) 555-0122 | priya@copperlinefreight.example

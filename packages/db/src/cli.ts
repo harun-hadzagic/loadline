@@ -25,7 +25,13 @@ async function runMigrate() {
 
 async function runSeed() {
   const r = await seed(
-    { appUrl: requireEnv("DATABASE_URL_APP"), ownerUrl: requireEnv("DATABASE_URL_OWNER") },
+    {
+      appUrl: requireEnv("DATABASE_URL_APP"),
+      ownerUrl: requireEnv("DATABASE_URL_OWNER"),
+      // The demo logins: Better Auth rows through loadline_auth, password from DEMO_PASSWORD.
+      authUrl: requireEnv("DATABASE_URL_AUTH"),
+      demoPassword: requireEnv("DEMO_PASSWORD"),
+    },
     log,
   );
   log(`seeded ${r.companies.length} companies`);

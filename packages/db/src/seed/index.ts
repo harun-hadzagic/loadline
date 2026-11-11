@@ -278,7 +278,7 @@ async function seedCompany(tx: Tx, company: DemoCompany, now: Date): Promise<voi
       location: p.location,
       heading: p.heading,
       speedMph: p.speedMph,
-      recordedAt: now,
+      recordedAt: new Date(), // the real clock: a future recorded_at would make the first real reports look stale
     })),
   );
 }

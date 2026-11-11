@@ -1,6 +1,6 @@
 import { drizzle, type NodePgDatabase } from "drizzle-orm/node-postgres";
 import pg from "pg";
-import { requireEnv } from "./env.ts";
+import { dbEnv, requireEnv } from "./env.ts";
 import * as schema from "./schema/index.ts";
 
 const { Pool, types } = pg;
@@ -59,8 +59,15 @@ export function appPool(): Pool {
 export function authPool(): Pool {
   const g = globalThis as Globals;
   if (!g.__loadlineAuthPool) {
+    // Better Auth builds its instance at import time, which `next build` does
+    // with no database around. A Pool opens nothing until the first query, so
+    // the build may construct one with a placeholder; at run time the variable
+    // is required.
+    const url = dbEnv().DATABASE_URL_AUTH;
+    if (!url && process.env.NEXT_PHASE !== "phase-production-build")
+      requireEnv("DATABASE_URL_AUTH");
     g.__loadlineAuthPool = new Pool({
-      connectionString: requireEnv("DATABASE_URL_AUTH"),
+      connectionString: url ?? "postgres://build:build@127.0.0.1:1/build",
       max: 5,
       application_name: "loadline-auth",
       options: "-c search_path=auth",

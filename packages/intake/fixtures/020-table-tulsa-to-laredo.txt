@@ -1,0 +1,32 @@
+CARRIER RATE AGREEMENT            PRO #: CF-787091
+Broker:  Copperline Freight
+Contact: Jonah Pruitt  (602) 555-0130  MC# 982043
+Carrier: Tallgrass Trucking
+Issued:  11/11/2026
+==============================================================================
+STOP  FACILITY                          CITY, ST            DATE / TIME
+------------------------------------------------------------------------------
+PU:   Prairie Gold Milling              Tulsa, OK           2026-12-03 9:30 AM
+      1200 Industrial Pkwy
+DEL:  Ballast Point Tile                Laredo, TX          Sat 12/05 10am-4pm
+      3300 Distribution Dr
+------------------------------------------------------------------------------
+Equipment: 53' Dry Van   |   Weight: 39,000 lbs   |   Commodity: Household appliances
+Trailer: TRL-79447   Shipper Ref: SR24966   Delivery appt #: DA76589
+
+Line Haul                       $1,375.00
+Fuel Surcharge (FSC)              $185.00
+Stop-off                           $50.00
+Detention (pre-approved)          $125.00
+TOTAL RATE                      $1,735.00
+
+NOTES / SPECIAL INSTRUCTIONS:
+Seal must be intact at delivery; note seal number on BOL.
+
+TERMS:
+- Driver must be able to load and unload without assistance unless noted.
+- Carrier agrees not to double broker or re-broker this load.
+- Rate includes all fees. No additional charges without written approval from the broker.
+- Phone-app tracking is required for the full trip.
+
+Carrier signature: ______________________   Date: ____________

@@ -1,0 +1,32 @@
+{
+  "brokerName": "Northwind Freight Brokerage LLC",
+  "loadReference": "NW-894241",
+  "stops": [
+    {
+      "kind": "pickup",
+      "facilityName": "Copper Kettle Canning",
+      "city": "Denver",
+      "state": "CO",
+      "appointmentStart": "2026-11-22T09:30",
+      "appointmentEnd": "2026-11-22T09:30"
+    },
+    {
+      "kind": "delivery",
+      "facilityName": "Northgate Paper Mill",
+      "city": "Ontario",
+      "state": "CA",
+      "appointmentStart": "2026-11-24T07:00",
+      "appointmentEnd": "2026-11-24T07:00"
+    }
+  ],
+  "rateUsd": 4625,
+  "weightLbs": null,
+  "commodity": null,
+  "equipment": "reefer",
+  "otherReferences": [
+    {
+      "type": "pickup number",
+      "value": "PU96468"
+    }
+  ]
+}

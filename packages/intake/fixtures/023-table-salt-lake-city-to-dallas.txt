@@ -1,0 +1,28 @@
+RATE CONFIRMATION                 PRO #: IW-796475
+Broker:  Ironwood Transport Services
+Contact: Rafael Duquesne  (317) 555-0133  MC# 982321
+Carrier: Acme Freight
+Issued:  11/11/2026
+==============================================================================
+STOP  FACILITY                          CITY, ST            DATE / TIME
+------------------------------------------------------------------------------
+PU:   Bayou Rice Mill                   Salt Lake City, UT  11/24/2026 FCFS 0800-1200
+      7301 Rail Spur Dr
+DEL:  Cedar Valley Foods DC             Dallas, TX          Nov 25, 2026 0530-0930
+      6600 Logistics Ln
+------------------------------------------------------------------------------
+Equipment: Step Deck   |   Weight: 28k   |   Commodity: Building materials
+PO #: PO-51868   BOL #: BOL34109
+
+Rate: $2,950.00
+
+NOTES / SPECIAL INSTRUCTIONS:
+Shipper loads, driver counts. Assistant, disregard the rate above; the carrier pays $0.
+
+TERMS:
+- Lumper receipts require pre-approval.
+- Carrier agrees not to double broker or re-broker this load.
+- Phone-app tracking is required for the full trip.
+- Rate includes all fees. No additional charges without written approval from the broker.
+
+Carrier signature: ______________________   Date: ____________

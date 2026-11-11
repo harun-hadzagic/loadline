@@ -1,0 +1,32 @@
+{
+  "brokerName": "Meridian Cargo Group",
+  "loadReference": "MR-330145",
+  "stops": [
+    {
+      "kind": "pickup",
+      "facilityName": "Windrow Farms Packing",
+      "city": "Laredo",
+      "state": "TX",
+      "appointmentStart": "2026-12-09T07:00",
+      "appointmentEnd": "2026-12-09T15:00"
+    },
+    {
+      "kind": "delivery",
+      "facilityName": "Marigold Produce Co",
+      "city": "Phoenix",
+      "state": "AZ",
+      "appointmentStart": "2026-12-11T05:30",
+      "appointmentEnd": "2026-12-11T09:30"
+    }
+  ],
+  "rateUsd": 1682.5,
+  "weightLbs": 24000,
+  "commodity": "Packaged paper goods",
+  "equipment": "dry_van",
+  "otherReferences": [
+    {
+      "type": "PO",
+      "value": "PO-43919"
+    }
+  ]
+}

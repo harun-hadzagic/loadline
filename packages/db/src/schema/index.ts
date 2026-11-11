@@ -181,5 +181,5 @@ export const TENANT_TABLES = [
   "truck_positions",
   "outbox",
 ] as const;
-export const REFERENCE_TABLES = ["cities", "load_transitions"] as const;
+export const REFERENCE_TABLES = ["cities", "load_transitions", "outbox_watermark"] as const;
 export type TenantTable = (typeof TENANT_TABLES)[number];

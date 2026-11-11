@@ -1,0 +1,40 @@
+{
+  "brokerName": "Meridian Cargo Group",
+  "loadReference": "MR-286536",
+  "stops": [
+    {
+      "kind": "pickup",
+      "facilityName": "Lakeshore Beverage Distributing",
+      "city": "Columbus",
+      "state": "OH",
+      "appointmentStart": "2026-12-05T07:00",
+      "appointmentEnd": "2026-12-05T15:00"
+    },
+    {
+      "kind": "delivery",
+      "facilityName": "Quarry Road Aggregates",
+      "city": "Birmingham",
+      "state": "AL",
+      "appointmentStart": "2026-12-07T09:30",
+      "appointmentEnd": "2026-12-07T09:30"
+    }
+  ],
+  "rateUsd": 4015,
+  "weightLbs": 32000,
+  "commodity": "Auto parts",
+  "equipment": "dry_van",
+  "otherReferences": [
+    {
+      "type": "PO",
+      "value": "PO-18635"
+    },
+    {
+      "type": "BOL",
+      "value": "BOL84765"
+    },
+    {
+      "type": "trailer",
+      "value": "TRL-64281"
+    }
+  ]
+}

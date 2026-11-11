@@ -1,0 +1,32 @@
+LOAD CONFIRMATION                 Load Number: PS-458750
+Broker:  Prairie Sky Transport
+Contact: Marcus Oyelaran  (402) 555-0153  MC# 984370
+Carrier: Acme Freight
+Issued:  11/11/2026
+==============================================================================
+STOP  FACILITY                          CITY, ST            DATE / TIME
+------------------------------------------------------------------------------
+1)PU: Ridgeback Auto Parts              Memphis, TN         Nov 14, 2026 0530-0930
+      88 Depot Ave    PU# PU444247
+2)DEL:Stonebridge Cabinet Works         Salt Lake City, UT  11-15-26 @ 08:00
+      88 Depot Ave    DEL# DA741666
+3)DEL:Cedar Valley Foods DC             Omaha, NE           11/15/2026 FCFS 1300-1700
+      4410 Mill Rd    DEL# DA561226
+4)DEL:Windrow Farms Packing             Savannah, GA        Nov 16, 2026 0530-0930
+      1200 Industrial Pkwy    DEL# DA584640
+------------------------------------------------------------------------------
+Equipment: 53' Van   |   Weight: 43k   |   Commodity: Auto parts
+Trailer: TRL-42605
+
+Rate: $4,325.00
+
+NOTES / SPECIAL INSTRUCTIONS:
+Please call the receiver 1 hour before arrival.
+
+TERMS:
+- Rate includes all fees. No additional charges without written approval from the broker.
+- Detention: 2 hours free time, then $50/hr with prior approval and signed in/out times.
+- Phone-app tracking is required for the full trip.
+- POD must be emailed within 24 hours of delivery.
+
+Carrier signature: ______________________   Date: ____________

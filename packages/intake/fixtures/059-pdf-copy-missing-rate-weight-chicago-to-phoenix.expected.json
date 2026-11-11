@@ -1,0 +1,32 @@
+{
+  "brokerName": "Prairie Sky Transport",
+  "loadReference": "PS-720279",
+  "stops": [
+    {
+      "kind": "pickup",
+      "facilityName": "Brightfield Grocery DC",
+      "city": "Chicago",
+      "state": "IL",
+      "appointmentStart": "2026-12-06T10:00",
+      "appointmentEnd": "2026-12-06T16:00"
+    },
+    {
+      "kind": "delivery",
+      "facilityName": "Granite State Appliances",
+      "city": "Phoenix",
+      "state": "AZ",
+      "appointmentStart": "2026-12-07T10:00",
+      "appointmentEnd": "2026-12-07T16:00"
+    }
+  ],
+  "rateUsd": null,
+  "weightLbs": null,
+  "commodity": "Structural steel beams",
+  "equipment": "flatbed",
+  "otherReferences": [
+    {
+      "type": "shipper ref",
+      "value": "SR16322"
+    }
+  ]
+}

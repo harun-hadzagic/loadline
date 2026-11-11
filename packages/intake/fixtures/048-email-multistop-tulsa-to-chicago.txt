@@ -1,0 +1,39 @@
+From: jonah@meridiancargo.example
+To: dispatch@cindercreektransport.example
+Subject: Load Confirmation - Load MR-597501 - Tulsa OK to Chicago IL
+
+Hi Cinder Creek Transport team,
+
+Thanks for taking this one. Please review the details below, sign, and send it back.
+
+Load #: MR-597501
+Booked with Meridian Cargo Group (MC 984813)
+
+Stop 1 is a pickup at Falconer Metals, 5005 Warehouse Row, Tulsa, OK. Appointment: 11/19/2026 07:00. PU# PU549979.
+
+Stop 2 is a delivery at Windrow Farms Packing, 5005 Warehouse Row, Salt Lake City, UT. Appointment: 2026-11-22 8:00 AM. DEL# DA683794.
+
+Stop 3 is a delivery at Oakmont Building Products, 4410 Mill Rd, Chicago, IL. Appointment: Tue 11/24 9:30am. DEL# DA428978.
+
+Equipment is a Reefer, weight is 28k lbs, commodity is Fresh produce.
+
+Keep the reefer unit on continuous and set at 34F, please.
+
+Rate breakdown:
+  Line Haul               $1,875.00
+  Fuel Surcharge (FSC)      $205.00
+  Stop-off                  $150.00
+  TOTAL RATE              $2,230.00
+
+Reference numbers: Shipper Ref SR60218, BOL # BOL74018.
+
+Notes: Please call the receiver 1 hour before arrival.
+
+Driver must carry a copy of this confirmation to the shipper and receiver.
+Driver must be able to load and unload without assistance unless noted.
+POD must be emailed within 24 hours of delivery.
+
+Thanks and safe travels,
+Jonah Pruitt
+Carrier Sales | Meridian Cargo Group
+(816) 555-0158 | jonah@meridiancargo.example

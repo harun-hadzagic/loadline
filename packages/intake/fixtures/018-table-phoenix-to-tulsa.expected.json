@@ -1,0 +1,36 @@
+{
+  "brokerName": "Harbor Light Logistics",
+  "loadReference": "HL-545794",
+  "stops": [
+    {
+      "kind": "pickup",
+      "facilityName": "Falconer Metals",
+      "city": "Phoenix",
+      "state": "AZ",
+      "appointmentStart": "2026-11-19T14:00",
+      "appointmentEnd": "2026-11-19T14:00"
+    },
+    {
+      "kind": "delivery",
+      "facilityName": "Cedar Valley Foods DC",
+      "city": "Tulsa",
+      "state": "OK",
+      "appointmentStart": "2026-11-21T10:00",
+      "appointmentEnd": "2026-11-21T16:00"
+    }
+  ],
+  "rateUsd": 3355,
+  "weightLbs": 24000,
+  "commodity": "Dairy products",
+  "equipment": "reefer",
+  "otherReferences": [
+    {
+      "type": "pickup number",
+      "value": "PU52643"
+    },
+    {
+      "type": "trailer",
+      "value": "TRL-64800"
+    }
+  ]
+}

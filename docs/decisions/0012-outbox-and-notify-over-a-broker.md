@@ -15,7 +15,7 @@ A transactional outbox in PostgreSQL plus `NOTIFY` as a wake-up call:
 - One `LISTEN` connection per process (`OutboxReader`, as `loadline_stream`), guarded on `globalThis` so development reloads do not multiply it. Fan-out to connected browsers happens in process (`EventHub`), by company and by driver audience.
 - Rows older than 24 hours are pruned by `app.prune_outbox()` from a timer in the hub; a client whose cursor predates the oldest row gets a `resync` event and refetches.
 
-Measured with the sync-latency benchmark (50 clients, 200 writes at 5/s, dev server, one machine): every one of the 10,000 expected deliveries arrived; `bench/results/sync-latency.json` has the percentiles.
+Measured with the sync-latency benchmark (50 clients, 200 writes at 5/s, the production build in Compose, one machine): every one of the 10,000 expected deliveries arrived, none twice; `bench/results/sync-latency.json` has the percentiles.
 
 ## When to replace it
 

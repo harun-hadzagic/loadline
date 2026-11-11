@@ -1,0 +1,40 @@
+{
+  "brokerName": "Harbor Light Logistics",
+  "loadReference": "HL-447647",
+  "stops": [
+    {
+      "kind": "pickup",
+      "facilityName": "Granite State Appliances",
+      "city": "Jacksonville",
+      "state": "FL",
+      "appointmentStart": "2026-11-29T00:00",
+      "appointmentEnd": null
+    },
+    {
+      "kind": "delivery",
+      "facilityName": "Northgate Paper Mill",
+      "city": "Chicago",
+      "state": "IL",
+      "appointmentStart": "2026-12-02T00:00",
+      "appointmentEnd": null
+    }
+  ],
+  "rateUsd": 1432.5,
+  "weightLbs": 37000,
+  "commodity": "Cardboard boxes",
+  "equipment": null,
+  "otherReferences": [
+    {
+      "type": "BOL",
+      "value": "BOL38974"
+    },
+    {
+      "type": "shipper ref",
+      "value": "SR26171"
+    },
+    {
+      "type": "trailer",
+      "value": "TRL-92139"
+    }
+  ]
+}

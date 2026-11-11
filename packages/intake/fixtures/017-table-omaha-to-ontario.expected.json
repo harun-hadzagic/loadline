@@ -1,0 +1,32 @@
+{
+  "brokerName": "Northwind Freight Brokerage LLC",
+  "loadReference": "NW-222770",
+  "stops": [
+    {
+      "kind": "pickup",
+      "facilityName": "Tidewater Imports Warehouse",
+      "city": "Omaha",
+      "state": "NE",
+      "appointmentStart": "2026-12-12T11:00",
+      "appointmentEnd": "2026-12-12T15:00"
+    },
+    {
+      "kind": "delivery",
+      "facilityName": "Ridgeback Auto Parts",
+      "city": "Ontario",
+      "state": "CA",
+      "appointmentStart": "2026-12-13T13:00",
+      "appointmentEnd": "2026-12-13T17:00"
+    }
+  ],
+  "rateUsd": 4000,
+  "weightLbs": 44000,
+  "commodity": "Canned vegetables",
+  "equipment": "dry_van",
+  "otherReferences": [
+    {
+      "type": "trailer",
+      "value": "TRL-80509"
+    }
+  ]
+}

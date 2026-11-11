@@ -1,0 +1,40 @@
+{
+  "brokerName": "Northwind Freight Brokerage LLC",
+  "loadReference": "NW-499411",
+  "stops": [
+    {
+      "kind": "pickup",
+      "facilityName": "Brightfield Grocery DC",
+      "city": "Salt Lake City",
+      "state": "UT",
+      "appointmentStart": "2026-12-04T13:00",
+      "appointmentEnd": "2026-12-04T17:00"
+    },
+    {
+      "kind": "delivery",
+      "facilityName": "Highline Lumber Yard",
+      "city": "Albuquerque",
+      "state": "NM",
+      "appointmentStart": "2026-12-07T10:00",
+      "appointmentEnd": "2026-12-07T16:00"
+    }
+  ],
+  "rateUsd": 3250,
+  "weightLbs": 41000,
+  "commodity": "Aluminum sheet",
+  "equipment": "flatbed",
+  "otherReferences": [
+    {
+      "type": "PO",
+      "value": "PO-20135"
+    },
+    {
+      "type": "shipper ref",
+      "value": "SR49809"
+    },
+    {
+      "type": "BOL",
+      "value": "BOL33046"
+    }
+  ]
+}

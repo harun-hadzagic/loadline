@@ -1,0 +1,36 @@
+From: rafael@summitridgebrokerage.example
+To: dispatch@redwoodlinecarriers.example
+Subject: Rate Confirmation - Order SR-459546 - Fresno CA to Harrisburg PA
+
+Hi Redwood Line Carriers team,
+
+Good talking with you. Here is the rate confirmation for the load.
+
+Order #: SR-459546
+Booked with Summit Ridge Brokerage (MC 985456)
+
+Pickup is at Silverleaf Poultry, 915 Foundry St, Fresno, CA. Date: 12/01/2026.
+
+Delivery is at Windrow Farms Packing, 6600 Logistics Ln, Harrisburg, PA. Date: 2026-12-02.
+
+Equipment is a Reefer, weight is 43,500 lbs, commodity is Fresh produce.
+
+Keep the reefer unit on continuous and set at 34F, please.
+
+Rate breakdown:
+  Line Haul               $2,025.00
+  Fuel Surcharge (FSC)      $357.50
+  TOTAL RATE              $2,382.50
+
+Reference numbers: Delivery appt # DA29705, Pickup # PU88428.
+
+Notes: Seal must be intact at delivery; note seal number on BOL.
+
+Lumper receipts require pre-approval.
+Phone-app tracking is required for the full trip.
+Carrier is responsible for cargo from pickup through delivery.
+
+Thanks and safe travels,
+Rafael Duquesne
+Carrier Sales | Summit Ridge Brokerage
+(801) 555-0164 | rafael@summitridgebrokerage.example

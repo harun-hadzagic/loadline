@@ -69,5 +69,49 @@ services:
       LOADLINE_STREAM_PASSWORD: ${LOADLINE_STREAM_PASSWORD:-stream-local}
       DEMO_PASSWORD: ${DEMO_PASSWORD:-loadline-demo}
 
+  # The app: one long-lived Node process (the event stream needs it).
+  web:
+    build:
+      context: .
+      dockerfile: docker/web.Dockerfile
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    ports:
+      - "127.0.0.1:${PORT:-3000}:3000"
+    environment:
+      DATABASE_URL_APP: postgres://loadline_app:${LOADLINE_APP_PASSWORD:-app-local}@db:5432/${DB_NAME:-loadline}
+      DATABASE_URL_AUTH: postgres://loadline_auth:${LOADLINE_AUTH_PASSWORD:-auth-local}@db:5432/${DB_NAME:-loadline}
+      DATABASE_URL_STREAM: postgres://loadline_stream:${LOADLINE_STREAM_PASSWORD:-stream-local}@db:5432/${DB_NAME:-loadline}
+      BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET:-change-me-this-is-a-local-dev-secret-0123456789}
+      BETTER_AUTH_URL: ${BETTER_AUTH_URL:-http://localhost:3000}
+      NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL:-http://localhost:3000}
+      SIMULATOR_TOKEN: ${SIMULATOR_TOKEN:-sim-local-token-change-me}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          'node -e "fetch(''http://127.0.0.1:3000/sign-in'').then(r => process.exit(r.ok ? 0 : 1), () => process.exit(1))"',
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+
+  # Moves the seeded trucks toward their stops and posts positions to the app.
+  simulator:
+    build:
+      context: .
+      dockerfile: docker/simulator.Dockerfile
+    depends_on:
+      web:
+        condition: service_healthy
+    environment:
+      SIMULATOR_TARGET_URL: http://web:3000
+      SIMULATOR_TOKEN: ${SIMULATOR_TOKEN:-sim-local-token-change-me}
+      SIMULATOR_SPEED_FACTOR: ${SIMULATOR_SPEED_FACTOR:-60}
+      SIMULATOR_INTERVAL_MS: ${SIMULATOR_INTERVAL_MS:-3000}
+    restart: unless-stopped
+
 volumes:
   dbdata:

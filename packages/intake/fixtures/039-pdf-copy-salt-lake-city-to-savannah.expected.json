@@ -1,0 +1,36 @@
+{
+  "brokerName": "Ironwood Transport Services",
+  "loadReference": "IW-924517",
+  "stops": [
+    {
+      "kind": "pickup",
+      "facilityName": "Silverleaf Poultry",
+      "city": "Salt Lake City",
+      "state": "UT",
+      "appointmentStart": "2026-11-16T09:30",
+      "appointmentEnd": "2026-11-16T09:30"
+    },
+    {
+      "kind": "delivery",
+      "facilityName": "Anvil Steel Supply",
+      "city": "Savannah",
+      "state": "GA",
+      "appointmentStart": "2026-11-19T10:00",
+      "appointmentEnd": "2026-11-19T16:00"
+    }
+  ],
+  "rateUsd": 2650,
+  "weightLbs": 18000,
+  "commodity": "Fresh cut flowers",
+  "equipment": "reefer",
+  "otherReferences": [
+    {
+      "type": "delivery number",
+      "value": "DA40322"
+    },
+    {
+      "type": "PO",
+      "value": "PO-44614"
+    }
+  ]
+}

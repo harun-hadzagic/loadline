@@ -1,0 +1,36 @@
+{
+  "brokerName": "Prairie Sky Transport",
+  "loadReference": "PS-133096",
+  "stops": [
+    {
+      "kind": "pickup",
+      "facilityName": "Tidewater Imports Warehouse",
+      "city": "Tulsa",
+      "state": "OK",
+      "appointmentStart": "2026-12-10T08:00",
+      "appointmentEnd": "2026-12-10T08:00"
+    },
+    {
+      "kind": "delivery",
+      "facilityName": "Oakmont Building Products",
+      "city": "Kansas City",
+      "state": "MO",
+      "appointmentStart": "2026-12-13T07:00",
+      "appointmentEnd": "2026-12-13T07:00"
+    }
+  ],
+  "rateUsd": 3000,
+  "weightLbs": null,
+  "commodity": "Structural steel beams",
+  "equipment": "flatbed",
+  "otherReferences": [
+    {
+      "type": "pickup number",
+      "value": "PU86670"
+    },
+    {
+      "type": "BOL",
+      "value": "BOL87838"
+    }
+  ]
+}

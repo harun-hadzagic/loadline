@@ -1,0 +1,28 @@
+CARRIER RATE AGREEMENT            Load #: PS-350890
+Broker:  Prairie Sky Transport
+Contact: Elena Marchetti  (402) 555-0129  MC# 981947
+Carrier: Redwood Line Carriers
+Issued:  11/11/2026
+==============================================================================
+STOP  FACILITY                          CITY, ST            DATE / TIME
+------------------------------------------------------------------------------
+PU:   Sterling Plastics Inc             Oklahoma City, OK   Nov 26, 2026 0530-0930
+      915 Foundry St
+DEL:  Oakmont Building Products         Ontario, CA         11-29-26 @ 08:00
+      5005 Warehouse Row
+------------------------------------------------------------------------------
+Equipment: Step Deck   |   Weight: 22,000   |   Commodity: Building materials
+Shipper Ref: SR96570   Delivery appt #: DA42132
+
+Rate: $3,725.00
+
+NOTES / SPECIAL INSTRUCTIONS:
+Shipper loads, driver counts.
+
+TERMS:
+- Carrier must call for check calls every 4 hours and at each stop.
+- Phone-app tracking is required for the full trip.
+- Carrier is responsible for cargo from pickup through delivery.
+- Driver must be able to load and unload without assistance unless noted.
+
+Carrier signature: ______________________   Date: ____________

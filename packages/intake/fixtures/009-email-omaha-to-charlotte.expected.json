@@ -1,0 +1,32 @@
+{
+  "brokerName": "Northwind Freight Brokerage LLC",
+  "loadReference": "NW-776780",
+  "stops": [
+    {
+      "kind": "pickup",
+      "facilityName": "Lakeshore Beverage Distributing",
+      "city": "Omaha",
+      "state": "NE",
+      "appointmentStart": "2026-11-16T09:30",
+      "appointmentEnd": "2026-11-16T09:30"
+    },
+    {
+      "kind": "delivery",
+      "facilityName": "Pinecrest Paper Co",
+      "city": "Charlotte",
+      "state": "NC",
+      "appointmentStart": "2026-11-17T09:30",
+      "appointmentEnd": "2026-11-17T09:30"
+    }
+  ],
+  "rateUsd": 2625,
+  "weightLbs": 18500,
+  "commodity": "Fresh produce",
+  "equipment": "reefer",
+  "otherReferences": [
+    {
+      "type": "trailer",
+      "value": "TRL-42167"
+    }
+  ]
+}

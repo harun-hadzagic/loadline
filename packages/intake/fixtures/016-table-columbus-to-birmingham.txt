@@ -1,0 +1,31 @@
+RATE CONFIRMATION                 Order #: MR-286536
+Broker:  Meridian Cargo Group
+Contact: Dana Whitfield  (816) 555-0126  MC# 981668
+Carrier: Redwood Line Carriers
+Issued:  11/11/2026
+==============================================================================
+STOP  FACILITY                          CITY, ST            DATE / TIME
+------------------------------------------------------------------------------
+PU:   Lakeshore Beverage Distributing   Columbus, OH        Sat 12/05 7am-3pm
+      5005 Warehouse Row
+DEL:  Quarry Road Aggregates            Birmingham, AL      12/07/2026 09:30
+      88 Depot Ave
+------------------------------------------------------------------------------
+Equipment: Dry Van   |   Weight: 32000 LBS   |   Commodity: Auto parts
+PO #: PO-18635   BOL #: BOL84765   Trailer: TRL-64281
+
+Line Haul                       $3,425.00
+Fuel Surcharge (FSC)              $515.00
+Stop-off                           $75.00
+TOTAL RATE                      $4,015.00
+
+NOTES / SPECIAL INSTRUCTIONS:
+Driver must wear a safety vest and closed-toe shoes at both facilities.
+
+TERMS:
+- Driver must be able to load and unload without assistance unless noted.
+- Payment terms: net 30 days after receipt of signed confirmation and POD.
+- Carrier agrees not to double broker or re-broker this load.
+- Carrier is responsible for cargo from pickup through delivery.
+
+Carrier signature: ______________________   Date: ____________

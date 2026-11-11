@@ -1,0 +1,60 @@
+COPPERLINE FREIGHT
+CARRIER RATE AGREEMENT
+Page 1 of 2
+Load No.
+CF-703505
+Carrier Lantern Road Express
+Broker Contact
+Tom Brightwater (602) 555-0154
+Stop 1 of 3
+PICKUP
+Granite State
+Appliances
+6600 Logistics Ln
+Reno, NV
+Appt 2026-11-21
+7:00 AM to 3:00 PM
+PU# PU328585
+Stop 2 of 3
+PICKUP
+Highline Lumber
+Yard
+1200 Industrial Pkwy
+Louisville, KY
+Appt Mon 11/23
+11am-3pm
+PU# PU698827
+Page 1 of 2
+COPPERLINE FREIGHT
+CARRIER RATE AGREEMENT (continued)
+Load No.
+CF-703505
+Stop 3 of 3
+DELIVERY
+Cedar Valley
+Foods DC
+7301 Rail Spur Dr
+Greensboro, NC
+Appt 11/24/2026
+08:00
+DEL# DA185190
+Equipment Type
+DV
+Total Weight
+38,500
+Commodity
+Consumer electronics
+Shipper Ref
+SR90950
+Carrier Rate
+Line Haul                 $1,900.00
+Fuel Surcharge (FSC)        $177.50
+Stop-off                     $75.00
+Detention (pre-approved)    $125.00
+TOTAL RATE                $2,277.50
+Special Instructions
+Terms and Conditions
+Detention: 2 hours free time, then
+$50/hr with prior approval and signed
+in/out times.
+Page 2 of 2

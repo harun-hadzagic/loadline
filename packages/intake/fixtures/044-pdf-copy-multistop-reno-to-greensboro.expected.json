@@ -1,0 +1,52 @@
+{
+  "brokerName": "Copperline Freight",
+  "loadReference": "CF-703505",
+  "stops": [
+    {
+      "kind": "pickup",
+      "facilityName": "Granite State Appliances",
+      "city": "Reno",
+      "state": "NV",
+      "appointmentStart": "2026-11-21T07:00",
+      "appointmentEnd": "2026-11-21T15:00"
+    },
+    {
+      "kind": "pickup",
+      "facilityName": "Highline Lumber Yard",
+      "city": "Louisville",
+      "state": "KY",
+      "appointmentStart": "2026-11-23T11:00",
+      "appointmentEnd": "2026-11-23T15:00"
+    },
+    {
+      "kind": "delivery",
+      "facilityName": "Cedar Valley Foods DC",
+      "city": "Greensboro",
+      "state": "NC",
+      "appointmentStart": "2026-11-24T08:00",
+      "appointmentEnd": "2026-11-24T08:00"
+    }
+  ],
+  "rateUsd": 2277.5,
+  "weightLbs": 38500,
+  "commodity": "Consumer electronics",
+  "equipment": "dry_van",
+  "otherReferences": [
+    {
+      "type": "pickup number",
+      "value": "PU328585"
+    },
+    {
+      "type": "pickup number",
+      "value": "PU698827"
+    },
+    {
+      "type": "delivery number",
+      "value": "DA185190"
+    },
+    {
+      "type": "shipper ref",
+      "value": "SR90950"
+    }
+  ]
+}

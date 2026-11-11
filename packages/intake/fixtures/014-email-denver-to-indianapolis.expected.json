@@ -1,0 +1,36 @@
+{
+  "brokerName": "Summit Ridge Brokerage",
+  "loadReference": "SR-808741",
+  "stops": [
+    {
+      "kind": "pickup",
+      "facilityName": "Oakmont Building Products",
+      "city": "Denver",
+      "state": "CO",
+      "appointmentStart": "2026-11-21T07:00",
+      "appointmentEnd": "2026-11-21T15:00"
+    },
+    {
+      "kind": "delivery",
+      "facilityName": "Quarry Road Aggregates",
+      "city": "Indianapolis",
+      "state": "IN",
+      "appointmentStart": "2026-11-24T15:00",
+      "appointmentEnd": "2026-11-24T19:00"
+    }
+  ],
+  "rateUsd": 4332.5,
+  "weightLbs": 40000,
+  "commodity": "Aluminum sheet",
+  "equipment": "flatbed",
+  "otherReferences": [
+    {
+      "type": "PO",
+      "value": "PO-32685"
+    },
+    {
+      "type": "delivery number",
+      "value": "DA71743"
+    }
+  ]
+}

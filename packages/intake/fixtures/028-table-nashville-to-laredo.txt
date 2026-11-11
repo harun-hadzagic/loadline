@@ -1,0 +1,31 @@
+RATE CONFIRMATION                 Load #: CF-559999
+Broker:  Copperline Freight
+Contact: Jonah Pruitt  (602) 555-0138  MC# 982896
+Carrier: Tallgrass Trucking
+Issued:  11/11/2026
+==============================================================================
+STOP  FACILITY                          CITY, ST            DATE / TIME
+------------------------------------------------------------------------------
+PU:   Summit Hardware DC                Nashville, TN       Sun 11/29 7am-3pm
+      350 Commerce Blvd
+DEL:  Northgate Paper Mill              Laredo, TX          11/30/2026 13:00-17:00
+      4410 Mill Rd
+------------------------------------------------------------------------------
+Equipment: 53' Van   |   Weight: 25k   |   Commodity: Plastic resin bags
+Pickup #: PU19789
+
+Line Haul                       $4,100.00
+Fuel Surcharge (FSC)              $507.50
+Stop-off                          $100.00
+TOTAL RATE                      $4,707.50
+
+NOTES / SPECIAL INSTRUCTIONS:
+Please call the receiver 1 hour before arrival.
+
+TERMS:
+- Phone-app tracking is required for the full trip.
+- Driver must carry a copy of this confirmation to the shipper and receiver.
+- Carrier is responsible for cargo from pickup through delivery.
+- Carrier agrees not to double broker or re-broker this load.
+
+Carrier signature: ______________________   Date: ____________

@@ -1,0 +1,52 @@
+{
+  "brokerName": "Northwind Freight Brokerage LLC",
+  "loadReference": "NW-480190",
+  "stops": [
+    {
+      "kind": "pickup",
+      "facilityName": "Foxglove Packaging",
+      "city": "Oklahoma City",
+      "state": "OK",
+      "appointmentStart": "2026-11-30T09:30",
+      "appointmentEnd": "2026-11-30T09:30"
+    },
+    {
+      "kind": "pickup",
+      "facilityName": "Silverleaf Poultry",
+      "city": "Columbus",
+      "state": "OH",
+      "appointmentStart": "2026-12-01T08:00",
+      "appointmentEnd": "2026-12-01T08:00"
+    },
+    {
+      "kind": "delivery",
+      "facilityName": "Cobalt Electronics Distribution",
+      "city": "Omaha",
+      "state": "NE",
+      "appointmentStart": "2026-12-04T09:30",
+      "appointmentEnd": "2026-12-04T09:30"
+    }
+  ],
+  "rateUsd": 4675,
+  "weightLbs": 25000,
+  "commodity": "Steel coils",
+  "equipment": "flatbed",
+  "otherReferences": [
+    {
+      "type": "pickup number",
+      "value": "PU374637"
+    },
+    {
+      "type": "pickup number",
+      "value": "PU856824"
+    },
+    {
+      "type": "delivery number",
+      "value": "DA152366"
+    },
+    {
+      "type": "trailer",
+      "value": "TRL-54354"
+    }
+  ]
+}

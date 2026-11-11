@@ -1,0 +1,68 @@
+{
+  "brokerName": "Northwind Freight Brokerage LLC",
+  "loadReference": "NW-388923",
+  "stops": [
+    {
+      "kind": "pickup",
+      "facilityName": "Anvil Steel Supply",
+      "city": "Jacksonville",
+      "state": "FL",
+      "appointmentStart": "2026-11-26T13:00",
+      "appointmentEnd": "2026-11-26T17:00"
+    },
+    {
+      "kind": "delivery",
+      "facilityName": "Harvest Moon Bakery",
+      "city": "Allentown",
+      "state": "PA",
+      "appointmentStart": "2026-11-29T11:00",
+      "appointmentEnd": "2026-11-29T15:00"
+    },
+    {
+      "kind": "delivery",
+      "facilityName": "Summit Hardware DC",
+      "city": "Harrisburg",
+      "state": "PA",
+      "appointmentStart": "2026-11-30T09:30",
+      "appointmentEnd": "2026-11-30T09:30"
+    },
+    {
+      "kind": "delivery",
+      "facilityName": "Willow Creek Dairy",
+      "city": "Indianapolis",
+      "state": "IN",
+      "appointmentStart": "2026-11-30T07:00",
+      "appointmentEnd": "2026-11-30T15:00"
+    }
+  ],
+  "rateUsd": 4400,
+  "weightLbs": 40000,
+  "commodity": "Household appliances",
+  "equipment": "dry_van",
+  "otherReferences": [
+    {
+      "type": "pickup number",
+      "value": "PU675447"
+    },
+    {
+      "type": "delivery number",
+      "value": "DA197556"
+    },
+    {
+      "type": "delivery number",
+      "value": "DA221475"
+    },
+    {
+      "type": "delivery number",
+      "value": "DA674374"
+    },
+    {
+      "type": "PO",
+      "value": "PO-42649"
+    },
+    {
+      "type": "BOL",
+      "value": "BOL44349"
+    }
+  ]
+}

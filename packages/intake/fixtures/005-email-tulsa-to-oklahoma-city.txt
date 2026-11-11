@@ -1,0 +1,31 @@
+From: marcus@bluewatercargo.example
+To: dispatch@lanternroadexpress.example
+Subject: Rate Confirmation - PRO BW-574785 - Tulsa OK to Oklahoma City OK
+
+Hi Lantern Road Express team,
+
+Good talking with you. Here is the rate confirmation for the load.
+
+PRO #: BW-574785
+Booked with Bluewater Cargo Partners (MC 980566)
+
+Pickup is at Sterling Plastics Inc, 1200 Industrial Pkwy, Tulsa, OK. Appointment: 11/18/2026 FCFS 0700-1500.
+
+Delivery is at Redfield Cold Storage, 88 Depot Ave, Oklahoma City, OK. Appointment: Nov 20, 2026 0530-0930.
+
+Equipment is a Step Deck, weight is 19,000 lbs, commodity is Aluminum sheet.
+
+We are paying $2,175.00 all in for this one.
+
+Reference numbers: Trailer TRL-72425, Delivery appt # DA50682, Shipper Ref SR17847.
+
+Notes: Driver must wear a safety vest and closed-toe shoes at both facilities.
+
+Payment terms: net 30 days after receipt of signed confirmation and POD.
+Carrier must call for check calls every 4 hours and at each stop.
+Phone-app tracking is required for the full trip.
+
+Thanks and safe travels,
+Marcus Oyelaran
+Carrier Sales | Bluewater Cargo Partners
+(615) 555-0115 | marcus@bluewatercargo.example

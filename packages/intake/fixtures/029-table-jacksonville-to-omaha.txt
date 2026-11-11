@@ -1,0 +1,28 @@
+CARRIER RATE AGREEMENT            Order #: BW-975538
+Broker:  Bluewater Cargo Partners
+Contact: Dana Whitfield  (615) 555-0139  MC# 982913
+Carrier: Cinder Creek Transport
+Issued:  11/11/2026
+==============================================================================
+STOP  FACILITY                          CITY, ST            DATE / TIME
+------------------------------------------------------------------------------
+PU:   Foxglove Packaging                Jacksonville, FL    12/06/2026 FCFS 0800-1200
+      88 Depot Ave
+DEL:  Juniper Home Goods DC             Omaha, NE           Dec 7, 2026 0930
+      6600 Logistics Ln
+------------------------------------------------------------------------------
+Equipment: DV   |   Weight: 27,000   |   Commodity: Canned vegetables
+BOL #: BOL61152   Delivery appt #: DA94905   PO #: PO-55313
+
+Rate: $4,500.00
+
+NOTES / SPECIAL INSTRUCTIONS:
+Shipper loads, driver counts.
+
+TERMS:
+- Phone-app tracking is required for the full trip.
+- Payment terms: net 30 days after receipt of signed confirmation and POD.
+- Carrier must call for check calls every 4 hours and at each stop.
+- Detention: 2 hours free time, then $50/hr with prior approval and signed in/out times.
+
+Carrier signature: ______________________   Date: ____________

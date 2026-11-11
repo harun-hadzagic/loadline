@@ -1,0 +1,36 @@
+{
+  "brokerName": "Copperline Freight",
+  "loadReference": "CF-106547",
+  "stops": [
+    {
+      "kind": "pickup",
+      "facilityName": "Highline Lumber Yard",
+      "city": "Harrisburg",
+      "state": "PA",
+      "appointmentStart": "2026-12-11T10:00",
+      "appointmentEnd": "2026-12-11T16:00"
+    },
+    {
+      "kind": "delivery",
+      "facilityName": "Anvil Steel Supply",
+      "city": "Dallas",
+      "state": "TX",
+      "appointmentStart": "2026-12-12T05:30",
+      "appointmentEnd": "2026-12-12T09:30"
+    }
+  ],
+  "rateUsd": 5237.5,
+  "weightLbs": 39500,
+  "commodity": "Auto parts",
+  "equipment": "dry_van",
+  "otherReferences": [
+    {
+      "type": "PO",
+      "value": "PO-87807"
+    },
+    {
+      "type": "BOL",
+      "value": "BOL74916"
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+From: priya@harborlightlogistics.example
+To: dispatch@cindercreektransport.example
+Subject: Load Confirmation - Order HL-573281 - Louisville KY to Albuquerque NM
+
+Hi Cinder Creek Transport team,
+
+Good talking with you. Here is the rate confirmation for the load.
+
+Order #: HL-573281
+Booked with Harbor Light Logistics (MC 984226)
+
+Stop 1 is a pickup at Bayou Rice Mill, 1200 Industrial Pkwy, Louisville, KY. Appointment: 12/07/2026 07:00-15:00. PU# PU283064.
+
+Stop 2 is a delivery at Evergreen Pallet Co, 6600 Logistics Ln, Indianapolis, IN. Appointment: 2026-12-08 1:00 PM to 5:00 PM. DEL# DA829940.
+
+Stop 3 is a delivery at Ridgeback Auto Parts, 915 Foundry St, Albuquerque, NM. Appointment: Tue 12/08 9:30am. DEL# DA112770.
+
+Equipment is a Flatbed, weight is 11 tons, commodity is Structural steel beams.
+
+Rate breakdown:
+  Line Haul               $2,100.00
+  Fuel Surcharge (FSC)      $330.00
+  Stop-off                   $75.00
+  TOTAL RATE              $2,505.00
+
+Reference numbers: Trailer TRL-35320.
+
+Notes: Driver must wear a safety vest and closed-toe shoes at both facilities.
+
+Carrier is responsible for cargo from pickup through delivery.
+Lumper receipts require pre-approval.
+Detention: 2 hours free time, then $50/hr with prior approval and signed in/out times.
+
+Thanks and safe travels,
+Priya Venkataram
+Carrier Sales | Harbor Light Logistics
+(904) 555-0152 | priya@harborlightlogistics.example

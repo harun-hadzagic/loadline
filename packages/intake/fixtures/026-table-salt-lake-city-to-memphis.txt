@@ -1,0 +1,31 @@
+RATE CONFIRMATION                 PRO #: HL-783765
+Broker:  Harbor Light Logistics
+Contact: Keisha Lombardi  (904) 555-0136  MC# 982657
+Carrier: Cinder Creek Transport
+Issued:  11/11/2026
+==============================================================================
+STOP  FACILITY                          CITY, ST            DATE / TIME
+------------------------------------------------------------------------------
+PU:   Bayou Rice Mill                   Salt Lake City, UT  2026-11-15 7:00 AM
+      915 Foundry St
+DEL:  Redfield Cold Storage             Memphis, TN         Wed 11/18 5:30am-9:30am
+      88 Depot Ave
+------------------------------------------------------------------------------
+Equipment: Dry Van   |   Weight: 43000 LBS   |   Commodity: Cardboard boxes
+Pickup #: PU70849   BOL #: BOL50195
+
+Line Haul                       $1,300.00
+Fuel Surcharge (FSC)              $137.50
+Detention (pre-approved)           $75.00
+TOTAL RATE                      $1,512.50
+
+NOTES / SPECIAL INSTRUCTIONS:
+Please call the receiver 1 hour before arrival.
+
+TERMS:
+- Driver must carry a copy of this confirmation to the shipper and receiver.
+- Rate includes all fees. No additional charges without written approval from the broker.
+- Lumper receipts require pre-approval.
+- Payment terms: net 30 days after receipt of signed confirmation and POD.
+
+Carrier signature: ______________________   Date: ____________

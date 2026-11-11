@@ -21,6 +21,8 @@ export async function GET(request: Request): Promise<Response> {
         role: ctx.role,
         driverId: ctx.driverId,
         send: (chunk) => controller.enqueue(encoder.encode(chunk)),
+        // desiredSize goes negative by the number of chunks the consumer has not taken.
+        backlog: () => Math.max(0, -(controller.desiredSize ?? 0)),
         close: () => {
           try {
             controller.close();
@@ -35,8 +37,10 @@ export async function GET(request: Request): Promise<Response> {
       const after =
         request.headers.get("last-event-id") ?? new URL(request.url).searchParams.get("after");
       hub.subscribe(c, after).catch((err) => {
+        // Never leave a silent stream: close it so the browser reconnects and replays.
         console.warn("[events] subscribe failed", err);
         hub.unsubscribe(c);
+        c.close();
       });
     },
     cancel() {

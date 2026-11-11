@@ -1,0 +1,36 @@
+{
+  "brokerName": "Summit Ridge Brokerage",
+  "loadReference": "SR-459546",
+  "stops": [
+    {
+      "kind": "pickup",
+      "facilityName": "Silverleaf Poultry",
+      "city": "Fresno",
+      "state": "CA",
+      "appointmentStart": "2026-12-01T00:00",
+      "appointmentEnd": null
+    },
+    {
+      "kind": "delivery",
+      "facilityName": "Windrow Farms Packing",
+      "city": "Harrisburg",
+      "state": "PA",
+      "appointmentStart": "2026-12-02T00:00",
+      "appointmentEnd": null
+    }
+  ],
+  "rateUsd": 2382.5,
+  "weightLbs": 43500,
+  "commodity": "Fresh produce",
+  "equipment": "reefer",
+  "otherReferences": [
+    {
+      "type": "delivery number",
+      "value": "DA29705"
+    },
+    {
+      "type": "pickup number",
+      "value": "PU88428"
+    }
+  ]
+}

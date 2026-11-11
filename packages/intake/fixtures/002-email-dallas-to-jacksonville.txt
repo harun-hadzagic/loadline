@@ -1,0 +1,35 @@
+From: dana@harborlightlogistics.example
+To: dispatch@acmefreight.example
+Subject: Rate Confirmation - Load HL-734618 - Dallas TX to Jacksonville FL
+
+Hi Acme Freight team,
+
+Attached in the body below is the confirmation for the load we talked about. Please sign and return.
+
+Load #: HL-734618
+Booked with Harbor Light Logistics (MC 980231)
+
+Pickup is at Prairie Gold Milling, 12 Quarry Rd, Dallas, TX. Appointment: 2026-11-27 1:00 PM to 5:00 PM.
+
+Delivery is at Juniper Home Goods DC, 4410 Mill Rd, Jacksonville, FL. Appointment: Mon 11/30 7am-3pm.
+
+Equipment is a Van, weight is 18 tons, commodity is Cardboard boxes.
+
+Rate breakdown:
+  Line Haul               $4,025.00
+  Fuel Surcharge (FSC)      $530.00
+  Detention (pre-approved)     $50.00
+  TOTAL RATE              $4,605.00
+
+Reference numbers: Shipper Ref SR33446, Delivery appt # DA93141, Trailer TRL-19536.
+
+Notes: Shipper loads, driver counts.
+
+Carrier agrees not to double broker or re-broker this load.
+Lumper receipts require pre-approval.
+Detention: 2 hours free time, then $50/hr with prior approval and signed in/out times.
+
+Thanks and safe travels,
+Dana Whitfield
+Carrier Sales | Harbor Light Logistics
+(904) 555-0112 | dana@harborlightlogistics.example

@@ -1,0 +1,40 @@
+{
+  "brokerName": "Summit Ridge Brokerage",
+  "loadReference": "SR-262479",
+  "stops": [
+    {
+      "kind": "pickup",
+      "facilityName": "Windrow Farms Packing",
+      "city": "Laredo",
+      "state": "TX",
+      "appointmentStart": "2026-11-13T09:30",
+      "appointmentEnd": "2026-11-13T09:30"
+    },
+    {
+      "kind": "delivery",
+      "facilityName": "Lakeshore Beverage Distributing",
+      "city": "Omaha",
+      "state": "NE",
+      "appointmentStart": "2026-11-15T06:00",
+      "appointmentEnd": "2026-11-15T14:00"
+    }
+  ],
+  "rateUsd": 2857.5,
+  "weightLbs": 29500,
+  "commodity": "Frozen chicken",
+  "equipment": "reefer",
+  "otherReferences": [
+    {
+      "type": "PO",
+      "value": "PO-16401"
+    },
+    {
+      "type": "BOL",
+      "value": "BOL66882"
+    },
+    {
+      "type": "pickup number",
+      "value": "PU54724"
+    }
+  ]
+}

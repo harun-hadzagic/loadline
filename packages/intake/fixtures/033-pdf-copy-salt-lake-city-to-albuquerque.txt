@@ -1,0 +1,56 @@
+NORTHWIND FREIGHT BROKERAGE LLC
+LOAD CONFIRMATION
+Page 1 of 2
+Load No.
+NW-499411
+Date Issued 11/11/2026
+Carrier Lantern Road Express
+Broker Contact
+Elena Marchetti (312) 555-0143
+Stop 1 of 2
+PICKUP
+Brightfield Grocery
+DC
+350 Commerce Blvd
+Salt Lake City,
+UT
+Appointment
+12-04-26
+@ 13:00-17:00
+Confidential - for carrier use only
+Page 1 of 2
+NORTHWIND FREIGHT BROKERAGE LLC
+LOAD CONFIRMATION (continued)
+Load No.
+NW-499411
+Stop 2 of 2
+DELIVERY
+Highline Lumber
+Yard
+350 Commerce Blvd
+Albuquerque,
+NM
+Appointment
+12/07/2026
+FCFS 1000-1600
+Equipment Type
+48' Flatbed
+Total Weight
+41k
+Commodity
+Aluminum sheet
+PO #
+PO-20135
+Shipper Ref
+SR49809
+BOL #
+BOL33046
+Carrier Rate
+$3,250.00
+Special Instructions
+Please call the receiver 1 hour before arrival.
+Terms and Conditions
+Carrier must call for check calls
+every 4 hours and at each stop.
+Printed 11/11/2026 09:14
+Page 2 of 2

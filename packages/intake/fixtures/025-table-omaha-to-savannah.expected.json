@@ -1,0 +1,32 @@
+{
+  "brokerName": "Northwind Freight Brokerage LLC",
+  "loadReference": "NW-171222",
+  "stops": [
+    {
+      "kind": "pickup",
+      "facilityName": "Marigold Produce Co",
+      "city": "Omaha",
+      "state": "NE",
+      "appointmentStart": "2026-12-08T10:00",
+      "appointmentEnd": "2026-12-08T16:00"
+    },
+    {
+      "kind": "delivery",
+      "facilityName": "Granite State Appliances",
+      "city": "Savannah",
+      "state": "GA",
+      "appointmentStart": "2026-12-09T14:00",
+      "appointmentEnd": "2026-12-09T14:00"
+    }
+  ],
+  "rateUsd": 4625,
+  "weightLbs": 35000,
+  "commodity": "Packaged paper goods",
+  "equipment": "dry_van",
+  "otherReferences": [
+    {
+      "type": "BOL",
+      "value": "BOL11727"
+    }
+  ]
+}

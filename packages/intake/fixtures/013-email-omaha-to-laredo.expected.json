@@ -1,0 +1,32 @@
+{
+  "brokerName": "Bluewater Cargo Partners",
+  "loadReference": "BW-188085",
+  "stops": [
+    {
+      "kind": "pickup",
+      "facilityName": "Marigold Produce Co",
+      "city": "Omaha",
+      "state": "NE",
+      "appointmentStart": "2026-11-14T11:00",
+      "appointmentEnd": "2026-11-14T15:00"
+    },
+    {
+      "kind": "delivery",
+      "facilityName": "Juniper Home Goods DC",
+      "city": "Laredo",
+      "state": "TX",
+      "appointmentStart": "2026-11-16T10:00",
+      "appointmentEnd": "2026-11-16T16:00"
+    }
+  ],
+  "rateUsd": 3875,
+  "weightLbs": 28000,
+  "commodity": "Canned vegetables",
+  "equipment": "dry_van",
+  "otherReferences": [
+    {
+      "type": "trailer",
+      "value": "TRL-15591"
+    }
+  ]
+}

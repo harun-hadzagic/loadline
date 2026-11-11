@@ -1,0 +1,40 @@
+{
+  "brokerName": "Prairie Sky Transport",
+  "loadReference": "PS-615963",
+  "stops": [
+    {
+      "kind": "pickup",
+      "facilityName": "Evergreen Pallet Co",
+      "city": "Harrisburg",
+      "state": "PA",
+      "appointmentStart": "2026-12-04T08:00",
+      "appointmentEnd": "2026-12-04T08:00"
+    },
+    {
+      "kind": "delivery",
+      "facilityName": "Windrow Farms Packing",
+      "city": "Nashville",
+      "state": "TN",
+      "appointmentStart": "2026-12-07T08:00",
+      "appointmentEnd": "2026-12-07T12:00"
+    }
+  ],
+  "rateUsd": 1800,
+  "weightLbs": 35000,
+  "commodity": "Frozen chicken",
+  "equipment": "reefer",
+  "otherReferences": [
+    {
+      "type": "pickup number",
+      "value": "PU66706"
+    },
+    {
+      "type": "trailer",
+      "value": "TRL-60343"
+    },
+    {
+      "type": "shipper ref",
+      "value": "SR93818"
+    }
+  ]
+}

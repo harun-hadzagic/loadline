@@ -1,0 +1,32 @@
+{
+  "brokerName": "Ironwood Transport Services",
+  "loadReference": "IW-483337",
+  "stops": [
+    {
+      "kind": "pickup",
+      "facilityName": "Pinecrest Paper Co",
+      "city": "Atlanta",
+      "state": "GA",
+      "appointmentStart": "2026-12-02T10:00",
+      "appointmentEnd": "2026-12-02T16:00"
+    },
+    {
+      "kind": "delivery",
+      "facilityName": "Marigold Produce Co",
+      "city": "Omaha",
+      "state": "NE",
+      "appointmentStart": "2026-12-04T10:00",
+      "appointmentEnd": "2026-12-04T16:00"
+    }
+  ],
+  "rateUsd": 1750,
+  "weightLbs": 36000,
+  "commodity": "Consumer electronics",
+  "equipment": "dry_van",
+  "otherReferences": [
+    {
+      "type": "shipper ref",
+      "value": "SR42060"
+    }
+  ]
+}

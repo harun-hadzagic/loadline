@@ -1,0 +1,40 @@
+{
+  "brokerName": "Bluewater Cargo Partners",
+  "loadReference": "BW-975538",
+  "stops": [
+    {
+      "kind": "pickup",
+      "facilityName": "Foxglove Packaging",
+      "city": "Jacksonville",
+      "state": "FL",
+      "appointmentStart": "2026-12-06T08:00",
+      "appointmentEnd": "2026-12-06T12:00"
+    },
+    {
+      "kind": "delivery",
+      "facilityName": "Juniper Home Goods DC",
+      "city": "Omaha",
+      "state": "NE",
+      "appointmentStart": "2026-12-07T09:30",
+      "appointmentEnd": "2026-12-07T09:30"
+    }
+  ],
+  "rateUsd": 4500,
+  "weightLbs": 27000,
+  "commodity": "Canned vegetables",
+  "equipment": "dry_van",
+  "otherReferences": [
+    {
+      "type": "BOL",
+      "value": "BOL61152"
+    },
+    {
+      "type": "delivery number",
+      "value": "DA94905"
+    },
+    {
+      "type": "PO",
+      "value": "PO-55313"
+    }
+  ]
+}

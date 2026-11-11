@@ -1,0 +1,32 @@
+{
+  "brokerName": "Bluewater Cargo Partners",
+  "loadReference": "BW-178978",
+  "stops": [
+    {
+      "kind": "pickup",
+      "facilityName": "Ridgeback Auto Parts",
+      "city": "St. Louis",
+      "state": "MO",
+      "appointmentStart": "2026-11-24T07:00",
+      "appointmentEnd": "2026-11-24T07:00"
+    },
+    {
+      "kind": "delivery",
+      "facilityName": "Sterling Plastics Inc",
+      "city": "Albuquerque",
+      "state": "NM",
+      "appointmentStart": "2026-11-26T13:00",
+      "appointmentEnd": "2026-11-26T17:00"
+    }
+  ],
+  "rateUsd": 1550,
+  "weightLbs": 27000,
+  "commodity": "Bottled water",
+  "equipment": null,
+  "otherReferences": [
+    {
+      "type": "trailer",
+      "value": "TRL-55903"
+    }
+  ]
+}

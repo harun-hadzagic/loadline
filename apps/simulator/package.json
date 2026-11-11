@@ -1,0 +1,22 @@
+{
+  "name": "@loadline/simulator",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Moves the seeded trucks toward their stops and posts positions to the app.",
+  "scripts": {
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "start": "tsx src/main.ts",
+    "dev": "tsx watch src/main.ts",
+    "test": "vitest run",
+    "test:unit": "vitest run"
+  },
+  "dependencies": {
+    "@loadline/db": "workspace:*",
+    "zod": "4.6.7"
+  },
+  "devDependencies": {
+    "tsx": "4.23.15",
+    "vitest": "5.1.0"
+  }
+}

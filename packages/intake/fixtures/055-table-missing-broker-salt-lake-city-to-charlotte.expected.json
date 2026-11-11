@@ -1,0 +1,32 @@
+{
+  "brokerName": null,
+  "loadReference": "IW-812308",
+  "stops": [
+    {
+      "kind": "pickup",
+      "facilityName": "Granite State Appliances",
+      "city": "Salt Lake City",
+      "state": "UT",
+      "appointmentStart": "2026-12-08T09:30",
+      "appointmentEnd": "2026-12-08T09:30"
+    },
+    {
+      "kind": "delivery",
+      "facilityName": "Highline Lumber Yard",
+      "city": "Charlotte",
+      "state": "NC",
+      "appointmentStart": "2026-12-10T15:00",
+      "appointmentEnd": "2026-12-10T19:00"
+    }
+  ],
+  "rateUsd": 2050,
+  "weightLbs": 35500,
+  "commodity": "Concrete pipe",
+  "equipment": "flatbed",
+  "otherReferences": [
+    {
+      "type": "delivery number",
+      "value": "DA35518"
+    }
+  ]
+}

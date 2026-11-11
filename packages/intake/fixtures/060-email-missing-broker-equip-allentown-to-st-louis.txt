@@ -1,0 +1,34 @@
+From: marcus@dispatch-desk.example
+To: dispatch@tallgrasstrucking.example
+Subject: Load Confirmation - PRO CF-613628 - Allentown PA to St. Louis MO
+
+Hi Tallgrass Trucking team,
+
+Attached in the body below is the confirmation for the load we talked about. Please sign and return.
+
+PRO #: CF-613628
+
+Pickup is at Cobalt Electronics Distribution, 88 Depot Ave, Allentown, PA. Appointment: 11/13/2026 10:00-16:00.
+
+Delivery is at Tidewater Imports Warehouse, 6600 Logistics Ln, St. Louis, MO. Appointment: 2026-11-16 9:30 AM.
+
+Weight is 30,000 lbs, commodity is Fresh produce.
+
+Rate breakdown:
+  Line Haul               $3,350.00
+  Fuel Surcharge (FSC)      $332.50
+  Stop-off                  $100.00
+  TOTAL RATE              $3,782.50
+
+Reference numbers: PO # PO-19075.
+
+Notes: No overnight parking on site.
+
+Driver must carry a copy of this confirmation to the shipper and receiver.
+Carrier agrees not to double broker or re-broker this load.
+Payment terms: net 30 days after receipt of signed confirmation and POD.
+
+Thanks,
+Marcus
+Dispatch Desk
+(602) 555-0170

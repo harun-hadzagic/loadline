@@ -19,3 +19,4 @@ One short record per choice that shaped Loadline, and for anything that departs 
 | [0013](0013-visibility-safe-cursor.md) | The visibility-safe cursor, and eager delivery above it |
 | [0014](0014-server-sent-events-over-websockets.md) | Server-sent events over WebSockets |
 | [0015](0015-self-hosting-over-serverless.md) | Self-hosting over serverless |
+| [0016](0016-positions-arrival-and-the-simulator.md) | Positions, automatic arrival and the simulator |

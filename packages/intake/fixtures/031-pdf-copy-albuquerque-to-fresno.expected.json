@@ -1,0 +1,32 @@
+{
+  "brokerName": "Ironwood Transport Services",
+  "loadReference": "IW-567524",
+  "stops": [
+    {
+      "kind": "pickup",
+      "facilityName": "Tidewater Imports Warehouse",
+      "city": "Albuquerque",
+      "state": "NM",
+      "appointmentStart": "2026-11-20T10:00",
+      "appointmentEnd": "2026-11-20T16:00"
+    },
+    {
+      "kind": "delivery",
+      "facilityName": "Brightfield Grocery DC",
+      "city": "Fresno",
+      "state": "CA",
+      "appointmentStart": "2026-11-21T07:00",
+      "appointmentEnd": "2026-11-21T15:00"
+    }
+  ],
+  "rateUsd": 3600,
+  "weightLbs": 32000,
+  "commodity": "Bottled water",
+  "equipment": "dry_van",
+  "otherReferences": [
+    {
+      "type": "shipper ref",
+      "value": "SR38590"
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+From: keisha@copperlinefreight.example
+To: dispatch@acmefreight.example
+Subject: Rate Confirmation - Order CF-106547 - Harrisburg PA to Dallas TX
+
+Hi Acme Freight team,
+
+Good talking with you. Here is the rate confirmation for the load.
+
+Order #: CF-106547
+Booked with Copperline Freight (MC 980461)
+
+Pickup is at Highline Lumber Yard, 2150 Harbor Way, Harrisburg, PA. Appointment: Fri 12/11 10am-4pm.
+
+Delivery is at Anvil Steel Supply, 88 Depot Ave, Dallas, TX. Appointment: 12/12/2026 05:30-09:30.
+
+Equipment is a 53' Dry Van, weight is 39,500 lbs, commodity is Auto parts.
+
+Rate breakdown:
+  Line Haul               $4,375.00
+  Fuel Surcharge (FSC)      $762.50
+  Stop-off                  $100.00
+  TOTAL RATE              $5,237.50
+
+Reference numbers: PO # PO-87807, BOL # BOL74916.
+
+Notes: No overnight parking on site.
+
+Carrier must call for check calls every 4 hours and at each stop.
+Carrier is responsible for cargo from pickup through delivery.
+Detention: 2 hours free time, then $50/hr with prior approval and signed in/out times.
+
+Thanks and safe travels,
+Keisha Lombardi
+Carrier Sales | Copperline Freight
+(602) 555-0114 | keisha@copperlinefreight.example

@@ -1,0 +1,27 @@
+RATE CONFIRMATION                 PRO #: IW-812308
+Contact: Tom (dispatch)  (317) 555-0165
+Carrier: Lantern Road Express
+Issued:  11/11/2026
+==============================================================================
+STOP  FACILITY                          CITY, ST            DATE / TIME
+------------------------------------------------------------------------------
+PU:   Granite State Appliances          Salt Lake City, UT  Dec 8, 2026 0930
+      88 Depot Ave
+DEL:  Highline Lumber Yard              Charlotte, NC       12-10-26 @ 15:00-19:00
+      88 Depot Ave
+------------------------------------------------------------------------------
+Equipment: Step Deck   |   Weight: 35,500 lbs   |   Commodity: Concrete pipe
+Delivery appt #: DA35518
+
+Rate: $2,050.00
+
+NOTES / SPECIAL INSTRUCTIONS:
+Driver must wear a safety vest and closed-toe shoes at both facilities.
+
+TERMS:
+- Carrier must call for check calls every 4 hours and at each stop.
+- Detention: 2 hours free time, then $50/hr with prior approval and signed in/out times.
+- Driver must be able to load and unload without assistance unless noted.
+- Carrier is responsible for cargo from pickup through delivery.
+
+Carrier signature: ______________________   Date: ____________

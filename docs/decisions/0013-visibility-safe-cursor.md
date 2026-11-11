@@ -18,6 +18,16 @@ So: the *resume cursor* is still exactly the spec's visibility-safe cursor; the 
 
 **Replay under the lock.** Subscribing a reconnecting client (replay, then switch to live) and draining new rows run under one lock, so no row can fall between a client's replay and its first live event.
 
+**The rules a drain follows** (each closes a hole the Phase 3 review proved):
+
+1. Rows, `xmin`, `xmax` and the in-progress list come from *one statement*, even when there are no rows. An empty read that took its horizon from a second, newer snapshot would let a transaction committing in between fall below the horizon unread.
+2. The horizon advances once per drain, to the horizon of the drain's *first* read, never per page. A failed read advances nothing.
+3. Every SSE frame's `id:` is `min(row cursor, horizon of the read that produced it)`; `hello` during a replay carries the client's own cursor. Resuming from any frame's id yields every later row.
+4. The next drain reads only rows from transactions that were in progress at the previous snapshot or newer than its `xmax`, so one long transaction does not make every drain re-read everything.
+5. "Can this client be replayed from its cursor?" is answered by a prune watermark (`app.outbox_watermark`, the highest cursor ever deleted), read after the replay, not by the oldest surviving row.
+
+`apps/web/test/db/hub.test.ts` and `packages/db/test/db/cursor-committed.test.ts` exercise each rule against the real database.
+
 ## Rejected
 
 - `id > last_id`: the bug described above.

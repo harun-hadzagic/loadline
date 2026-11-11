@@ -1,0 +1,40 @@
+{
+  "brokerName": "Bluewater Cargo Partners",
+  "loadReference": "BW-574785",
+  "stops": [
+    {
+      "kind": "pickup",
+      "facilityName": "Sterling Plastics Inc",
+      "city": "Tulsa",
+      "state": "OK",
+      "appointmentStart": "2026-11-18T07:00",
+      "appointmentEnd": "2026-11-18T15:00"
+    },
+    {
+      "kind": "delivery",
+      "facilityName": "Redfield Cold Storage",
+      "city": "Oklahoma City",
+      "state": "OK",
+      "appointmentStart": "2026-11-20T05:30",
+      "appointmentEnd": "2026-11-20T09:30"
+    }
+  ],
+  "rateUsd": 2175,
+  "weightLbs": 19000,
+  "commodity": "Aluminum sheet",
+  "equipment": "flatbed",
+  "otherReferences": [
+    {
+      "type": "trailer",
+      "value": "TRL-72425"
+    },
+    {
+      "type": "delivery number",
+      "value": "DA50682"
+    },
+    {
+      "type": "shipper ref",
+      "value": "SR17847"
+    }
+  ]
+}

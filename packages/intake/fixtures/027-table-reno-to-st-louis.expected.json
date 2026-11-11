@@ -1,0 +1,32 @@
+{
+  "brokerName": "Prairie Sky Transport",
+  "loadReference": "PS-472664",
+  "stops": [
+    {
+      "kind": "pickup",
+      "facilityName": "Cedar Valley Foods DC",
+      "city": "Reno",
+      "state": "NV",
+      "appointmentStart": "2026-11-22T09:30",
+      "appointmentEnd": "2026-11-22T09:30"
+    },
+    {
+      "kind": "delivery",
+      "facilityName": "Silverleaf Poultry",
+      "city": "St. Louis",
+      "state": "MO",
+      "appointmentStart": "2026-11-23T09:30",
+      "appointmentEnd": "2026-11-23T09:30"
+    }
+  ],
+  "rateUsd": 3325,
+  "weightLbs": 40000,
+  "commodity": "Frozen chicken",
+  "equipment": "reefer",
+  "otherReferences": [
+    {
+      "type": "shipper ref",
+      "value": "SR46931"
+    }
+  ]
+}

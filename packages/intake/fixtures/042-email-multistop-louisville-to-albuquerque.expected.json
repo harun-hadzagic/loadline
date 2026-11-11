@@ -1,0 +1,52 @@
+{
+  "brokerName": "Harbor Light Logistics",
+  "loadReference": "HL-573281",
+  "stops": [
+    {
+      "kind": "pickup",
+      "facilityName": "Bayou Rice Mill",
+      "city": "Louisville",
+      "state": "KY",
+      "appointmentStart": "2026-12-07T07:00",
+      "appointmentEnd": "2026-12-07T15:00"
+    },
+    {
+      "kind": "delivery",
+      "facilityName": "Evergreen Pallet Co",
+      "city": "Indianapolis",
+      "state": "IN",
+      "appointmentStart": "2026-12-08T13:00",
+      "appointmentEnd": "2026-12-08T17:00"
+    },
+    {
+      "kind": "delivery",
+      "facilityName": "Ridgeback Auto Parts",
+      "city": "Albuquerque",
+      "state": "NM",
+      "appointmentStart": "2026-12-08T09:30",
+      "appointmentEnd": "2026-12-08T09:30"
+    }
+  ],
+  "rateUsd": 2505,
+  "weightLbs": 22000,
+  "commodity": "Structural steel beams",
+  "equipment": "flatbed",
+  "otherReferences": [
+    {
+      "type": "pickup number",
+      "value": "PU283064"
+    },
+    {
+      "type": "delivery number",
+      "value": "DA829940"
+    },
+    {
+      "type": "delivery number",
+      "value": "DA112770"
+    },
+    {
+      "type": "trailer",
+      "value": "TRL-35320"
+    }
+  ]
+}

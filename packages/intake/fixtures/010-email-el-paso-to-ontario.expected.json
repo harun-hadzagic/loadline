@@ -1,0 +1,32 @@
+{
+  "brokerName": "Harbor Light Logistics",
+  "loadReference": "HL-447897",
+  "stops": [
+    {
+      "kind": "pickup",
+      "facilityName": "Brightfield Grocery DC",
+      "city": "El Paso",
+      "state": "TX",
+      "appointmentStart": "2026-11-23T08:00",
+      "appointmentEnd": "2026-11-23T12:00"
+    },
+    {
+      "kind": "delivery",
+      "facilityName": "Bayou Rice Mill",
+      "city": "Ontario",
+      "state": "CA",
+      "appointmentStart": "2026-11-25T05:30",
+      "appointmentEnd": "2026-11-25T09:30"
+    }
+  ],
+  "rateUsd": 4665,
+  "weightLbs": 23500,
+  "commodity": "Lumber",
+  "equipment": "flatbed",
+  "otherReferences": [
+    {
+      "type": "delivery number",
+      "value": "DA82373"
+    }
+  ]
+}

@@ -1,0 +1,33 @@
+From: dana@northwindfreight.example
+To: dispatch@cindercreektransport.example
+Subject: Load Confirmation - PRO NW-776780 - Omaha NE to Charlotte NC
+
+Hi Cinder Creek Transport team,
+
+Attached in the body below is the confirmation for the load we talked about. Please sign and return.
+
+PRO #: NW-776780
+Booked with Northwind Freight Brokerage LLC (MC 980918)
+
+Pickup is at Lakeshore Beverage Distributing, 915 Foundry St, Omaha, NE. Appointment: 11-16-26 @ 09:30.
+
+Delivery is at Pinecrest Paper Co, 350 Commerce Blvd, Charlotte, NC. Appointment: 11/17/2026 09:30.
+
+Equipment is a Reefer, weight is 18,500 lbs, commodity is Fresh produce.
+
+Keep the reefer unit on continuous and set at 34F, please.
+
+Rate is $2,625.00 flat, all in.
+
+Reference numbers: Trailer TRL-42167.
+
+Notes: Shipper loads, driver counts.
+
+Rate includes all fees. No additional charges without written approval from the broker.
+Phone-app tracking is required for the full trip.
+Detention: 2 hours free time, then $50/hr with prior approval and signed in/out times.
+
+Thanks and safe travels,
+Dana Whitfield
+Carrier Sales | Northwind Freight Brokerage LLC
+(312) 555-0119 | dana@northwindfreight.example

@@ -1,0 +1,40 @@
+{
+  "brokerName": "Summit Ridge Brokerage",
+  "loadReference": "SR-271848",
+  "stops": [
+    {
+      "kind": "pickup",
+      "facilityName": "Highline Lumber Yard",
+      "city": "El Paso",
+      "state": "TX",
+      "appointmentStart": "2026-11-25T06:00",
+      "appointmentEnd": "2026-11-25T14:00"
+    },
+    {
+      "kind": "delivery",
+      "facilityName": "Falconer Metals",
+      "city": "Chicago",
+      "state": "IL",
+      "appointmentStart": "2026-11-28T06:00",
+      "appointmentEnd": "2026-11-28T14:00"
+    }
+  ],
+  "rateUsd": 1400,
+  "weightLbs": 26500,
+  "commodity": "Building materials",
+  "equipment": "flatbed",
+  "otherReferences": [
+    {
+      "type": "trailer",
+      "value": "TRL-73326"
+    },
+    {
+      "type": "delivery number",
+      "value": "DA52835"
+    },
+    {
+      "type": "shipper ref",
+      "value": "SR16077"
+    }
+  ]
+}

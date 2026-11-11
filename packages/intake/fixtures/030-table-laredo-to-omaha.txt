@@ -1,0 +1,31 @@
+RATE CONFIRMATION                 Load #: SR-262479
+Broker:  Summit Ridge Brokerage
+Contact: Tom Brightwater  (801) 555-0140  MC# 983094
+Carrier: Redwood Line Carriers
+Issued:  11/11/2026
+==============================================================================
+STOP  FACILITY                          CITY, ST            DATE / TIME
+------------------------------------------------------------------------------
+PU:   Windrow Farms Packing             Laredo, TX          11/13/2026 09:30
+      12 Quarry Rd
+DEL:  Lakeshore Beverage Distributing   Omaha, NE           2026-11-15 6:00 AM to 2:00 PM
+      915 Foundry St
+------------------------------------------------------------------------------
+Equipment: Refrigerated   |   Weight: 29,500 lbs   |   Commodity: Frozen chicken
+PO #: PO-16401   BOL #: BOL66882   Pickup #: PU54724
+
+Line Haul                       $2,450.00
+Fuel Surcharge (FSC)              $407.50
+TOTAL RATE                      $2,857.50
+
+NOTES / SPECIAL INSTRUCTIONS:
+Driver must wear a safety vest and closed-toe shoes at both facilities.
+Reefer: continuous mode, set temp 34F.
+
+TERMS:
+- POD must be emailed within 24 hours of delivery.
+- Carrier agrees not to double broker or re-broker this load.
+- Driver must carry a copy of this confirmation to the shipper and receiver.
+- Rate includes all fees. No additional charges without written approval from the broker.
+
+Carrier signature: ______________________   Date: ____________

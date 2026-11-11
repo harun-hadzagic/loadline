@@ -1,0 +1,29 @@
+RATE CONFIRMATION                 Load #: PS-472664
+Broker:  Prairie Sky Transport
+Contact: Priya Venkataram  (402) 555-0137  MC# 982751
+Carrier: Cinder Creek Transport
+Issued:  11/11/2026
+==============================================================================
+STOP  FACILITY                          CITY, ST            DATE / TIME
+------------------------------------------------------------------------------
+PU:   Cedar Valley Foods DC             Reno, NV            11-22-26 @ 09:30
+      7301 Rail Spur Dr
+DEL:  Silverleaf Poultry                St. Louis, MO       11/23/2026 09:30
+      7301 Rail Spur Dr
+------------------------------------------------------------------------------
+Equipment: R   |   Weight: 20 tons   |   Commodity: Frozen chicken
+Shipper Ref: SR46931
+
+Rate: $3,325.00
+
+NOTES / SPECIAL INSTRUCTIONS:
+Please call the receiver 1 hour before arrival.
+Reefer: continuous mode, set temp 34F.
+
+TERMS:
+- POD must be emailed within 24 hours of delivery.
+- Carrier must call for check calls every 4 hours and at each stop.
+- Carrier is responsible for cargo from pickup through delivery.
+- Lumper receipts require pre-approval.
+
+Carrier signature: ______________________   Date: ____________

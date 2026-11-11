@@ -1,0 +1,32 @@
+RATE CONFIRMATION                 PRO #: MR-898272
+Broker:  Meridian Cargo Group
+Contact: Priya Venkataram  (816) 555-0134  MC# 982492
+Carrier: Tallgrass Trucking
+Issued:  11/11/2026
+==============================================================================
+STOP  FACILITY                          CITY, ST            DATE / TIME
+------------------------------------------------------------------------------
+PU:   Copper Kettle Canning             Salt Lake City, UT  12/01/2026 11:00-15:00
+      740 Freight Ct
+DEL:  Foxglove Packaging                Oklahoma City, OK   2026-12-02 10:00 AM to 4:00 PM
+      915 Foundry St
+------------------------------------------------------------------------------
+Equipment: Reefer   |   Weight: 24,500   |   Commodity: Frozen vegetables
+Trailer: TRL-82756   PO #: PO-65989
+
+Line Haul                       $1,450.00
+Fuel Surcharge (FSC)              $212.50
+Stop-off                          $125.00
+TOTAL RATE                      $1,787.50
+
+NOTES / SPECIAL INSTRUCTIONS:
+Please call the receiver 1 hour before arrival.
+Reefer: continuous mode, set temp 34F.
+
+TERMS:
+- Driver must carry a copy of this confirmation to the shipper and receiver.
+- Carrier is responsible for cargo from pickup through delivery.
+- Carrier agrees not to double broker or re-broker this load.
+- Rate includes all fees. No additional charges without written approval from the broker.
+
+Carrier signature: ______________________   Date: ____________

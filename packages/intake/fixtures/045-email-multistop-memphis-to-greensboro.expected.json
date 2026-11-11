@@ -1,0 +1,52 @@
+{
+  "brokerName": "Bluewater Cargo Partners",
+  "loadReference": "BW-171800",
+  "stops": [
+    {
+      "kind": "pickup",
+      "facilityName": "Ridgeback Auto Parts",
+      "city": "Memphis",
+      "state": "TN",
+      "appointmentStart": "2026-11-28T11:00",
+      "appointmentEnd": "2026-11-28T15:00"
+    },
+    {
+      "kind": "delivery",
+      "facilityName": "Ballast Point Tile",
+      "city": "Savannah",
+      "state": "GA",
+      "appointmentStart": "2026-11-30T14:00",
+      "appointmentEnd": "2026-11-30T14:00"
+    },
+    {
+      "kind": "delivery",
+      "facilityName": "Foxglove Packaging",
+      "city": "Greensboro",
+      "state": "NC",
+      "appointmentStart": "2026-12-02T08:00",
+      "appointmentEnd": "2026-12-02T12:00"
+    }
+  ],
+  "rateUsd": 2775,
+  "weightLbs": 26000,
+  "commodity": "Frozen vegetables",
+  "equipment": "reefer",
+  "otherReferences": [
+    {
+      "type": "pickup number",
+      "value": "PU149593"
+    },
+    {
+      "type": "delivery number",
+      "value": "DA614125"
+    },
+    {
+      "type": "delivery number",
+      "value": "DA894824"
+    },
+    {
+      "type": "BOL",
+      "value": "BOL95432"
+    }
+  ]
+}

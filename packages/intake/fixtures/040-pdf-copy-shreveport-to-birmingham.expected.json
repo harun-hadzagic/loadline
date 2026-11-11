@@ -1,0 +1,40 @@
+{
+  "brokerName": "Meridian Cargo Group",
+  "loadReference": "MR-939053",
+  "stops": [
+    {
+      "kind": "pickup",
+      "facilityName": "Cedar Valley Foods DC",
+      "city": "Shreveport",
+      "state": "LA",
+      "appointmentStart": "2026-11-23T07:00",
+      "appointmentEnd": "2026-11-23T15:00"
+    },
+    {
+      "kind": "delivery",
+      "facilityName": "Sterling Plastics Inc",
+      "city": "Birmingham",
+      "state": "AL",
+      "appointmentStart": "2026-11-25T07:00",
+      "appointmentEnd": "2026-11-25T07:00"
+    }
+  ],
+  "rateUsd": 3902.5,
+  "weightLbs": 20000,
+  "commodity": "Canned vegetables",
+  "equipment": "dry_van",
+  "otherReferences": [
+    {
+      "type": "delivery number",
+      "value": "DA78277"
+    },
+    {
+      "type": "trailer",
+      "value": "TRL-83256"
+    },
+    {
+      "type": "shipper ref",
+      "value": "SR68790"
+    }
+  ]
+}

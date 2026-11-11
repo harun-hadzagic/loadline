@@ -1,0 +1,40 @@
+{
+  "brokerName": "Meridian Cargo Group",
+  "loadReference": "MR-707945",
+  "stops": [
+    {
+      "kind": "pickup",
+      "facilityName": "Ballast Point Tile",
+      "city": "El Paso",
+      "state": "TX",
+      "appointmentStart": "2026-11-15T08:00",
+      "appointmentEnd": "2026-11-15T12:00"
+    },
+    {
+      "kind": "delivery",
+      "facilityName": "Foxglove Packaging",
+      "city": "Denver",
+      "state": "CO",
+      "appointmentStart": "2026-11-17T07:00",
+      "appointmentEnd": "2026-11-17T15:00"
+    }
+  ],
+  "rateUsd": null,
+  "weightLbs": 22000,
+  "commodity": "Cardboard boxes",
+  "equipment": "dry_van",
+  "otherReferences": [
+    {
+      "type": "PO",
+      "value": "PO-74669"
+    },
+    {
+      "type": "shipper ref",
+      "value": "SR91642"
+    },
+    {
+      "type": "BOL",
+      "value": "BOL29138"
+    }
+  ]
+}

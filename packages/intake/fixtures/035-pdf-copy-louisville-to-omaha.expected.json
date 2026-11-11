@@ -1,0 +1,40 @@
+{
+  "brokerName": "Prairie Sky Transport",
+  "loadReference": "PS-259708",
+  "stops": [
+    {
+      "kind": "pickup",
+      "facilityName": "Pinecrest Paper Co",
+      "city": "Louisville",
+      "state": "KY",
+      "appointmentStart": "2026-11-18T09:30",
+      "appointmentEnd": "2026-11-18T09:30"
+    },
+    {
+      "kind": "delivery",
+      "facilityName": "Cobalt Electronics Distribution",
+      "city": "Omaha",
+      "state": "NE",
+      "appointmentStart": "2026-11-20T05:30",
+      "appointmentEnd": "2026-11-20T09:30"
+    }
+  ],
+  "rateUsd": 3675,
+  "weightLbs": 24000,
+  "commodity": "Canned vegetables",
+  "equipment": "dry_van",
+  "otherReferences": [
+    {
+      "type": "BOL",
+      "value": "BOL60022"
+    },
+    {
+      "type": "PO",
+      "value": "PO-28547"
+    },
+    {
+      "type": "pickup number",
+      "value": "PU20238"
+    }
+  ]
+}

@@ -1,0 +1,40 @@
+{
+  "brokerName": "Harbor Light Logistics",
+  "loadReference": "HL-495046",
+  "stops": [
+    {
+      "kind": "pickup",
+      "facilityName": "Foxglove Packaging",
+      "city": "Fresno",
+      "state": "CA",
+      "appointmentStart": "2026-12-11T11:00",
+      "appointmentEnd": "2026-12-11T15:00"
+    },
+    {
+      "kind": "delivery",
+      "facilityName": "Stonebridge Cabinet Works",
+      "city": "Allentown",
+      "state": "PA",
+      "appointmentStart": "2026-12-14T06:00",
+      "appointmentEnd": "2026-12-14T14:00"
+    }
+  ],
+  "rateUsd": 4102.5,
+  "weightLbs": 36000,
+  "commodity": "Bottled water",
+  "equipment": "dry_van",
+  "otherReferences": [
+    {
+      "type": "delivery number",
+      "value": "DA74924"
+    },
+    {
+      "type": "shipper ref",
+      "value": "SR98735"
+    },
+    {
+      "type": "trailer",
+      "value": "TRL-51688"
+    }
+  ]
+}

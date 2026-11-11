@@ -1,0 +1,64 @@
+{
+  "brokerName": "Summit Ridge Brokerage",
+  "loadReference": "SR-752043",
+  "stops": [
+    {
+      "kind": "pickup",
+      "facilityName": "Quarry Road Aggregates",
+      "city": "Kansas City",
+      "state": "MO",
+      "appointmentStart": "2026-12-05T09:30",
+      "appointmentEnd": "2026-12-05T09:30"
+    },
+    {
+      "kind": "delivery",
+      "facilityName": "Redfield Cold Storage",
+      "city": "Birmingham",
+      "state": "AL",
+      "appointmentStart": "2026-12-07T08:00",
+      "appointmentEnd": "2026-12-07T12:00"
+    },
+    {
+      "kind": "delivery",
+      "facilityName": "Foxglove Packaging",
+      "city": "Omaha",
+      "state": "NE",
+      "appointmentStart": "2026-12-09T10:00",
+      "appointmentEnd": "2026-12-09T16:00"
+    },
+    {
+      "kind": "delivery",
+      "facilityName": "Juniper Home Goods DC",
+      "city": "Louisville",
+      "state": "KY",
+      "appointmentStart": "2026-12-11T08:00",
+      "appointmentEnd": "2026-12-11T08:00"
+    }
+  ],
+  "rateUsd": 5145,
+  "weightLbs": 25000,
+  "commodity": "Structural steel beams",
+  "equipment": "flatbed",
+  "otherReferences": [
+    {
+      "type": "pickup number",
+      "value": "PU847329"
+    },
+    {
+      "type": "delivery number",
+      "value": "DA641149"
+    },
+    {
+      "type": "delivery number",
+      "value": "DA259074"
+    },
+    {
+      "type": "delivery number",
+      "value": "DA670130"
+    },
+    {
+      "type": "trailer",
+      "value": "TRL-85606"
+    }
+  ]
+}

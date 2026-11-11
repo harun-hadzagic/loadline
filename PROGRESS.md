@@ -66,3 +66,28 @@ One entry per phase: what was built, and the evidence it works. Figures here are
 - `pnpm lint`, `pnpm typecheck`: clean.
 
 **Reviewer**: see `docs/building-with-ai.md`.
+
+## Phase 4 · Map and geospatial — done 2026-11-11
+
+**Built**
+
+- `app.record_position()` (migration 0007): upsert of the truck's latest position, stale reports ignored, and the arrival check in the same transaction (`ST_DWithin` against the company's `arrival_radius_miles`, next open stop only, status untouched). Decision 0016.
+- `POST /api/positions` and `GET /api/simulator/state` behind a constant-time service token; `recordPositions` emits one `position.updated` per truck and `stop.arrived` (addressed to the driver) per arrival; `GET /api/positions` for the map.
+- `apps/simulator`: great-circle movement at 55 mph × `SIMULATOR_SPEED_FACTOR` toward the next open stop, jitter at home otherwise, one batch per company per tick; Compose service.
+- `/map`: MapLibre GL with OpenFreeMap tiles, trucks coloured by state, stops of active loads, popups, live updates from `position.updated` payloads; works without the base map.
+- Nearest free trucks in the assign dialog (`assignmentCandidates`: free in `app.load_window`, ordered by `location <-> pickup` on the GiST index).
+- `bench/src/geo.ts`: a separate `loadline_bench` database with 100,000 trucks and 200,000 stops over the city table, `EXPLAIN (ANALYZE, BUFFERS)`, median of 20 runs after 3 warm-ups, indexes dropped and recreated for the comparison.
+- Compose: `web` (standalone Next.js image) and `simulator` images; `docker compose up` brings up db → migrate → web → simulator.
+- Phase 3 review fixes in the stream (see `docs/building-with-ai.md`): single-snapshot reads, one horizon per drain, per-frame resume ids, prune watermark, closed streams on failure, cache bridge per tab with refetch on hello, one-load rollback, event counting in the bench, `instrumentation.ts` starting the hub at boot.
+
+**Evidence**
+
+- `pnpm test`: db `11 files, 132 tests`; web `5 files, 67 tests` (hub, events, positions, services, permissions); simulator `4 tests`; all passing.
+- `pnpm --filter @loadline/e2e test`: `11 passed` (auth, two-browser board, map with a live marker move, arrival on the load page, driver phone). `board.spec.ts --repeat-each 10`: `30 passed`.
+- `bench/results/geo.json` (native arm64 image, Apple M2 Pro): nearest free trucks 0.075 ms with the GiST index (Index Scan on `truck_positions_location_idx`) vs 40.5 ms without; arrival check 0.119 ms with (Index Scan on `stops_location_idx`) vs 133.6 ms without (Seq Scan).
+- `bench/results/sync-latency.json`, now against the production (standalone) build in Compose: 50 clients, 200 writes at 4.97/s, 10,000 of 10,000 delivered, 0 lost, 0 duplicates, p50 2.4 ms, p95 4.1 ms, p99 6.3 ms, max 8.5 ms.
+- Simulator against the dev server at 600×: 3 trucks moving, 6 arrivals logged (3 loads × 2 stops), the rest idle at home as designed.
+- `docker compose up --build`: all four services up, web healthy, sign-in and board 200. Note: this machine has a PostgreSQL on 5432, so the local `.env` uses `DB_PORT=5434`; `.env.example` keeps 5432.
+- `pnpm lint`, `pnpm typecheck`: clean.
+
+**Reviewer**: see `docs/building-with-ai.md`.

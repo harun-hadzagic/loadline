@@ -1,0 +1,40 @@
+{
+  "brokerName": "Harbor Light Logistics",
+  "loadReference": "HL-734618",
+  "stops": [
+    {
+      "kind": "pickup",
+      "facilityName": "Prairie Gold Milling",
+      "city": "Dallas",
+      "state": "TX",
+      "appointmentStart": "2026-11-27T13:00",
+      "appointmentEnd": "2026-11-27T17:00"
+    },
+    {
+      "kind": "delivery",
+      "facilityName": "Juniper Home Goods DC",
+      "city": "Jacksonville",
+      "state": "FL",
+      "appointmentStart": "2026-11-30T07:00",
+      "appointmentEnd": "2026-11-30T15:00"
+    }
+  ],
+  "rateUsd": 4605,
+  "weightLbs": 36000,
+  "commodity": "Cardboard boxes",
+  "equipment": "dry_van",
+  "otherReferences": [
+    {
+      "type": "shipper ref",
+      "value": "SR33446"
+    },
+    {
+      "type": "delivery number",
+      "value": "DA93141"
+    },
+    {
+      "type": "trailer",
+      "value": "TRL-19536"
+    }
+  ]
+}

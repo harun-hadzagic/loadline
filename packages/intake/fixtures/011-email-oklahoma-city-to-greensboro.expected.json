@@ -1,0 +1,32 @@
+{
+  "brokerName": "Prairie Sky Transport",
+  "loadReference": "PS-513757",
+  "stops": [
+    {
+      "kind": "pickup",
+      "facilityName": "Stonebridge Cabinet Works",
+      "city": "Oklahoma City",
+      "state": "OK",
+      "appointmentStart": "2026-11-30T11:00",
+      "appointmentEnd": "2026-11-30T15:00"
+    },
+    {
+      "kind": "delivery",
+      "facilityName": "Pinecrest Paper Co",
+      "city": "Greensboro",
+      "state": "NC",
+      "appointmentStart": "2026-12-02T10:00",
+      "appointmentEnd": "2026-12-02T16:00"
+    }
+  ],
+  "rateUsd": 2425,
+  "weightLbs": 25500,
+  "commodity": "Auto parts",
+  "equipment": "dry_van",
+  "otherReferences": [
+    {
+      "type": "delivery number",
+      "value": "DA24214"
+    }
+  ]
+}

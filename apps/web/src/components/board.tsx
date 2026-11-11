@@ -17,10 +17,11 @@ import { toast } from "sonner";
 import { AssignDialog } from "@/components/assign-dialog";
 import { ConnectionIndicator } from "@/components/connection-indicator";
 import { Badge } from "@/components/ui/badge";
-import { LOADS_KEY, mergeLoad, useEventStream } from "@/hooks/use-event-stream";
+import { LOADS_KEY, mergeLoad, useStreamStatus } from "@/hooks/use-event-stream";
 import { money, STATUS_LABEL, windowInZone } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { assignLoadAction } from "@/server/actions";
+import type { ActionResult } from "@/server/errors";
 import type { DriverView, TruckView } from "@/server/fleet";
 import type { LoadStatus, LoadView } from "@/server/loads";
 
@@ -33,10 +34,29 @@ interface Props {
   canAssign: boolean;
 }
 
+/**
+ * Undo an optimistic assignment for one load only. Stream updates applied to
+ * other loads while the request was in flight stay in place. The server's
+ * current row wins when the 409 carried it; otherwise the pre-request row
+ * returns, unless the cache has since moved past the optimistic entry.
+ */
+export function rollbackLoad(
+  list: LoadView[],
+  original: LoadView,
+  optimistic: LoadView,
+  current: LoadView | null,
+): LoadView[] {
+  return list.map((l) => {
+    if (l.id !== original.id) return l;
+    if (current) return current;
+    return l === optimistic || l.assignment?.id === "pending" ? original : l;
+  });
+}
+
 export function Board({ initialLoads, drivers, trucks, canAssign }: Props) {
   const qc = useQueryClient();
   const router = useRouter();
-  const status = useEventStream();
+  const status = useStreamStatus();
   const { data: loads = [] } = useQuery<LoadView[]>({
     queryKey: LOADS_KEY,
     queryFn: async () => {
@@ -58,8 +78,7 @@ export function Board({ initialLoads, drivers, trucks, canAssign }: Props) {
 
   const assign = async (load: LoadView, driverId: string, truckId: string) => {
     setAssigning(null);
-    // Optimistic: move the card now, roll back on a 409.
-    const previous = qc.getQueryData<LoadView[]>(LOADS_KEY) ?? [];
+    // Optimistic: move the card now, roll it back on a 409.
     const driver = drivers.find((d) => d.id === driverId);
     const truck = trucks.find((t) => t.id === truckId);
     const optimistic: LoadView = {
@@ -79,22 +98,33 @@ export function Board({ initialLoads, drivers, trucks, canAssign }: Props) {
       (old ?? []).map((l) => (l.id === load.id ? optimistic : l)),
     );
     setPendingIds((s) => new Set(s).add(load.id));
-    const result = await assignLoadAction({
-      loadId: load.id,
-      version: load.version,
-      driverId,
-      truckId,
-    });
-    setPendingIds((s) => {
-      const n = new Set(s);
-      n.delete(load.id);
-      return n;
-    });
+    let result: ActionResult<LoadView>;
+    try {
+      result = await assignLoadAction({
+        loadId: load.id,
+        version: load.version,
+        driverId,
+        truckId,
+      });
+    } catch (err) {
+      result = {
+        ok: false,
+        status: 0,
+        message: err instanceof Error ? err.message : "Request failed.",
+      };
+    } finally {
+      setPendingIds((s) => {
+        const n = new Set(s);
+        n.delete(load.id);
+        return n;
+      });
+    }
     if (!result.ok) {
       const current = (result.details?.current as LoadView | undefined) ?? null;
-      qc.setQueryData<LoadView[]>(LOADS_KEY, () =>
-        current ? mergeLoad(previous, current) : previous,
+      qc.setQueryData<LoadView[]>(LOADS_KEY, (old) =>
+        rollbackLoad(old ?? [], load, optimistic, current),
       );
+      void qc.invalidateQueries({ queryKey: LOADS_KEY }); // the truth replaces any guess
       toast.error(result.message, { id: `assign-${load.id}` });
       return;
     }
@@ -158,7 +188,7 @@ function Column({
       ref={setNodeRef}
       data-testid={`column-${status}`}
       className={cn(
-        "flex min-h-40 flex-col gap-2 rounded-lg border bg-muted/30 p-2",
+        "flex max-h-[calc(100vh-8rem)] min-h-40 flex-col gap-2 overflow-y-auto rounded-lg border bg-muted/30 p-2",
         isOver && droppable && "ring-2 ring-primary",
       )}
     >

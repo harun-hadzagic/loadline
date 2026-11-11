@@ -1,0 +1,36 @@
+{
+  "brokerName": "Harbor Light Logistics",
+  "loadReference": "HL-783765",
+  "stops": [
+    {
+      "kind": "pickup",
+      "facilityName": "Bayou Rice Mill",
+      "city": "Salt Lake City",
+      "state": "UT",
+      "appointmentStart": "2026-11-15T07:00",
+      "appointmentEnd": "2026-11-15T07:00"
+    },
+    {
+      "kind": "delivery",
+      "facilityName": "Redfield Cold Storage",
+      "city": "Memphis",
+      "state": "TN",
+      "appointmentStart": "2026-11-18T05:30",
+      "appointmentEnd": "2026-11-18T09:30"
+    }
+  ],
+  "rateUsd": 1512.5,
+  "weightLbs": 43000,
+  "commodity": "Cardboard boxes",
+  "equipment": "dry_van",
+  "otherReferences": [
+    {
+      "type": "pickup number",
+      "value": "PU70849"
+    },
+    {
+      "type": "BOL",
+      "value": "BOL50195"
+    }
+  ]
+}

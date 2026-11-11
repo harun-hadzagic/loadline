@@ -1,0 +1,52 @@
+{
+  "brokerName": "Ironwood Transport Services",
+  "loadReference": "IW-828439",
+  "stops": [
+    {
+      "kind": "pickup",
+      "facilityName": "Redfield Cold Storage",
+      "city": "Greensboro",
+      "state": "NC",
+      "appointmentStart": "2026-12-12T07:00",
+      "appointmentEnd": "2026-12-12T07:00"
+    },
+    {
+      "kind": "pickup",
+      "facilityName": "Falconer Metals",
+      "city": "Albuquerque",
+      "state": "NM",
+      "appointmentStart": "2026-12-14T08:00",
+      "appointmentEnd": "2026-12-14T12:00"
+    },
+    {
+      "kind": "delivery",
+      "facilityName": "Cobalt Electronics Distribution",
+      "city": "Birmingham",
+      "state": "AL",
+      "appointmentStart": "2026-12-17T15:00",
+      "appointmentEnd": "2026-12-17T19:00"
+    }
+  ],
+  "rateUsd": 3825,
+  "weightLbs": 40000,
+  "commodity": "Plastic resin bags",
+  "equipment": "dry_van",
+  "otherReferences": [
+    {
+      "type": "pickup number",
+      "value": "PU734567"
+    },
+    {
+      "type": "pickup number",
+      "value": "PU409034"
+    },
+    {
+      "type": "delivery number",
+      "value": "DA520465"
+    },
+    {
+      "type": "PO",
+      "value": "PO-91992"
+    }
+  ]
+}

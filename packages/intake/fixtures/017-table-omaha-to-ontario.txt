@@ -1,0 +1,28 @@
+RATE CONFIRMATION                 PRO #: NW-222770
+Broker:  Northwind Freight Brokerage LLC
+Contact: Dana Whitfield  (312) 555-0127  MC# 981774
+Carrier: Cinder Creek Transport
+Issued:  11/11/2026
+==============================================================================
+STOP  FACILITY                          CITY, ST            DATE / TIME
+------------------------------------------------------------------------------
+PU:   Tidewater Imports Warehouse       Omaha, NE           12/12/2026 FCFS 1100-1500
+      915 Foundry St
+DEL:  Ridgeback Auto Parts              Ontario, CA         Dec 13, 2026 1300-1700
+      2150 Harbor Way
+------------------------------------------------------------------------------
+Equipment: Van   |   Weight: 22 tons   |   Commodity: Canned vegetables
+Trailer: TRL-80509
+
+Rate: $4,000.00
+
+NOTES / SPECIAL INSTRUCTIONS:
+No overnight parking on site.
+
+TERMS:
+- Driver must carry a copy of this confirmation to the shipper and receiver.
+- Payment terms: net 30 days after receipt of signed confirmation and POD.
+- Detention: 2 hours free time, then $50/hr with prior approval and signed in/out times.
+- Lumper receipts require pre-approval.
+
+Carrier signature: ______________________   Date: ____________

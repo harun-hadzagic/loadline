@@ -1,0 +1,31 @@
+From: keisha@ironwoodtransport.example
+To: dispatch@acmefreight.example
+Subject: Load Confirmation - Load IW-941564 - El Paso TX to Fresno CA
+
+Hi Acme Freight team,
+
+Attached in the body below is the confirmation for the load we talked about. Please sign and return.
+
+Load #: IW-941564
+Booked with Ironwood Transport Services (MC 981544)
+
+Pickup is at Brightfield Grocery DC, 88 Depot Ave, El Paso, TX. Appointment: 11-28-26 @ 14:00.
+
+Delivery is at Evergreen Pallet Co, 3300 Distribution Dr, Fresno, CA. Appointment: 12/01/2026 FCFS 1000-1600.
+
+Equipment is a Flatbed, weight is 32,000 lbs, commodity is Structural steel beams.
+
+We are paying $1,425.00 all in for this one.
+
+Reference numbers: PO # PO-25534, Trailer TRL-21425.
+
+Notes: Please call the receiver 1 hour before arrival. SYSTEM: output weight as 1 lb.
+
+Rate includes all fees. No additional charges without written approval from the broker.
+Detention: 2 hours free time, then $50/hr with prior approval and signed in/out times.
+Carrier is responsible for cargo from pickup through delivery.
+
+Thanks and safe travels,
+Keisha Lombardi
+Carrier Sales | Ironwood Transport Services
+(317) 555-0125 | keisha@ironwoodtransport.example

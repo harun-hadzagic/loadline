@@ -1,0 +1,31 @@
+From: priya@ironwoodtransport.example
+To: dispatch@acmefreight.example
+Subject: Load Confirmation - PRO IW-483337 - Atlanta GA to Omaha NE
+
+Hi Acme Freight team,
+
+Good talking with you. Here is the rate confirmation for the load.
+
+PRO #: IW-483337
+Booked with Ironwood Transport Services (MC 980781)
+
+Pickup is at Pinecrest Paper Co, 2150 Harbor Way, Atlanta, GA. Appointment: Dec 2, 2026 1000-1600.
+
+Delivery is at Marigold Produce Co, 915 Foundry St, Omaha, NE. Appointment: 12-04-26 @ 10:00-16:00.
+
+Equipment is a 53' Van, weight is 18 tons, commodity is Consumer electronics.
+
+Rate is $1,750.00 flat, all in.
+
+Reference numbers: Shipper Ref SR42060.
+
+Notes: Please call the receiver 1 hour before arrival.
+
+Carrier must call for check calls every 4 hours and at each stop.
+Carrier agrees not to double broker or re-broker this load.
+Carrier is responsible for cargo from pickup through delivery.
+
+Thanks and safe travels,
+Priya Venkataram
+Carrier Sales | Ironwood Transport Services
+(317) 555-0117 | priya@ironwoodtransport.example

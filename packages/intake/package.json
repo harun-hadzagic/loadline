@@ -1,0 +1,23 @@
+{
+  "name": "@loadline/intake",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Load intake: extraction schema, regex baseline, Claude extractor, eval runner and fixtures.",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "vitest run",
+    "test:unit": "vitest run",
+    "eval": "tsx src/eval/cli.ts"
+  },
+  "dependencies": {
+    "zod": "4.6.7"
+  },
+  "devDependencies": {
+    "tsx": "4.23.15",
+    "vitest": "5.1.0"
+  }
+}

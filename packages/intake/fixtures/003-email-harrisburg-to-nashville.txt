@@ -1,0 +1,33 @@
+From: marcus@prairieskytransport.example
+To: dispatch@cindercreektransport.example
+Subject: Rate Confirmation - Load PS-615963 - Harrisburg PA to Nashville TN
+
+Hi Cinder Creek Transport team,
+
+Attached in the body below is the confirmation for the load we talked about. Please sign and return.
+
+Load #: PS-615963
+Booked with Prairie Sky Transport (MC 980399)
+
+Pickup is at Evergreen Pallet Co, 2150 Harbor Way, Harrisburg, PA. Appointment: 12-04-26 @ 08:00.
+
+Delivery is at Windrow Farms Packing, 4410 Mill Rd, Nashville, TN. Appointment: 12/07/2026 FCFS 0800-1200.
+
+Equipment is a Reefer, weight is 35k lbs, commodity is Frozen chicken.
+
+Keep the reefer unit on continuous and set at 34F, please.
+
+We are paying $1,800.00 all in for this one.
+
+Reference numbers: Pickup # PU66706, Trailer TRL-60343, Shipper Ref SR93818.
+
+Notes: No overnight parking on site.
+
+Carrier must call for check calls every 4 hours and at each stop.
+Carrier agrees not to double broker or re-broker this load.
+Driver must be able to load and unload without assistance unless noted.
+
+Thanks and safe travels,
+Marcus Oyelaran
+Carrier Sales | Prairie Sky Transport
+(402) 555-0113 | marcus@prairieskytransport.example

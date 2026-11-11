@@ -1,0 +1,36 @@
+{
+  "brokerName": "Prairie Sky Transport",
+  "loadReference": "PS-350890",
+  "stops": [
+    {
+      "kind": "pickup",
+      "facilityName": "Sterling Plastics Inc",
+      "city": "Oklahoma City",
+      "state": "OK",
+      "appointmentStart": "2026-11-26T05:30",
+      "appointmentEnd": "2026-11-26T09:30"
+    },
+    {
+      "kind": "delivery",
+      "facilityName": "Oakmont Building Products",
+      "city": "Ontario",
+      "state": "CA",
+      "appointmentStart": "2026-11-29T08:00",
+      "appointmentEnd": "2026-11-29T08:00"
+    }
+  ],
+  "rateUsd": 3725,
+  "weightLbs": 22000,
+  "commodity": "Building materials",
+  "equipment": "flatbed",
+  "otherReferences": [
+    {
+      "type": "shipper ref",
+      "value": "SR96570"
+    },
+    {
+      "type": "delivery number",
+      "value": "DA42132"
+    }
+  ]
+}

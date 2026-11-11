@@ -1,0 +1,31 @@
+From: elena@northwindfreight.example
+To: dispatch@lanternroadexpress.example
+Subject: Rate Confirmation - Order NW-293350 - St. Louis MO to Tulsa OK
+
+Hi Lantern Road Express team,
+
+Attached in the body below is the confirmation for the load we talked about. Please sign and return.
+
+Order #: NW-293350
+Booked with Northwind Freight Brokerage LLC (MC 980127)
+
+Pickup is at Silverleaf Poultry, 4410 Mill Rd, St. Louis, MO. Appointment: Nov 20, 2026 0800.
+
+Delivery is at Sterling Plastics Inc, 12 Quarry Rd, Tulsa, OK. Appointment: 11-22-26 @ 10:00-16:00.
+
+Equipment is a 48' Flatbed, weight is 41000 LBS, commodity is Building materials.
+
+We are paying $2,575.00 all in for this one.
+
+Reference numbers: Pickup # PU77589, BOL # BOL92937.
+
+Notes: Seal must be intact at delivery; note seal number on BOL.
+
+Rate includes all fees. No additional charges without written approval from the broker.
+Lumper receipts require pre-approval.
+POD must be emailed within 24 hours of delivery.
+
+Thanks and safe travels,
+Elena Marchetti
+Carrier Sales | Northwind Freight Brokerage LLC
+(312) 555-0111 | elena@northwindfreight.example

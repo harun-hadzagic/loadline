@@ -1,0 +1,36 @@
+{
+  "brokerName": "Summit Ridge Brokerage",
+  "loadReference": "SR-296842",
+  "stops": [
+    {
+      "kind": "pickup",
+      "facilityName": "Silverleaf Poultry",
+      "city": "Albuquerque",
+      "state": "NM",
+      "appointmentStart": "2026-11-17T06:00",
+      "appointmentEnd": "2026-11-17T14:00"
+    },
+    {
+      "kind": "delivery",
+      "facilityName": "Harvest Moon Bakery",
+      "city": "Charlotte",
+      "state": "NC",
+      "appointmentStart": "2026-11-19T08:00",
+      "appointmentEnd": "2026-11-19T08:00"
+    }
+  ],
+  "rateUsd": 3737.5,
+  "weightLbs": 28000,
+  "commodity": "Auto parts",
+  "equipment": "dry_van",
+  "otherReferences": [
+    {
+      "type": "delivery number",
+      "value": "DA34845"
+    },
+    {
+      "type": "trailer",
+      "value": "TRL-89366"
+    }
+  ]
+}

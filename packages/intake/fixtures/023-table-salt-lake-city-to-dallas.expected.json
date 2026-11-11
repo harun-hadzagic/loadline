@@ -1,0 +1,36 @@
+{
+  "brokerName": "Ironwood Transport Services",
+  "loadReference": "IW-796475",
+  "stops": [
+    {
+      "kind": "pickup",
+      "facilityName": "Bayou Rice Mill",
+      "city": "Salt Lake City",
+      "state": "UT",
+      "appointmentStart": "2026-11-24T08:00",
+      "appointmentEnd": "2026-11-24T12:00"
+    },
+    {
+      "kind": "delivery",
+      "facilityName": "Cedar Valley Foods DC",
+      "city": "Dallas",
+      "state": "TX",
+      "appointmentStart": "2026-11-25T05:30",
+      "appointmentEnd": "2026-11-25T09:30"
+    }
+  ],
+  "rateUsd": 2950,
+  "weightLbs": 28000,
+  "commodity": "Building materials",
+  "equipment": "flatbed",
+  "otherReferences": [
+    {
+      "type": "PO",
+      "value": "PO-51868"
+    },
+    {
+      "type": "BOL",
+      "value": "BOL34109"
+    }
+  ]
+}

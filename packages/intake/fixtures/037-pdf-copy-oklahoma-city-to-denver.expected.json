@@ -1,0 +1,32 @@
+{
+  "brokerName": "Bluewater Cargo Partners",
+  "loadReference": "BW-766233",
+  "stops": [
+    {
+      "kind": "pickup",
+      "facilityName": "Oakmont Building Products",
+      "city": "Oklahoma City",
+      "state": "OK",
+      "appointmentStart": "2026-12-02T09:30",
+      "appointmentEnd": "2026-12-02T09:30"
+    },
+    {
+      "kind": "delivery",
+      "facilityName": "Brightfield Grocery DC",
+      "city": "Denver",
+      "state": "CO",
+      "appointmentStart": "2026-12-05T07:00",
+      "appointmentEnd": "2026-12-05T15:00"
+    }
+  ],
+  "rateUsd": 2450,
+  "weightLbs": 20000,
+  "commodity": "Concrete pipe",
+  "equipment": "flatbed",
+  "otherReferences": [
+    {
+      "type": "shipper ref",
+      "value": "SR65145"
+    }
+  ]
+}

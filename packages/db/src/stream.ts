@@ -51,11 +51,21 @@ export interface OutboxRow {
   cursor: Cursor;
 }
 
-/** Rows plus the safe horizon of the snapshot that read them (see readCommitted). */
+/** What one read saw: the rows, and the snapshot they were read under. */
+export interface SnapshotInfo {
+  /** Oldest transaction still running when the read happened. */
+  xmin: bigint;
+  /** First transaction id not yet assigned at that moment. */
+  xmax: bigint;
+  /** Transactions in progress at that moment (xmin <= x < xmax). */
+  xip: bigint[];
+}
+
 export interface CommittedBatch {
   rows: OutboxRow[];
   /** Every row at or below this cursor is final: no running transaction can add one before it. */
   horizon: Cursor;
+  snapshot: SnapshotInfo;
 }
 
 const MAX_ID = 9223372036854775807n;
@@ -100,6 +110,10 @@ export class OutboxReader {
       connectionString: this.url,
       max: 3,
       application_name: "loadline-stream-read",
+      // A half-open socket must not hang a drain while it holds the hub lock.
+      query_timeout: 15_000,
+      connectionTimeoutMillis: 10_000,
+      keepAlive: true,
     });
   }
 
@@ -107,14 +121,24 @@ export class OutboxReader {
   async start(onWake: () => void): Promise<void> {
     this.onWake = onWake;
     this.stopped = false;
-    await this.connectListener();
+    try {
+      await this.connectListener();
+    } catch (err) {
+      // Reads still work through the pool and the poll; keep trying to LISTEN in the background.
+      this.log("warn", "initial LISTEN failed; retrying in the background", err);
+      void this.reconnect();
+    }
     this.healthTimer = setInterval(() => void this.checkHealth(), this.healthIntervalMs);
+    this.healthTimer.unref?.();
   }
 
   private async connectListener(): Promise<void> {
     const client = new pg.Client({
       connectionString: this.url,
       application_name: "loadline-stream-listen",
+      query_timeout: 15_000,
+      connectionTimeoutMillis: 10_000,
+      keepAlive: true,
     });
     client.on("notification", () => this.onWake?.());
     client.on("error", (err) => {
@@ -124,8 +148,15 @@ export class OutboxReader {
     client.on("end", () => {
       if (!this.stopped) void this.reconnect();
     });
-    await client.connect();
-    await client.query(`LISTEN ${this.channel}`);
+    try {
+      await client.connect();
+      await client.query(`LISTEN ${this.channel}`);
+    } catch (err) {
+      // Never keep a half-connected client: its later "end" would tear down a healthy listener.
+      client.removeAllListeners();
+      client.end().catch(() => {});
+      throw err;
+    }
     this.listener = client;
     this.reconnectAttempt = 0;
     this.log("info", "listening", { channel: this.channel });
@@ -195,23 +226,85 @@ export class OutboxReader {
    * resume from: a replay from the horizon is complete, a replay from a row
    * above it could skip an older row that commits later.
    */
-  async readCommitted(after: Cursor | null, limit = 500): Promise<CommittedBatch> {
+  async readCommitted(
+    after: Cursor | null,
+    limit = 500,
+    skip: SnapshotInfo | null = null,
+  ): Promise<CommittedBatch> {
+    // One statement, one snapshot: the rows, the xmin and the in-progress list
+    // all come from the same instant, even when there are no rows. (A second
+    // statement would have a newer snapshot, and a transaction committing in
+    // between would fall below the horizon without ever having been read.)
     const params: unknown[] = [limit];
-    let where = "WHERE pg_visible_in_snapshot(txid, s.snap)";
+    const conds = ["pg_visible_in_snapshot(o.txid, s.snap)"];
     if (after) {
-      where += " AND (txid, id) > ($2::xid8, $3::bigint)";
+      conds.push(`(o.txid, o.id) > ($${params.length + 1}::xid8, $${params.length + 2}::bigint)`);
       params.push(after.txid.toString(), after.id.toString());
     }
-    // One statement, one snapshot: the xmin and the visibility checks agree.
-    const r = await this.pool.query<Omit<OutboxRow, "cursor"> & { xmin: string }>(
+    if (skip) {
+      // Rows visible at the previous read were already handled; only rows from
+      // transactions that were in progress then, or newer ones, can be new.
+      conds.push(
+        `(o.txid >= $${params.length + 1}::xid8 OR o.txid = ANY($${params.length + 2}::xid8[]))`,
+      );
+      params.push(skip.xmax.toString(), `{${skip.xip.map(String).join(",")}}`);
+    }
+    type Raw = Partial<Omit<OutboxRow, "cursor">> & {
+      xmin: string;
+      xmax: string;
+      xip: string[] | null;
+    };
+    const r = await this.pool.query<Raw>(
       `WITH s AS (SELECT pg_current_snapshot() AS snap)
-       SELECT id::text, txid::text, company_id AS "companyId", type, entity_id AS "entityId",
-              payload, audience, to_json(created_at)#>>'{}' AS "createdAt", pg_snapshot_xmin(s.snap)::text AS xmin
-         FROM app.outbox, s ${where} ORDER BY txid, id LIMIT $1`,
+       SELECT pg_snapshot_xmin(s.snap)::text AS xmin, pg_snapshot_xmax(s.snap)::text AS xmax,
+              (SELECT array_agg(x::text) FROM pg_snapshot_xip(s.snap) x) AS xip,
+              r.id, r.txid, r."companyId", r.type, r."entityId", r.payload, r.audience, r."createdAt"
+         FROM s
+         LEFT JOIN LATERAL (
+           SELECT o.id::text, o.txid::text, o.company_id AS "companyId", o.type, o.entity_id AS "entityId",
+                  o.payload, o.audience, to_json(o.created_at)#>>'{}' AS "createdAt"
+             FROM app.outbox o
+            WHERE ${conds.join(" AND ")}
+            ORDER BY o.txid, o.id LIMIT $1
+         ) r ON true`,
       params,
     );
-    const xmin = r.rows[0]?.xmin ?? (await this.currentXmin());
-    return { rows: r.rows.map(withCursor), horizon: horizonFor(BigInt(xmin)) };
+    const first = r.rows[0];
+    if (!first) throw new Error("snapshot query returned no row");
+    const snapshot: SnapshotInfo = {
+      xmin: BigInt(first.xmin),
+      xmax: BigInt(first.xmax),
+      xip: (first.xip ?? []).map((x) => BigInt(x)),
+    };
+    const rows: OutboxRow[] = [];
+    for (const row of r.rows) {
+      if (row.id === null || row.id === undefined) continue;
+      rows.push(
+        withCursor({
+          id: row.id,
+          txid: row.txid as string,
+          companyId: row.companyId as string,
+          type: row.type as string,
+          entityId: row.entityId ?? null,
+          payload: (row.payload ?? {}) as Record<string, unknown>,
+          audience: row.audience ?? null,
+          createdAt: row.createdAt as string,
+        }),
+      );
+    }
+    return { rows, horizon: horizonFor(snapshot.xmin), snapshot };
+  }
+
+  /**
+   * The highest cursor ever pruned (app.outbox_watermark). A client cursor at or
+   * below it may have missed pruned rows and must resync. Null until the first prune.
+   */
+  async pruneWatermark(): Promise<Cursor | null> {
+    const r = await this.pool.query<{ txid: string; id: string }>(
+      "SELECT txid::text, outbox_id::text AS id FROM app.outbox_watermark WHERE singleton AND txid IS NOT NULL",
+    );
+    const row = r.rows[0];
+    return row ? { txid: BigInt(row.txid), id: BigInt(row.id) } : null;
   }
 
   /** The current safe horizon, for a hub that is starting or has nothing to read. */

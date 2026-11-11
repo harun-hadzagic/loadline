@@ -1,0 +1,64 @@
+{
+  "brokerName": "Prairie Sky Transport",
+  "loadReference": "PS-458750",
+  "stops": [
+    {
+      "kind": "pickup",
+      "facilityName": "Ridgeback Auto Parts",
+      "city": "Memphis",
+      "state": "TN",
+      "appointmentStart": "2026-11-14T05:30",
+      "appointmentEnd": "2026-11-14T09:30"
+    },
+    {
+      "kind": "delivery",
+      "facilityName": "Stonebridge Cabinet Works",
+      "city": "Salt Lake City",
+      "state": "UT",
+      "appointmentStart": "2026-11-15T08:00",
+      "appointmentEnd": "2026-11-15T08:00"
+    },
+    {
+      "kind": "delivery",
+      "facilityName": "Cedar Valley Foods DC",
+      "city": "Omaha",
+      "state": "NE",
+      "appointmentStart": "2026-11-15T13:00",
+      "appointmentEnd": "2026-11-15T17:00"
+    },
+    {
+      "kind": "delivery",
+      "facilityName": "Windrow Farms Packing",
+      "city": "Savannah",
+      "state": "GA",
+      "appointmentStart": "2026-11-16T05:30",
+      "appointmentEnd": "2026-11-16T09:30"
+    }
+  ],
+  "rateUsd": 4325,
+  "weightLbs": 43000,
+  "commodity": "Auto parts",
+  "equipment": "dry_van",
+  "otherReferences": [
+    {
+      "type": "pickup number",
+      "value": "PU444247"
+    },
+    {
+      "type": "delivery number",
+      "value": "DA741666"
+    },
+    {
+      "type": "delivery number",
+      "value": "DA561226"
+    },
+    {
+      "type": "delivery number",
+      "value": "DA584640"
+    },
+    {
+      "type": "trailer",
+      "value": "TRL-42605"
+    }
+  ]
+}

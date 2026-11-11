@@ -1,0 +1,35 @@
+From: marcus@bluewatercargo.example
+To: dispatch@tallgrasstrucking.example
+Subject: Carrier Rate Agreement - Load BW-171800 - Memphis TN to Greensboro NC
+
+Hi Tallgrass Trucking team,
+
+Good talking with you. Here is the rate confirmation for the load.
+
+Load #: BW-171800
+Booked with Bluewater Cargo Partners (MC 984549)
+
+Stop 1 is a pickup at Ridgeback Auto Parts, 5005 Warehouse Row, Memphis, TN. Appointment: 11-28-26 @ 11:00-15:00. PU# PU149593.
+
+Stop 2 is a delivery at Ballast Point Tile, 2150 Harbor Way, Savannah, GA. Appointment: 11/30/2026 14:00. DEL# DA614125.
+
+Stop 3 is a delivery at Foxglove Packaging, 5005 Warehouse Row, Greensboro, NC. Appointment: Dec 2, 2026 0800-1200. DEL# DA894824.
+
+Equipment is a Reefer, weight is 26,000 lbs, commodity is Frozen vegetables.
+
+Keep the reefer unit on continuous and set at 34F, please.
+
+Rate is $2,775.00 flat, all in.
+
+Reference numbers: BOL # BOL95432.
+
+Notes: Shipper loads, driver counts.
+
+POD must be emailed within 24 hours of delivery.
+Payment terms: net 30 days after receipt of signed confirmation and POD.
+Phone-app tracking is required for the full trip.
+
+Thanks and safe travels,
+Marcus Oyelaran
+Carrier Sales | Bluewater Cargo Partners
+(615) 555-0155 | marcus@bluewatercargo.example

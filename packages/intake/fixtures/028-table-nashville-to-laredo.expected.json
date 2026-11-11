@@ -1,0 +1,32 @@
+{
+  "brokerName": "Copperline Freight",
+  "loadReference": "CF-559999",
+  "stops": [
+    {
+      "kind": "pickup",
+      "facilityName": "Summit Hardware DC",
+      "city": "Nashville",
+      "state": "TN",
+      "appointmentStart": "2026-11-29T07:00",
+      "appointmentEnd": "2026-11-29T15:00"
+    },
+    {
+      "kind": "delivery",
+      "facilityName": "Northgate Paper Mill",
+      "city": "Laredo",
+      "state": "TX",
+      "appointmentStart": "2026-11-30T13:00",
+      "appointmentEnd": "2026-11-30T17:00"
+    }
+  ],
+  "rateUsd": 4707.5,
+  "weightLbs": 25000,
+  "commodity": "Plastic resin bags",
+  "equipment": "dry_van",
+  "otherReferences": [
+    {
+      "type": "pickup number",
+      "value": "PU19789"
+    }
+  ]
+}

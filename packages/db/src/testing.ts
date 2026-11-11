@@ -2,6 +2,9 @@
 // this module: Biome and test/unit/no-raw-database-access.test.ts refuse it.
 import { bootstrap, dropAll } from "./bootstrap.ts";
 
+export { bootstrap, dropAll } from "./bootstrap.ts";
+export { withCredentials } from "./env.ts";
+export { migrate } from "./migrate.ts";
 export { appPool, createDb, createPool } from "./pool.ts";
 
 import { dbEnv, withCredentials } from "./env.ts";

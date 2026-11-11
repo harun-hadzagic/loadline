@@ -72,4 +72,30 @@ Held up: cross-company access through every Better Auth endpoint, member managem
 - *The benchmark undercounted itself.* Events could reach a client before the writer had read its own HTTP response, so 13% were counted as stray. Writes are now registered before they are sent, and a receipt that beats the response is reported as such (none did).
 - *Ten in a row.* Repeating the two-browser tests exhausted the free drivers (every test load had the same window) and then pushed cards off-screen; test loads now get their own windows and the board's columns scroll independently.
 
-**What the reviewer caught.** _Appended after the Phase 3 review._
+**What the reviewer caught.** Eleven findings, one critical, four high; all fixed before Phase 4 was committed, each with a test that fails on the old code:
+
+1. *Critical: an empty read took its horizon from a second snapshot.* When a drain found no rows, the xmin came from a later statement; a transaction committing between the two fell below the new horizon without ever having been read, and was lost for good. The reviewer measured 6 of 2,229 events lost at 74 writes/s with nothing patched. Fix: rows, xmin, xmax and the in-progress list come from one statement (a `LEFT JOIN LATERAL` from the snapshot CTE), so an empty read is as safe as a full one.
+2. *High: multi-page drains lost and repeated rows.* The horizon advanced after every 500-row page. Fix: one horizon per drain, that of the first page; the de-duplication map is pruned once at the end; a failed read advances nothing.
+3. *High: the SSE id was wrong.* Every frame carried the batch horizon, so a drop after the first frame of a batch resumed past the rest, and `hello` carried the hub horizon before a replay had even started. Fix: each frame's id is `min(row cursor, read horizon)`, and `hello` carries the client's own cursor during a replay. A test resumes from every frame's id and checks that everything later arrives.
+4. *High: changes between the server render and the stream connecting were missed,* and changes made while the board was not mounted were dropped. Fix: the cache bridge lives in `Providers` for the whole tab, and every `hello` refetches the lists.
+5. *High: a 409 rolled back the whole list captured before the request,* erasing stream updates to other loads. Fix: only that load is rolled back, the list is refetched after any 409, and the overlap 409 now carries the current row too.
+6. *Medium:* a failed subscribe left a silent "live" stream (the route now closes it); a failed `start()` was cached forever (it is not); the resync decision compared with the oldest kept row (a prune watermark table replaces it, read after the replay); a stuck old transaction made every drain re-read everything (the previous snapshot's in-progress list bounds the next read); the client marked a row as seen before applying it (it marks after, and refetches on failure).
+7. *Medium: the tests did not prove the claims.* The cursor test used `readVisible`, which production never calls; there was no hub test; the exactly-once assertion could not fail; the bench ignored duplicates. Added: `cursor-committed.test.ts`, `hub.test.ts` (empty-drain race, 600-row drain with an old commit, resume from every frame, watermark resync, failure closes the client, audiences), `events.test.ts` ("exactly one event per changed entity"), and duplicate counting in the bench.
+8. *Low:* the stats route is now owner/admin only; the hub starts at boot through `instrumentation.ts`, so pruning no longer waits for a browser; the reader pool has query timeouts and keepalive; a half-connected LISTEN client is discarded; a stalled SSE consumer is dropped and replays; the browser's seen-set is capped.
+
+Held up: the lock, the company and audience filters on every path, payload contents, no database connection per SSE client, unsubscribe on abort, the xid8 arithmetic, reconnect behaviour, and the version check in `mergeLoad`.
+
+## Phase 4 · Map and geospatial
+
+**What Claude Code wrote.** `app.record_position()` with the arrival check (migration 0007), the positions service and routes (service token, simulator state), the simulator with its great-circle helpers, the MapLibre map page, the nearest-free-trucks candidates (started in Phase 3), the geospatial benchmark with its own 100,000-row database, Compose services for `web` and `simulator` with their Dockerfiles, and the tests (arrival ordering and radius, cross-company positions, known-position ordering, event counts, map and arrival e2e).
+
+**Where the AI was wrong, and how it was caught.**
+
+- *The benchmark put everything in one city.* The seed picked a city with `ORDER BY <expression of the outer row> LIMIT 1`, which orders by a constant and returns the same first row every time, so all 100,000 trucks and 200,000 stops sat in one place and the arrival check scanned every row even with the index. Caught by reading the plans (`rows=66666 per worker` for a one-mile radius); fixed with `ORDER BY id OFFSET n`.
+- *The benchmark broke its own constraint.* Two thousand assignments over two hundred drivers in one window hit `assignments_driver_no_overlap`. The schema was right; the seed now has one driver per assignment.
+- *Two `random()` calls in one range* produced a lower bound above the upper bound on some rows.
+- *Seeded positions were timestamped in the future* (the seed rounds "now" up to the hour for appointment windows and reused it), so the first real reports looked stale and were ignored. Caught by the nearest-trucks test, whose known positions did not take.
+- *The e2e token came from the wrong place.* The Playwright global setup loads the repository `.env` into the runner process, so a test that read `process.env.SIMULATOR_TOKEN` sent the local token, not the one the web server under test was started with. The test now takes it from the same config that starts the server.
+- *"0 moving" was read as a bug.* At 600× speed the three in-transit trucks had already reached both stops (six arrivals in the log) before the log was read; the assigned loads start tomorrow, so their trucks correctly stayed home.
+
+**What the reviewer caught.** _Appended after the Phase 4 review._

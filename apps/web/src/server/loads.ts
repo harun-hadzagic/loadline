@@ -366,8 +366,11 @@ async function describeOverlap(
   input: AssignInput,
 ): Promise<ConflictError> {
   const constraint = String(err.details?.constraint ?? "");
+  // The current row goes with every 409, so the client can show the truth instead of guessing.
+  const current = await getLoadTx(tx, input.loadId).catch(() => null);
   if (constraint === "assignments_load_no_overlap") {
     return new ConflictError("overlap", "This load was assigned by someone else just now.", {
+      current,
       constraint,
     });
   }
@@ -387,12 +390,13 @@ async function describeOverlap(
        ORDER BY lower(a.period) LIMIT 1`)
     .catch(() => null);
   const c = clash?.rows[0];
-  if (!c) return err;
+  if (!c) return new ConflictError("overlap", err.message, { constraint, current });
   const what = byTruck ? `Truck #${c.name}` : c.name;
   return new ConflictError(
     "overlap",
     `${what} is already on ${c.reference} from ${c.lower} to ${c.upper}.`,
     {
+      current,
       constraint,
       clash: c,
     },

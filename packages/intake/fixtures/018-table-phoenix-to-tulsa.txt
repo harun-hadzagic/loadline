@@ -1,0 +1,31 @@
+CARRIER RATE AGREEMENT            Order #: HL-545794
+Broker:  Harbor Light Logistics
+Contact: Tom Brightwater  (904) 555-0128  MC# 981884
+Carrier: Blue Ridge Haulers
+Issued:  11/11/2026
+==============================================================================
+STOP  FACILITY                          CITY, ST            DATE / TIME
+------------------------------------------------------------------------------
+PU:   Falconer Metals                   Phoenix, AZ         11/19/2026 14:00
+      3300 Distribution Dr
+DEL:  Cedar Valley Foods DC             Tulsa, OK           2026-11-21 10:00 AM to 4:00 PM
+      740 Freight Ct
+------------------------------------------------------------------------------
+Equipment: Refrigerated   |   Weight: 24k   |   Commodity: Dairy products
+Pickup #: PU52643   Trailer: TRL-64800
+
+Line Haul                       $2,950.00
+Fuel Surcharge (FSC)              $405.00
+TOTAL RATE                      $3,355.00
+
+NOTES / SPECIAL INSTRUCTIONS:
+No overnight parking on site.
+Reefer: continuous mode, set temp 34F.
+
+TERMS:
+- Phone-app tracking is required for the full trip.
+- Driver must carry a copy of this confirmation to the shipper and receiver.
+- Payment terms: net 30 days after receipt of signed confirmation and POD.
+- Rate includes all fees. No additional charges without written approval from the broker.
+
+Carrier signature: ______________________   Date: ____________

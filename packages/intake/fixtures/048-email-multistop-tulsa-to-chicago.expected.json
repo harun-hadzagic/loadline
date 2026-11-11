@@ -1,0 +1,56 @@
+{
+  "brokerName": "Meridian Cargo Group",
+  "loadReference": "MR-597501",
+  "stops": [
+    {
+      "kind": "pickup",
+      "facilityName": "Falconer Metals",
+      "city": "Tulsa",
+      "state": "OK",
+      "appointmentStart": "2026-11-19T07:00",
+      "appointmentEnd": "2026-11-19T07:00"
+    },
+    {
+      "kind": "delivery",
+      "facilityName": "Windrow Farms Packing",
+      "city": "Salt Lake City",
+      "state": "UT",
+      "appointmentStart": "2026-11-22T08:00",
+      "appointmentEnd": "2026-11-22T08:00"
+    },
+    {
+      "kind": "delivery",
+      "facilityName": "Oakmont Building Products",
+      "city": "Chicago",
+      "state": "IL",
+      "appointmentStart": "2026-11-24T09:30",
+      "appointmentEnd": "2026-11-24T09:30"
+    }
+  ],
+  "rateUsd": 2230,
+  "weightLbs": 28000,
+  "commodity": "Fresh produce",
+  "equipment": "reefer",
+  "otherReferences": [
+    {
+      "type": "pickup number",
+      "value": "PU549979"
+    },
+    {
+      "type": "delivery number",
+      "value": "DA683794"
+    },
+    {
+      "type": "delivery number",
+      "value": "DA428978"
+    },
+    {
+      "type": "shipper ref",
+      "value": "SR60218"
+    },
+    {
+      "type": "BOL",
+      "value": "BOL74018"
+    }
+  ]
+}

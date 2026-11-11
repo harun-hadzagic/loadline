@@ -1,0 +1,28 @@
+CARRIER RATE AGREEMENT            Load Number: NW-171222
+Broker:  Northwind Freight Brokerage LLC
+Contact: Marcus Oyelaran  (312) 555-0135  MC# 982560
+Carrier: Acme Freight
+Issued:  11/11/2026
+==============================================================================
+STOP  FACILITY                          CITY, ST            DATE / TIME
+------------------------------------------------------------------------------
+PU:   Marigold Produce Co               Omaha, NE           Dec 8, 2026 1000-1600
+      740 Freight Ct
+DEL:  Granite State Appliances          Savannah, GA        12-09-26 @ 14:00
+      88 Depot Ave
+------------------------------------------------------------------------------
+Equipment: 53' Dry Van   |   Weight: 35,000 lbs   |   Commodity: Packaged paper goods
+BOL #: BOL11727
+
+Rate: $4,625.00
+
+NOTES / SPECIAL INSTRUCTIONS:
+Driver must wear a safety vest and closed-toe shoes at both facilities.
+
+TERMS:
+- Carrier must call for check calls every 4 hours and at each stop.
+- Detention: 2 hours free time, then $50/hr with prior approval and signed in/out times.
+- Carrier agrees not to double broker or re-broker this load.
+- Payment terms: net 30 days after receipt of signed confirmation and POD.
+
+Carrier signature: ______________________   Date: ____________

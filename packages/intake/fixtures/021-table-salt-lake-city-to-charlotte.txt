@@ -1,0 +1,29 @@
+CARRIER RATE AGREEMENT            PRO #: BW-153639
+Broker:  Bluewater Cargo Partners
+Contact: Dana Whitfield  (615) 555-0131  MC# 982154
+Carrier: Redwood Line Carriers
+Issued:  11/11/2026
+==============================================================================
+STOP  FACILITY                          CITY, ST            DATE / TIME
+------------------------------------------------------------------------------
+PU:   Sterling Plastics Inc             Salt Lake City, UT  12-10-26 @ 14:00
+      5005 Warehouse Row
+DEL:  Redfield Cold Storage             Charlotte, NC       12/11/2026 FCFS 0530-0930
+      6600 Logistics Ln
+------------------------------------------------------------------------------
+Equipment: 53' Reefer   |   Weight: 31000 LBS   |   Commodity: Frozen vegetables
+Shipper Ref: SR76888
+
+Rate: $2,300.00
+
+NOTES / SPECIAL INSTRUCTIONS:
+No overnight parking on site.
+Reefer: continuous mode, set temp 34F.
+
+TERMS:
+- POD must be emailed within 24 hours of delivery.
+- Driver must carry a copy of this confirmation to the shipper and receiver.
+- Carrier is responsible for cargo from pickup through delivery.
+- Phone-app tracking is required for the full trip.
+
+Carrier signature: ______________________   Date: ____________

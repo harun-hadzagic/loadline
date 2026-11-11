@@ -1,0 +1,33 @@
+From: marcus@northwindfreight.example
+To: dispatch@acmefreight.example
+Subject: Carrier Rate Agreement - PRO NW-894241 - Denver CO to Ontario CA
+
+Hi Acme Freight team,
+
+Thanks for taking this one. Please review the details below, sign, and send it back.
+
+PRO #: NW-894241
+Booked with Northwind Freight Brokerage LLC (MC 985797)
+
+Pickup is at Copper Kettle Canning, 4410 Mill Rd, Denver, CO. Appointment: 11-22-26 @ 09:30.
+
+Delivery is at Northgate Paper Mill, 88 Depot Ave, Ontario, CA. Appointment: 11/24/2026 07:00.
+
+Equipment is a Reefer.
+
+Keep the reefer unit on continuous and set at 34F, please.
+
+Rate is $4,625.00 flat, all in.
+
+Reference numbers: Pickup # PU96468.
+
+Notes: Seal must be intact at delivery; note seal number on BOL.
+
+Carrier agrees not to double broker or re-broker this load.
+Payment terms: net 30 days after receipt of signed confirmation and POD.
+Driver must carry a copy of this confirmation to the shipper and receiver.
+
+Thanks and safe travels,
+Marcus Oyelaran
+Carrier Sales | Northwind Freight Brokerage LLC
+(312) 555-0167 | marcus@northwindfreight.example
