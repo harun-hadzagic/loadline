@@ -421,30 +421,58 @@ export type Candidate = {
 export async function assignmentCandidates(
   ctx: RequestContext,
   loadId: string,
-): Promise<{ drivers: Candidate[]; trucks: Candidate[] }> {
+): Promise<{ drivers: Candidate[]; trucks: Candidate[]; nearestTruckIds: string[] }> {
   assertCan(ctx, "load", "assign");
   return withTenant(tenant(ctx), async (tx) => {
     await requireLoadTx(tx, loadId);
+    // The pickup point and the load's window are read once and passed back in
+    // as constants. The shape matters under row-level security: PostGIS
+    // functions are not LEAKPROOF, so on a policy-protected table the planner
+    // will not use them as index conditions, and an ORDER BY on a distance
+    // to a joined column cannot be served by the GiST index either. With a
+    // constant point, ORDER BY location <-> $point is an index-ordered scan
+    // that stops after five rows (decision 0018; the geo benchmark runs this
+    // exact query as the app role).
+    const target = await tx.execute<{ pickup: string | null; window: string | null }>(sql`
+      SELECT (SELECT s.location::text FROM app.stops s WHERE s.load_id = ${loadId} ORDER BY s.seq LIMIT 1) AS pickup,
+             app.load_window(${loadId})::text AS window`);
+    const pickup = target.rows[0]?.pickup ?? null;
+    const window = target.rows[0]?.window ?? null;
     const drivers = await tx.execute<Candidate>(sql`
       SELECT d.id, d.name AS label, NULL::float AS "distanceMiles",
              NOT EXISTS (SELECT 1 FROM app.assignments a
-                          WHERE a.driver_id = d.id AND a.ended_reason IS NULL AND a.period && app.load_window(${loadId})) AS free
+                          WHERE a.driver_id = d.id AND a.ended_reason IS NULL AND a.period && ${window}::tstzrange) AS free
         FROM app.drivers d WHERE d.active
        ORDER BY free DESC, d.name`);
     const trucks = await tx.execute<Candidate>(sql`
-      WITH pickup AS (
-        SELECT s.location FROM app.stops s WHERE s.load_id = ${loadId} ORDER BY s.seq LIMIT 1
-      )
       SELECT t.id, '#' || t.unit_number AS label, t.equipment,
-             ROUND((ST_Distance(p.location, pickup.location) / 1609.344)::numeric, 1)::float AS "distanceMiles",
+             ROUND((ST_Distance(p.location, ${pickup}::geography) / 1609.344)::numeric, 1)::float AS "distanceMiles",
              NOT EXISTS (SELECT 1 FROM app.assignments a
-                          WHERE a.truck_id = t.id AND a.ended_reason IS NULL AND a.period && app.load_window(${loadId})) AS free
+                          WHERE a.truck_id = t.id AND a.ended_reason IS NULL AND a.period && ${window}::tstzrange) AS free
         FROM app.trucks t
         LEFT JOIN app.truck_positions p ON p.truck_id = t.id
-        CROSS JOIN pickup
        WHERE t.active
-       ORDER BY free DESC, p.location <-> pickup.location NULLS LAST, t.unit_number`);
-    return { drivers: drivers.rows, trucks: trucks.rows };
+       ORDER BY free DESC, p.location <-> ${pickup}::geography NULLS LAST, t.unit_number`);
+    // The spec's query: the five closest active trucks with no overlapping
+    // assignment, ORDER BY location <-> pickup LIMIT 5, served by the GiST
+    // index. (The full list above sorts everything for the pickers.)
+    const nearest =
+      pickup === null
+        ? { rows: [] as Array<{ id: string }> }
+        : await tx.execute<{ id: string }>(sql`
+      SELECT t.id
+        FROM app.truck_positions p
+        JOIN app.trucks t ON t.id = p.truck_id
+       WHERE t.active
+         AND NOT EXISTS (SELECT 1 FROM app.assignments a
+                          WHERE a.truck_id = t.id AND a.ended_reason IS NULL AND a.period && ${window}::tstzrange)
+       ORDER BY p.location <-> ${pickup}::geography
+       LIMIT 5`);
+    return {
+      drivers: drivers.rows,
+      trucks: trucks.rows,
+      nearestTruckIds: nearest.rows.map((r) => r.id),
+    };
   });
 }
 

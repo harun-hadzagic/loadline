@@ -21,10 +21,14 @@ interface Props {
 
 async function fetchCandidates(
   loadId: string,
-): Promise<{ drivers: Candidate[]; trucks: Candidate[] }> {
+): Promise<{ drivers: Candidate[]; trucks: Candidate[]; nearestTruckIds: string[] }> {
   const res = await fetch(`/api/loads/${loadId}/candidates`, { cache: "no-store" });
   if (!res.ok) throw new Error("Could not load drivers and trucks.");
-  return res.json() as Promise<{ drivers: Candidate[]; trucks: Candidate[] }>;
+  return res.json() as Promise<{
+    drivers: Candidate[];
+    trucks: Candidate[];
+    nearestTruckIds: string[];
+  }>;
 }
 
 export function AssignDialog({ load, onClose, onAssign }: Props) {
@@ -41,7 +45,10 @@ export function AssignDialog({ load, onClose, onAssign }: Props) {
     setTruckId((t) => t || data.trucks.find((x) => x.free)?.id || "");
   }, [data]);
   const first = load.stops[0];
-  const nearest = data?.trucks.filter((t) => t.free && t.distanceMiles !== null).slice(0, 5) ?? [];
+  // The server's nearest-neighbour query (five closest free trucks), in its order.
+  const nearest = (data?.nearestTruckIds ?? [])
+    .map((id) => data?.trucks.find((t) => t.id === id))
+    .filter((t): t is Candidate => !!t);
 
   return (
     <Dialog open onOpenChange={(open) => !open && onClose()}>
